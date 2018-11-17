@@ -125,6 +125,8 @@ public class SavingsAccountAssembler {
         Group group = null;
         Staff fieldOfficer = null;
         AccountType accountType = AccountType.INVALID;
+        
+       
         final Long clientId = this.fromApiJsonHelper.extractLongNamed(clientIdParamName, element);
         if (clientId != null) {
             client = this.clientRepository.findOneWithNotFoundDetection(clientId);
@@ -146,6 +148,20 @@ public class SavingsAccountAssembler {
             if (!group.hasClientAsMember(client)) { throw new ClientNotInGroupException(clientId, groupId); }
             accountType = AccountType.JLG;
         }
+        
+        if((Boolean)command.booleanPrimitiveValueOfParameterNamed("isGSIM")!=null)
+        {
+        	System.out.println("setting system to gsim");
+        	if(command.booleanPrimitiveValueOfParameterNamed("isGSIM"))
+        	{
+        		accountType = AccountType.GSIM;
+        	}
+        }
+        
+       /* if(((Boolean)command.booleanPrimitiveValueOfParameterNamed("isGSIM"))!=null)
+        {
+        	accountType = AccountType.GSIM;
+        }*/
 
         final Long fieldOfficerId = this.fromApiJsonHelper.extractLongNamed(fieldOfficerIdParamName, element);
         if (fieldOfficerId != null) {
@@ -297,6 +313,7 @@ public class SavingsAccountAssembler {
         account.setHelpers(this.savingsAccountTransactionSummaryWrapper, this.savingsHelper);
         return account;
     }
+    
 
     public void setHelpers(final SavingsAccount account) {
         account.setHelpers(this.savingsAccountTransactionSummaryWrapper, this.savingsHelper);

@@ -166,6 +166,10 @@ public class Loan extends AbstractPersistableCustom {
     @ManyToOne
     @JoinColumn(name = "group_id", nullable = true)
     private Group group;
+    
+    @ManyToOne
+    @JoinColumn(name = "glim_id", nullable = true)
+    private GroupLoanIndividualMonitoringAccount glim;
 
     @Column(name = "loan_type_enum", nullable = false)
     private Integer loanType;
@@ -1071,8 +1075,16 @@ public class Loan extends AbstractPersistableCustom {
     public Client client() {
         return this.client;
     }
+    
+    public GroupLoanIndividualMonitoringAccount getGlim() {
+		return glim;
+	}
 
-    public LoanProduct loanProduct() {
+	public void setGlim(GroupLoanIndividualMonitoringAccount glim) {
+		this.glim = glim;
+	}
+
+	public LoanProduct loanProduct() {
         return this.loanProduct;
     }
 
@@ -4202,6 +4214,14 @@ public class Loan extends AbstractPersistableCustom {
         }
         return groupId;
     }
+    
+    public Long getGlimId() {
+        Long glimId = null;
+        if (this.glim != null) {
+        	glimId = this.glim.getId();
+        }
+        return glimId;
+    }
 
     public Long getOfficeId() {
         Long officeId = null;
@@ -6548,7 +6568,7 @@ public class Loan extends AbstractPersistableCustom {
     public boolean hasInvalidLoanType() {
         return AccountType.fromInt(this.loanType).isInvalid();
     }
-
+    
     public boolean isIndividualLoan(){return AccountType.fromInt(this.loanType).isIndividualAccount();}
 
     public void setRates(List<Rate> rates) {
@@ -6558,4 +6578,14 @@ public class Loan extends AbstractPersistableCustom {
     public List<Rate> getRates() {
         return rates;
     }
+
+     
+    public Integer getLoanType() {
+		return loanType;
+	}
+
+	public void setLoanType(Integer loanType) {
+		this.loanType = loanType;
+	}
+
 }

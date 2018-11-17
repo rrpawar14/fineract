@@ -87,6 +87,7 @@ public class GuarantorReadPlatformServiceImpl implements GuarantorReadPlatformSe
         }
         return mergedGuarantorDatas;
     }
+ 
 
     @Override
     public GuarantorData retrieveGuarantor(final Long loanId, final Long guarantorId) {

@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.SearchParameters;
 import org.apache.fineract.organisation.staff.data.StaffData;
@@ -133,7 +134,6 @@ public interface LoanReadPlatformService {
 
     LoanTransactionData retrieveLoanForeclosureTemplate(final Long loanId, final LocalDate transactionDate);
 
-
     LoanAccountData retrieveLoanByLoanAccount(String loanAccountNumber);
 
     Long retrieveLoanIdByAccountNumber(String loanAccountNumber);
@@ -141,5 +141,9 @@ public interface LoanReadPlatformService {
     String retrieveAccountNumberByAccountId(Long accountId);
 
     Integer retrieveNumberOfActiveLoans();
+
+	List<LoanAccountData> retrieveGLIMChildLoansByGLIMParentAccount(String parentloanAccountNumber);
+
+
 
 }

@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.fineract.accounting.journalentry.service.JournalEntryWritePlatformService;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
@@ -134,6 +135,7 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         return user;
     }
 
+    
     @Transactional
     @Override
     public SavingsAccountTransaction handleDeposit(final SavingsAccount account, final DateTimeFormatter fmt,
@@ -176,7 +178,6 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
             account.calculateInterestUsing(mc, today, isInterestTransfer, isSavingsInterestPostingAtCurrentPeriodEnd,
                     financialYearBeginningMonth, postInterestOnDate);
         }
-
         saveTransactionToGenerateTransactionId(deposit);
 
         this.savingsAccountRepository.saveAndFlush(account);

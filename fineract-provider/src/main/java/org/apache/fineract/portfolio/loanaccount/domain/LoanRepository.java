@@ -119,6 +119,9 @@ public interface LoanRepository extends JpaRepository<Loan, Long>, JpaSpecificat
 
     @Query("select loan from Loan loan where loan.group.id = :groupId and loan.client.id is null")
     List<Loan> findByGroupId(@Param("groupId") Long groupId);
+    
+    @Query("select loan from Loan loan where loan.glim.id = :glimId")
+    List<Loan> findByGlimId(@Param("glimId") Long glimId);
 
     @Query("select loan from Loan loan where loan.id IN :ids and loan.loanStatus IN :loanStatuses and loan.loanType IN :loanTypes")
     List<Loan> findByIdsAndLoanStatusAndLoanType(@Param("ids") Collection<Long> ids,
@@ -153,4 +156,6 @@ public interface LoanRepository extends JpaRepository<Loan, Long>, JpaSpecificat
 
     @Query(FIND_NON_CLOSED_LOAN_THAT_BELONGS_TO_CLIENT)
     Loan findNonClosedLoanThatBelongsToClient(@Param("loanId") Long loanId, @Param("clientId") Long clientId);
+    
+   
 }
