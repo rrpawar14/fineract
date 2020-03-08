@@ -28,10 +28,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.fineract.infrastructure.bulkimport.data.GlobalEntityType;
 import org.apache.fineract.integrationtests.common.CommonConstants;
 import org.apache.fineract.integrationtests.common.Utils;
+import org.apache.fineract.integrationtests.common.savings.SavingsApplicationTestBuilder;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.joda.time.LocalDate;
@@ -57,6 +59,7 @@ public class LoanTransactionHelper {
     private static final String DISBURSE_LOAN_COMMAND = "disburse";
     private static final String DISBURSE_LOAN_TO_SAVINGS_COMMAND = "disburseToSavings";
     private static final String UNDO_DISBURSE_LOAN_COMMAND = "undoDisbursal";
+    private static final String REJECT_LOAN_COMMAND = "reject";
     private static final String UNDO_LAST_DISBURSE_LOAN_COMMAND = "undolastdisbursal";
     private static final String WRITE_OFF_LOAN_COMMAND = "writeoff";
     private static final String WAIVE_INTEREST_COMMAND = "waiveinterest";
@@ -80,6 +83,23 @@ public class LoanTransactionHelper {
     public Integer getLoanId(final String loanApplicationJSON) {
         return Utils.performServerPost(this.requestSpec, this.responseSpec, APPLY_LOAN_URL, loanApplicationJSON, "loanId");
     }
+    
+    public HashMap<String,Integer> getGlimId(final String loanApplicationJSON) {
+        return Utils.performServerPost(this.requestSpec, this.responseSpec, APPLY_LOAN_URL, loanApplicationJSON, "");
+    }
+    
+    public Object getGlimLoanId(final String glimId) {
+    	final String GET_LOAN_URL = "/fineract-provider/api/v1/loans/glimAccount/" + glimId + "?" + Utils.TENANT_IDENTIFIER;
+        return Utils.performServerGet(this.requestSpec, this.responseSpec, GET_LOAN_URL, "childLoanId");
+        
+    }
+    
+    //
+    
+  /*  public Integer Object(final String glimId) {
+        final String GET_LOAN_URL = "/fineract-provider/api/v1/loans/glimAccount/" + glimId + "?" + Utils.TENANT_IDENTIFIER;
+        return Utils.performServerGet(this.requestSpec, this.responseSpec, GET_LOAN_URL, "childLoanId");
+    }*/
 
     public Object getLoanError(final String loanApplicationJSON, final String responseAttribute) {
         return Utils.performServerPost(this.requestSpec, this.responseSpec, APPLY_LOAN_URL, loanApplicationJSON, responseAttribute);
@@ -216,7 +236,39 @@ public class LoanTransactionHelper {
         System.out.println("IN UNDO LAST DISBURSE LOAN URL " + url);
         return performUndoLastLoanDisbursementTransaction(createLoanOperationURL(UNDO_LAST_DISBURSE_LOAN_COMMAND, loanID), undoLastDisburseJson);
     }
+    //glimtesting
+    public HashMap approveGlimAccount(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
+    	final List<Map<String, Object>> approvalFormData, final Integer glimID) {
+    	String approvalForm = new LoanApplicationTestBuilder() //
+							      .withApprovalFormData(approvalFormData)
+							      .build();
 
+        final String approvalURL = createGlimAccountURL(APPROVE_LOAN_COMMAND, glimID);
+        return performLoanTransaction(approvalURL, approvalForm);
+    }
+    
+    public HashMap disburseGlimAccount(final String date, final Integer glimID) {
+        System.out.println("--------------------------------- GLIM DISBURSEMENT APPLICATION -------------------------------");
+        return performLoanTransaction(createGlimAccountURL(DISBURSE_LOAN_COMMAND, glimID), getDisbursementAsJSON(date));
+    }
+    
+    public HashMap undoDisburseGlimAccount(final Integer glimID) {
+    	System.out.println("--------------------------------- UNDO DISBURSAL GLIM APPLICATION -------------------------------");
+    	final String undoBodyJson = "{'note':'UNDO DISBURSAL'}";
+    	return performLoanTransaction(createGlimAccountURL(UNDO_DISBURSE_LOAN_COMMAND, glimID), undoBodyJson);
+    }
+
+    public HashMap undoApprovalGlimAccount(final Integer glimID) {
+    	System.out.println("--------------------------------- UNDO APPROVAL GLIM APPLICATION -------------------------------");
+    	final String undoBodyJson = "{'note':'UNDO APPROVAL'}";
+    	return performLoanTransaction(createGlimAccountURL(UNDO_APPROVAL_LOAN_COMMAND, glimID), undoBodyJson);
+    }
+    
+    public HashMap rejectGlimAccount(final String date, final Integer glimID) {
+    	System.out.println("--------------------------------- REJECT GLIM APPLICATION -------------------------------");
+    	return performLoanTransaction(createGlimAccountURL(REJECT_LOAN_COMMAND, glimID), getRejectAsJSON(date));
+    }
+    
     public void recoverFromGuarantor(final Integer loanID) {
         performLoanTransaction(createLoanOperationURL(RECOVER_FROM_GUARANTORS_COMMAND, loanID), "", "");
     }
@@ -343,7 +395,23 @@ public class LoanTransactionHelper {
         map.put("note", "Approval NOTE");
         return new Gson().toJson(map);
     }
-
+    
+    private String getDisbursementAsJSON(final String date) {
+    	final HashMap<String, String> map = new HashMap<>();
+    	map.put("actualDisbursementDate", date);
+    	map.put("locale", "en");
+        map.put("dateFormat", "dd MMMM yyyy");
+        return new Gson().toJson(map);
+    }
+    
+    private String getRejectAsJSON(final String date) {
+    	final HashMap<String, String> map = new HashMap<>();
+    	map.put("rejectedOnDate", date);
+    	map.put("locale", "en");
+        map.put("dateFormat", "dd MMMM yyyy");
+        return new Gson().toJson(map);
+    }
+    
     private String getRepaymentBodyAsJSON(final String transactionDate, final Float transactionAmount) {
         final HashMap<String, String> map = new HashMap<>();
         map.put("locale", "en");
@@ -495,6 +563,10 @@ public class LoanTransactionHelper {
 
     private String createLoanTransactionURL(final String command, final Integer loanID) {
         return "/fineract-provider/api/v1/loans/" + loanID + "/transactions?command=" + command + "&" + Utils.TENANT_IDENTIFIER;
+    }
+    
+    private String createGlimAccountURL(final String command, final Integer glimID) {
+        return "/fineract-provider/api/v1/loans/glimAccount/" + glimID + "?command=" + command + "&" + Utils.TENANT_IDENTIFIER;
     }
 
     private HashMap performLoanTransaction(final String postURLForLoanTransaction, final String jsonToBeSent) {

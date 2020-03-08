@@ -75,12 +75,14 @@ public class LoanApplicationApprovalTest {
         final Integer loanID = applyForLoanApplication(clientID, loanProductID, proposedAmount);
 
         HashMap loanStatusHashMap = LoanStatusChecker.getStatusOfLoan(this.requestSpec, this.responseSpec, loanID);
+        System.out.println("First hash map is "+loanStatusHashMap);
         LoanStatusChecker.verifyLoanIsPending(loanStatusHashMap);
 
         final String expectedDisbursementDate = null;
         List<HashMap> approveTranches = null;
         loanStatusHashMap = this.loanTransactionHelper.approveLoanWithApproveAmount(approveDate, expectedDisbursementDate, approvalAmount,
                 loanID, approveTranches);
+        System.out.println("second hash map is "+loanStatusHashMap);
         LoanStatusChecker.verifyLoanIsWaitingForDisbursal(loanStatusHashMap);
 
     }
@@ -108,6 +110,7 @@ public class LoanApplicationApprovalTest {
         @SuppressWarnings("unchecked")
         List<HashMap> error = (List<HashMap>) this.loanTransactionHelper.approveLoan(approveDate, approvalAmount, loanID,
                 CommonConstants.RESPONSE_ERROR);
+        System.out.println("error is "+error);
 
         assertEquals("error.msg.loan.approval.amount.can't.be.greater.than.loan.amount.demanded",
                 error.get(0).get(CommonConstants.RESPONSE_ERROR_MESSAGE_CODE));
@@ -274,7 +277,7 @@ public class LoanApplicationApprovalTest {
                 .withInterestTypeAsDecliningBalance() //
                 .withSubmittedOnDate("1 March 2014") //
                 .build(clientID.toString(), loanProductID.toString(), null);
-
+        System.out.println("tranches= "+tranches);
         return this.loanTransactionHelper.getLoanId(loanApplicationJSON);
     }
 

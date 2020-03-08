@@ -20,7 +20,9 @@ package org.apache.fineract.integrationtests.common.savings;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.fineract.integrationtests.common.CommonConstants;
@@ -92,7 +94,10 @@ public class SavingsProductHelper {
     private String daysToInactive = null;
     private String daysToDormancy = null;
     private String daysToEscheat = null;
-
+    private Boolean withgsimID = null;
+    private Integer gsimID = null;
+  
+    
     public String build() {
         final HashMap<String, String> map = new HashMap<>();
 
@@ -128,6 +133,7 @@ public class SavingsProductHelper {
         map.put("minRequiredBalance", this.minRequiredBalance);
         map.put("enforceMinRequiredBalance", this.enforceMinRequiredBalance);
         map.put("withHoldTax", this.withHoldTax.toString());
+        
         if (withHoldTax) {
             map.put("taxGroupId", taxGroupId);
         }
@@ -141,6 +147,8 @@ public class SavingsProductHelper {
         	map.put("daysToEscheat", this.daysToEscheat);
 
         }
+      
+        
         String savingsProductCreateJson = new Gson().toJson(map);
         System.out.println(savingsProductCreateJson);
         return savingsProductCreateJson;
@@ -230,6 +238,13 @@ public class SavingsProductHelper {
         }
         return this;
     }
+    
+    public SavingsProductHelper withgsimID(final Integer gsimID) {
+    	if(withgsimID !=null)	{
+    		 this.gsimID = gsimID;
+        }
+        return this;
+    }
 
     private Map<String, String> getAccountMappingForCashBased() {
         final Map<String, String> map = new HashMap<>();
@@ -282,5 +297,5 @@ public class SavingsProductHelper {
 
 		return this;
 	}
-
+	
 }
