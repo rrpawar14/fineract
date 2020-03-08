@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.fineract.integrationtests.common.savings.SavingsProductHelper;
+
 import com.google.gson.Gson;
 
 
@@ -55,6 +57,8 @@ public class ShareAccountHelper {
     private String lockinPeriodFrequencyType ;
     
     private List<Map<String, Object>> charges = null ;
+    
+    private List<Map<String, Object>> clientArray =null;
             //chargeId , amount
     
     public String build() {
@@ -141,4 +145,5 @@ public class ShareAccountHelper {
         this.charges.addAll(charges) ;
         return this ;
     }
+  
 }

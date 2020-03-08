@@ -18,8 +18,12 @@
  */
 package org.apache.fineract.integrationtests.common.savings;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.fineract.integrationtests.common.shares.ShareAccountHelper;
 
 import com.google.gson.Gson;
 
@@ -28,11 +32,14 @@ public class SavingsApplicationTestBuilder {
     private static final String LOCALE = "en_GB";
 
     private String submittedOnDate = "";
-
+   
     private HashMap<String, String> addParams = null;
 
     private List<HashMap<String, Object>> datatables = null;
 
+    private List<Map<String, Object>> clientArray =null;
+    private List<Map<String, Object>> savingsArray =null;
+   
     public String build(final String ID, final String savingsProductId, final String accountType) {
 
         final HashMap<String, Object> map = new HashMap<>();
@@ -51,11 +58,26 @@ public class SavingsApplicationTestBuilder {
         if (datatables != null) {
             map.put("datatables", this.datatables);
         }
+      
         String savingsApplicationJSON = new Gson().toJson(map);
         System.out.println(savingsApplicationJSON);
         return savingsApplicationJSON;
     }
-
+    
+    public String build()
+    {
+    	final HashMap<String, Object> map = new HashMap<>();
+    	if(this.clientArray != null)  {
+            map.put("clientArray", this.clientArray) ;
+    	}
+    	
+    	 if(this.savingsArray != null)  {
+             map.put("savingsArray", this.savingsArray) ;
+        }
+    	String GsimApplicationJSON = new Gson().toJson(map);
+    	return GsimApplicationJSON; 
+    }
+    
     public SavingsApplicationTestBuilder withSubmittedOnDate(final String savingsApplicationSubmittedDate) {
         this.submittedOnDate = savingsApplicationSubmittedDate;
         return this;
@@ -70,4 +92,17 @@ public class SavingsApplicationTestBuilder {
         this.datatables = datatables;
         return this;
     }
+    
+    public SavingsApplicationTestBuilder withClientArray(final List<Map<String,Object>> clientArray) {
+		 this.clientArray = new ArrayList<>();
+      	 this.clientArray.addAll(clientArray);
+      	 return this;
+    }
+    
+    public SavingsApplicationTestBuilder withSavingsArray(final List<Map<String,Object>> savingsArray) {
+		 this.savingsArray = new ArrayList<>();
+     	 this.savingsArray.addAll(savingsArray);
+     	 return this;
+   }
+    
 }

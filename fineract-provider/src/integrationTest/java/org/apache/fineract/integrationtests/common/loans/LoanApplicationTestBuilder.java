@@ -21,6 +21,9 @@ package org.apache.fineract.integrationtests.common.loans;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.fineract.integrationtests.common.savings.SavingsApplicationTestBuilder;
 
 import com.google.gson.Gson;
 
@@ -35,8 +38,10 @@ public class LoanApplicationTestBuilder {
     private static final String EQUAL_PRINCIPAL_PAYMENTS = "0";
     private static final String EQUAL_INSTALLMENTS = "1";
     private static final String CALCULATION_PERIOD_SAME_AS_REPAYMENT_PERIOD = "1";
+    private static final String LOCALE = "en_GB";
     public static final String DEFAULT_STRATEGY = "1";
     public static final String RBI_INDIA_STRATEGY = "4";
+    
 
     private String principal = "10,000";
     private String loanTermFrequency = "";
@@ -62,10 +67,14 @@ public class LoanApplicationTestBuilder {
     @SuppressWarnings("rawtypes")
     private List<HashMap> charges = new ArrayList<>();
     private String repaymentsStartingFromDate = null;
-
+    private String isParentAccount = null;
+    private String totalLoan = "0";
+ 
     private String calendarId;
     private boolean syncDisbursementWithMeeting = false;
     private List<HashMap<String, Object>> datatables = null;
+    private List<Map<String, Object>> approvalFormData =null;
+    
 
     public String build(final String clientID, final String groupID, final String loanProductId, final String savingsID) {
         final HashMap<String, Object> map = new HashMap<>();
@@ -90,6 +99,19 @@ public class LoanApplicationTestBuilder {
             map.put("clientId", ID);
         }
         return build(map, loanProductId, savingsID);
+    }
+    
+    public String build()
+    {
+    	final HashMap<String, Object> map = new HashMap<>();
+ 
+    	 if(this.approvalFormData != null) {
+             map.put("approvalFormData", this.approvalFormData) ;
+         }
+    	
+    	String approvalFormData=new Gson().toJson(map);
+    	System.out.println("approvalFormData:"+approvalFormData);
+    	return approvalFormData; 
     }
 
     private String build(final HashMap<String, Object> map, final String loanProductId, final String savingsID) {
@@ -134,7 +156,15 @@ public class LoanApplicationTestBuilder {
             map.put("maxOutstandingLoanBalance", maxOutstandingLoanBalance);
 
         }
-
+        
+        if(isParentAccount!=null){
+         map.put("isParentAccount", isParentAccount);
+        }
+        
+        if(totalLoan!=null){
+            map.put("totalLoan", totalLoan);
+        }
+       
         if (datatables != null) {
             map.put("datatables", this.datatables);
         }
@@ -246,7 +276,7 @@ public class LoanApplicationTestBuilder {
         this.submittedOnDate = loanApplicationSubmittedDate;
         return this;
     }
-
+    
     public LoanApplicationTestBuilder withCharges(final List<HashMap> charges) {
         this.charges = charges;
         return this;
@@ -254,6 +284,11 @@ public class LoanApplicationTestBuilder {
 
     public LoanApplicationTestBuilder withLoanType(final String loanType) {
         this.loanType = loanType;
+        return this;
+    }
+
+    public LoanApplicationTestBuilder withtotalLoan(final String totalLoan) {
+        this.totalLoan = totalLoan;
         return this;
     }
 
@@ -283,6 +318,23 @@ public class LoanApplicationTestBuilder {
         this.repaymentsStartingFromDate = firstRepaymentDate;
         return this;
     }
+    
+    public LoanApplicationTestBuilder withParentAccount(final String parentAccount) {
+        this.isParentAccount = parentAccount;
+        return this;
+    }
+    
+    public LoanApplicationTestBuilder withApprovalFormData(final List<Map<String, Object>> approvalFormData) {
+		 this.approvalFormData = new ArrayList<>();
+     	 this.approvalFormData.addAll(approvalFormData);
+     	 return this;
+    }
+    
+   /* public LoanApplicationTestBuilder withDisburseFormData(final List<Map<String, Object>> disburseFormData) {
+		 this.disburseFormData = new ArrayList<>();
+    	 this.disburseFormData.addAll(disburseFormData);
+    	 return this;
+    }*/
 
     /**
      * calendarID parameter is used to sync repayments with group meetings,
