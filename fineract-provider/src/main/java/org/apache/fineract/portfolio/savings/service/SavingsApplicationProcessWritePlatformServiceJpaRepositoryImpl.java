@@ -221,12 +221,11 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl
 
 			final SavingsAccount account = this.savingAccountAssembler.assembleFrom(command, submittedBy);
 			this.savingAccountRepository.save(account);
-
 			String accountNumber = "";
 			GroupSavingsIndividualMonitoring gsimAccount = null;
 			BigDecimal applicationId = BigDecimal.ZERO;
 			Boolean isLastChildApplication = false;
-
+			
 			// gsim
 			if (account.isAccountNumberRequiresAutoGeneration()) {
 
@@ -243,9 +242,9 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl
 					if (command.booleanObjectValueOfParameterNamed("lastApplication") != null) {
 						isLastChildApplication = command.booleanPrimitiveValueOfParameterNamed("lastApplication");
 					}
-
+					
 					Group group = this.groupRepositoryWrapper.findOneWithNotFoundDetection(groupId);
-
+					
 					if (command.booleanObjectValueOfParameterNamed("isParentAccount") != null)
 					{
 							// empty table check
@@ -254,13 +253,12 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl
 
 							accountNumber = this.accountNumberGenerator.generate(account, accountNumberFormat);
 							account.updateAccountNo(accountNumber + "-1");
-
-							gsimWritePlatformService.addGSIMAccountInfo(accountNumber, group, BigDecimal.ZERO,
+							gsimAccount = gsimWritePlatformService.addGSIMAccountInfo(accountNumber, group, BigDecimal.ZERO,
 									Long.valueOf(1), true,
 									SavingsAccountStatusType.SUBMITTED_AND_PENDING_APPROVAL.getValue(),applicationId);
-							account.setGsim(gsimRepository.findOneByAccountNumber(accountNumber));
+							account.setGsim(gsimAccount);
 							this.savingAccountRepository.save(account);
-
+						
 						} else {
 							// Parent-empty table
 							accountNumber = this.accountNumberGenerator.generate(account, accountNumberFormat);
@@ -270,7 +268,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl
 									SavingsAccountStatusType.SUBMITTED_AND_PENDING_APPROVAL.getValue(),applicationId);
 							account.setGsim(gsimRepository.findOneByAccountNumber(accountNumber));
 							this.savingAccountRepository.save(account);
-
+							
 						}
 
 					} else {
@@ -284,6 +282,8 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl
 							this.gsimWritePlatformService.incrementChildAccountCount(gsimAccount);
 							account.setGsim(gsimAccount);
 							this.savingAccountRepository.save(account);
+							
+							
 
 						} else {
 							// Child-empty table
@@ -295,7 +295,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl
 									SavingsAccountStatusType.SUBMITTED_AND_PENDING_APPROVAL.getValue(),applicationId);
 							account.setGsim(gsimAccount);
 							this.savingAccountRepository.save(account);
-
+							
 						}
 						
 						//reset isAcceptingChild when processing last application of GSIM
@@ -304,7 +304,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl
 									gsimRepository.findOneByIsAcceptingChildAndApplicationId(true, applicationId));
 						}
 
-					}
+					} 
 				} else // for applications other than GSIM
 				{
 					generateAccountNumber(account);
@@ -313,8 +313,9 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl
 			}
 
 			// end of gsim
-
+	
 			final Long savingsId = account.getId();
+			
 			if (command.parameterExists(SavingsApiConstants.datatables)) {
 				this.entityDatatableChecksWritePlatformService.saveDatatables(StatusEnum.CREATE.getCode().longValue(),
 						EntityTables.SAVING.getName(), savingsId, account.productId(),
@@ -328,14 +329,16 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl
 					constructEntityMap(BUSINESS_ENTITY.SAVING, account));
 
 			return new CommandProcessingResultBuilder() //
-					.withCommandId(command.commandId()) //
-					.withEntityId(savingsId) //
+					.withCommandId(command.commandId()) //command.commandId()
+					.withEntityId(savingsId)			 //
 					.withOfficeId(account.officeId()) //
 					.withClientId(account.clientId()) //
 					.withGroupId(account.groupId()) //
 					.withSavingsId(savingsId) //
+				    .withGsimId(gsimAccount==null ? 0 : gsimAccount.getId())
 					.build();
-		} catch (final DataAccessException dve) {
+		}
+		catch (final DataAccessException dve) {
 			handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
 			return CommandProcessingResult.empty();
 		} catch (final PersistenceException dve) {
@@ -517,7 +520,6 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl
 		Long parentSavingId = gsimId;
 		GroupSavingsIndividualMonitoring parentSavings = gsimRepository.findOne(parentSavingId);
 		List<SavingsAccount> childSavings = this.savingAccountRepository.findByGsimId(gsimId);
-
 		CommandProcessingResult result = null;
 		int count = 0;
 		for (SavingsAccount account : childSavings) {

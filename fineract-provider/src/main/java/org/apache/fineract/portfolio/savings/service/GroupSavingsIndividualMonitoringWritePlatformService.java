@@ -33,6 +33,6 @@ public interface GroupSavingsIndividualMonitoringWritePlatformService
 
 	void incrementChildAccountCount(GroupSavingsIndividualMonitoring gsimAccount);
 
-	void addGSIMAccountInfo(String accountNumber, Group group, BigDecimal parentDeposit, Long childAccountsCount,
+	GroupSavingsIndividualMonitoring addGSIMAccountInfo(String accountNumber, Group group, BigDecimal parentDeposit, Long childAccountsCount,
 			Boolean isAcceptingChild, Integer loanStatus, BigDecimal applicationId);
 }

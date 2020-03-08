@@ -4192,6 +4192,14 @@ public class Loan extends AbstractPersistableCustom<Long> {
         }
         return groupId;
     }
+    
+    public Long getGlimId() {
+        Long glimId = null;
+        if (this.glim != null) {
+        	glimId = this.glim.getId();
+        }
+        return glimId;
+    }
 
     public Long getOfficeId() {
         Long officeId = null;

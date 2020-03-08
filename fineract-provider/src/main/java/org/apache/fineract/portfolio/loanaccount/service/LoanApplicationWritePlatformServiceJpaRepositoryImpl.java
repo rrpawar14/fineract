@@ -598,14 +598,15 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 
             this.businessEventNotifierService.notifyBusinessEventWasExecuted(BUSINESS_EVENTS.LOAN_CREATE,
                     constructEntityMap(BUSINESS_ENTITY.LOAN, newLoanApplication));
-
+           
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withEntityId(newLoanApplication.getId()) //
                     .withOfficeId(newLoanApplication.getOfficeId()) //
                     .withClientId(newLoanApplication.getClientId()) //
                     .withGroupId(newLoanApplication.getGroupId()) //
-                    .withLoanId(newLoanApplication.getId()) //
+                    .withLoanId(newLoanApplication.getId())
+                    .withGlimId(newLoanApplication.getGlimId())
                     .build();
         } catch (final DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
@@ -1313,7 +1314,7 @@ public void checkForProductMixRestrictions(final Loan loan) {
   
     			
     	CommandProcessingResult result=null;
-    	int count=0,j=0;;
+    	int count=0,j=0;
     	for(JsonElement approvals:approvalFormData)
     	{
     			

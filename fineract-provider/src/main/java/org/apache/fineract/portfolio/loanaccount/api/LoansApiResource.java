@@ -422,7 +422,6 @@ public class LoansApiResource {
             @Context final UriInfo uriInfo) {
         long start = System.currentTimeMillis() ;
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
-
         LoanAccountData loanBasicDetails = this.loanReadPlatformService.retrieveOne(loanId);
         if (loanBasicDetails.isInterestRecalculationEnabled()) {
             Collection<CalendarData> interestRecalculationCalendarDatas = this.calendarReadPlatformService
@@ -557,9 +556,9 @@ public class LoansApiResource {
                 mandatoryResponseParameters.add("linkedAccount");
                 linkedAccount = this.accountAssociationsReadPlatformService.retriveLoanLinkedAssociation(loanId);
             }
-
+            
         }
-
+        
         Collection<LoanProductData> productOptions = null;
         LoanProductData product = null;
         Collection<EnumOptionData> loanTermFrequencyTypeOptions = null;

@@ -151,10 +151,19 @@ public class SavingsAccountAssembler {
             accountType = AccountType.JLG;
         }
         
-        if(((Boolean)command.booleanPrimitiveValueOfParameterNamed("isGSIM"))!=null)
+        if((Boolean)command.booleanPrimitiveValueOfParameterNamed("isGSIM")!=null)
+        {
+        	System.out.println("setting system to gsim");
+        	if(command.booleanPrimitiveValueOfParameterNamed("isGSIM"))
+        	{
+        		accountType = AccountType.GSIM;
+        	}
+        }
+        
+       /* if(((Boolean)command.booleanPrimitiveValueOfParameterNamed("isGSIM"))!=null)
         {
         	accountType = AccountType.GSIM;
-        }
+        }*/
 
         final Long fieldOfficerId = this.fromApiJsonHelper.extractLongNamed(fieldOfficerIdParamName, element);
         if (fieldOfficerId != null) {

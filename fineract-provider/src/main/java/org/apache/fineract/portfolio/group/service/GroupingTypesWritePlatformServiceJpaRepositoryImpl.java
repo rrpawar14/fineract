@@ -796,7 +796,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
         final Set<Client> clientMembers = assembleSetOfClients(groupForUpdate.officeId(), command);
         final Map<String, Object> actualChanges = new HashMap<>();
 
-        final List<String> changes = groupForUpdate.associateClients(clientMembers);
+        final List<String> changes = groupForUpdate.associateClients(clientMembers); System.out.println("group client "+changes);
 
         if (groupForUpdate.isGroup()) {
             validateGroupRulesBeforeClientAssociation(groupForUpdate);

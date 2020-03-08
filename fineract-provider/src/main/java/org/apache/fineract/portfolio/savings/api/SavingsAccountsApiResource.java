@@ -273,8 +273,10 @@ public class SavingsAccountsApiResource {
     @Path("/gsim/{parentAccountId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String updateGsim(@PathParam("parentAccountId") final Long parentAccountId, final String apiRequestBodyAsJson,
-            @QueryParam("command") final String commandParam) {
+   /* public String updateGsim(@PathParam("parentAccountId") final Long parentAccountId, final String apiRequestBodyAsJson,
+            @QueryParam("command") final String commandParam) {*/
+    public String updateGsim(@PathParam("parentAccountId") final Long parentAccountId, final String apiRequestBodyAsJson)
+    {
 
       /*  if (is(commandParam, "updateWithHoldTax")) {
             final CommandWrapper commandRequest = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson).updateWithHoldTax(accountId)
@@ -314,8 +316,7 @@ public class SavingsAccountsApiResource {
             final CommandWrapper commandRequest = builder.withdrawSavingsAccountApplication(parentAccountId).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         } else if (is(commandParam, "approve")) {
-        	System.out.println("parentAccountId "+parentAccountId);
-            final CommandWrapper commandRequest = builder.approveGSIMAccountApplication(parentAccountId).build();
+        	final CommandWrapper commandRequest = builder.approveGSIMAccountApplication(parentAccountId).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         } else if (is(commandParam, "undoapproval")) {
             final CommandWrapper commandRequest = builder.undoGSIMApplicationApproval(parentAccountId).build();
