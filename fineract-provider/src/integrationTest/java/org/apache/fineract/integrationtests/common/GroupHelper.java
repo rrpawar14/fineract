@@ -248,11 +248,21 @@ public class GroupHelper {
     }
     
     //Glim_Gsim_testing
-    public static List<String> verifyRetrieveGlimAccounts(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
+    public static List<String> verifyRetrieveGlimAccountsByGroupId(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
             final Integer groupID) {
         List<String> list = new ArrayList<>();
         System.out.println("------------------------------CHECK GROUP Retrieve Accounts------------------------------------\n");
         final String GROUP_URL = "/fineract-provider/api/v1/groups/"+groupID+"/glimaccounts?" + Utils.TENANT_IDENTIFIER;
+        list = Utils.performServerGet(requestSpec, responseSpec, GROUP_URL, "glimId");
+        System.out.println("GlimId of Retrieved Account"+list);
+        return list;
+    }
+    
+    public static List<String> verifyRetrieveGlimAccountsByGlimId(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
+            final Integer glimId) {
+        List<String> list = new ArrayList<>();
+        System.out.println("------------------------------CHECK GROUP Retrieve Accounts------------------------------------\n");
+        final String GROUP_URL = "/fineract-provider/api/v1/loans/glimAccount/"+glimId+"?"+ Utils.TENANT_IDENTIFIER;
         list = Utils.performServerGet(requestSpec, responseSpec, GROUP_URL, "glimId");
         System.out.println("GlimId of Retrieved Account"+list);
         return list;

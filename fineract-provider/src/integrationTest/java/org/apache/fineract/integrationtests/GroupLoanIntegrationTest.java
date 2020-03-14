@@ -121,7 +121,7 @@ public class GroupLoanIntegrationTest {
     }
     
     @Test
-    public void getGlimAccount() {
+    public void getGlimAccountByGroupId() {
     	
     	this.loanTransactionHelper = new LoanTransactionHelper(this.requestSpec, this.responseSpec);
         
@@ -144,8 +144,36 @@ public class GroupLoanIntegrationTest {
         System.out.println("GlimId: "+ glimId);
         System.out.println("LoanId: "+ loanId);
        
-        final List<String> retrievedGlimId=GroupHelper.verifyRetrieveGlimAccounts(this.requestSpec, this.responseSpec, groupID);
+        final List<String> retrievedGlimId=GroupHelper.verifyRetrieveGlimAccountsByGroupId(this.requestSpec, this.responseSpec, groupID);
         Assert.assertNotNull(retrievedGlimId.toString());
+    }
+    
+    @Test
+    public void getGlimAccountByGlimId() {
+    	
+    	this.loanTransactionHelper = new LoanTransactionHelper(this.requestSpec, this.responseSpec);
+        
+    	final Integer clientID = ClientHelper.createClient(this.requestSpec, this.responseSpec);
+        Assert.assertNotNull(clientID);
+
+        Integer groupID = GroupHelper.createGroup(this.requestSpec, this.responseSpec, true);
+        Assert.assertNotNull(groupID);
+
+        groupID = GroupHelper.associateClient(this.requestSpec, this.responseSpec, groupID.toString(), clientID.toString());
+        Assert.assertNotNull(groupID);
+
+        final Integer loanProductID = createLoanProduct();
+        Assert.assertNotNull(loanProductID);
+
+        HashMap<String,Integer> glim = applyForGlimApplication(clientID, groupID, loanProductID);
+        final Integer glimId=glim.get("glimId");
+        final Integer loanId=glim.get("loanId");
+        System.out.println("Glim Loan Application: "+ glim);
+        System.out.println("GlimId: "+ glimId);
+        System.out.println("LoanId: "+ loanId);
+       
+        final List<String> retrievedGlimAccountId=GroupHelper.verifyRetrieveGlimAccountsByGlimId(this.requestSpec, this.responseSpec, glimId);
+        Assert.assertNotNull(retrievedGlimAccountId);
     }
     
     private Map<String, Object> approvalFormData(final Integer loanId, final String approvedOnDate) {
