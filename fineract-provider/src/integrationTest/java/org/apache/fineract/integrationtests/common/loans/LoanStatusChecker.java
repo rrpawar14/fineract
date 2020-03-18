@@ -61,6 +61,10 @@ public class LoanStatusChecker {
     public static void verifyLoanAccountForeclosed(final HashMap loanSubStatusHashMap) {
         assertEquals("Foreclosed", getSubStatus(loanSubStatusHashMap, "value"));
     }
+    
+    public static void verifyLoanAccountRejected(final HashMap loanSubStatusHashMap) {
+        assertEquals("Rejected", getSubStatus(loanSubStatusHashMap, "value"));
+    }
 
     public static HashMap<String, Object> getStatusOfLoan(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
             final Integer loanID) {

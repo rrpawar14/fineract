@@ -37,9 +37,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.integrationtests.common.ClientHelper;
 import org.apache.fineract.integrationtests.common.CommonConstants;
+import org.apache.fineract.integrationtests.common.GroupHelper;
 import org.apache.fineract.integrationtests.common.SchedulerJobHelper;
 import org.apache.fineract.integrationtests.common.TaxComponentHelper;
 import org.apache.fineract.integrationtests.common.TaxGroupHelper;
@@ -67,6 +70,7 @@ public class ClientSavingsIntegrationTest {
     public static final String WITHDRAW_AMOUNT_ADJUSTED = "500";
     public static final String MINIMUM_OPENING_BALANCE = "1000.0";
     public static final String ACCOUNT_TYPE_INDIVIDUAL = "INDIVIDUAL";
+    public static final String DATE_FORMAT = "dd MMMM yyyy";
 
     private ResponseSpecification responseSpec;
     private RequestSpecification requestSpec;
@@ -2096,6 +2100,33 @@ public class ClientSavingsIntegrationTest {
         return SavingsProductHelper.createSavingsProduct(savingsProductJSON, requestSpec, responseSpec);
     }
 
+    private Integer createGsimSavingsProduct(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
+            final String minOpenningBalance, String minBalanceForInterestCalculation, String minRequiredBalance,
+            String enforceMinRequiredBalance, final boolean allowOverdraft,String gsimID) {
+    	System.out.println("------------------------------CREATING NEW GSIM SAVINGS PRODUCT ---------------------------------------");
+    	
+    	 SavingsProductHelper savingsProductHelper = new SavingsProductHelper();
+         if (allowOverdraft) {
+             final String overDraftLimit = "2000.0";
+             savingsProductHelper = savingsProductHelper.withOverDraft(overDraftLimit);
+         }
+        
+         System.out.println("gsimid="+gsimID);
+         final String savingsProductJSON = savingsProductHelper
+                 //
+                 .withInterestCompoundingPeriodTypeAsDaily()
+                 //
+                 .withInterestPostingPeriodTypeAsMonthly()
+                 //
+                 .withInterestCalculationPeriodTypeAsDailyBalance()
+                 //
+                 .withMinBalanceForInterestCalculation(minBalanceForInterestCalculation)
+                 //
+                 .withMinRequiredBalance(minRequiredBalance).withEnforceMinRequiredBalance(enforceMinRequiredBalance)
+                 .withMinimumOpenningBalance(minOpenningBalance).build();
+         return SavingsProductHelper.createSavingsProduct(savingsProductJSON, requestSpec, responseSpec);
+    }
+
     private Integer createTaxGroup(final String percentage){
         final Integer liabilityAccountId = null;
         final Integer taxComponentId = TaxComponentHelper.createTaxComponent(this.requestSpec, this.responseSpec, percentage, liabilityAccountId);
@@ -2296,4 +2327,5 @@ public class ClientSavingsIntegrationTest {
         assertEquals("Verifying opening Balance is -300", balance, summary.get("accountBalance"));
 
     }
+
 }
