@@ -62,3 +62,5 @@ CREATE TABLE `gsim_accounts` (
  -- changes to savings_Transaction
  ALTER TABLE `m_savings_account_transaction` ADD COLUMN `is_loan_disbursement` bigint(20);
   
+ -- changes to savings_Transaction
+ ALTER TABLE `m_savings_account_transaction` ADD COLUMN `is_loan_disbursement` bigint(20);

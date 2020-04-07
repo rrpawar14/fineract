@@ -109,7 +109,7 @@ public class GroupHelper {
         System.out.println("---------------------------------DELETE GROUP---------------------------------------------");
         return Utils.performServerDelete(requestSpec, responseSpec, GROUP_ASSOCIATE_URL, "groupId");
     }
-   
+
     public static Object assignStaff(final RequestSpecification requestSpec, final ResponseSpecification responseSpec, final String groupId,final Long staffId){
         final String GROUP_ASSIGN_STAFF_URL = "/fineract-provider/api/v1/groups/" + groupId + "?" + Utils.TENANT_IDENTIFIER + "&command=assignStaff";
         System.out.println("---------------------------------DELETE GROUP---------------------------------------------");
@@ -141,7 +141,7 @@ public class GroupHelper {
         System.out.println("map : " + map);
         return new Gson().toJson(map);
     }
-    
+
     public static String associateClientAsJSON(final String clientMember) {
         final HashMap<String, List<String>> map = new HashMap<String, List<String>>();
         final List<String> list = new ArrayList<>();
@@ -217,7 +217,7 @@ public class GroupHelper {
         final String GROUP_URL = "/fineract-provider/api/v1/groups/" + generatedGroupID
                 + "?associations=clientMembers&" + Utils.TENANT_IDENTIFIER;
         list = Utils.performServerGet(requestSpec, responseSpec, GROUP_URL, "clientMembers");
-       System.out.println("the list of verifyEmptyGroupMembers"+list);
+        System.out.println("the list of verifyEmptyGroupMembers"+list);
         assertTrue("ERROR IN GROUP MEMBER", list.toString().contains("id=" + groupMember.toString()));
     }
 
@@ -240,7 +240,7 @@ public class GroupHelper {
         list = Utils.performServerGet(requestSpec, responseSpec, GROUP_URL, "pageItems");
         assertFalse("GROUP NOT DELETED", list.toString().contains("id=" + generatedGroupID.toString()));
     }
-    
+
     //Glim_Gsim_testing
     public static List<String> verifyRetrieveGlimAccountsByGroupId(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
             final Integer groupID) {
@@ -251,7 +251,7 @@ public class GroupHelper {
         System.out.println("GlimId of Retrieved Account"+list);
         return list;
     }
-    
+
     public static List<String> verifyRetrieveGlimAccountsByGlimId(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
             final Integer glimId) {
         List<String> list = new ArrayList<>();
@@ -261,7 +261,7 @@ public class GroupHelper {
         System.out.println("GlimId of Retrieved Account"+list);
         return list;
     }
-    
+
     public static List<String> verifyRetrieveGsimAccounts(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
             final Integer groupID) {
         List<String> list = new ArrayList<>();
@@ -271,7 +271,7 @@ public class GroupHelper {
         System.out.println("GsimId Retrieved Accounts"+list);
         return list;
     }
-    
+
     public static String randomNameGenerator(final String prefix, final int lenOfRandomSuffix) {
         return Utils.randomStringGenerator(prefix, lenOfRandomSuffix);
     }

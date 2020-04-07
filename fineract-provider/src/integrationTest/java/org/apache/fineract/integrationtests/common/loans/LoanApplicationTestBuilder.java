@@ -38,7 +38,7 @@ public class LoanApplicationTestBuilder {
     private static final String LOCALE = "en_GB";
     public static final String DEFAULT_STRATEGY = "1";
     public static final String RBI_INDIA_STRATEGY = "4";
-    
+
 
     private String principal = "10,000";
     private String loanTermFrequency = "";
@@ -66,12 +66,12 @@ public class LoanApplicationTestBuilder {
     private String repaymentsStartingFromDate = null;
     private String isParentAccount = null;
     private String totalLoan = "0";
- 
+
     private String calendarId;
     private boolean syncDisbursementWithMeeting = false;
     private List<HashMap<String, Object>> datatables = null;
     private List<Map<String, Object>> approvalFormData =null;
-    
+
 
     public String build(final String clientID, final String groupID, final String loanProductId, final String savingsID) {
         final HashMap<String, Object> map = new HashMap<>();
@@ -97,18 +97,18 @@ public class LoanApplicationTestBuilder {
         }
         return build(map, loanProductId, savingsID);
     }
-    
+
     public String build()
     {
-    	final HashMap<String, Object> map = new HashMap<>();
- 
-    	 if(this.approvalFormData != null) {
+         final HashMap<String, Object> map = new HashMap<>();
+
+         if(this.approvalFormData != null) {
              map.put("approvalFormData", this.approvalFormData) ;
          }
-    	
-    	String approvalFormData=new Gson().toJson(map);
-    	System.out.println("approvalFormData:"+approvalFormData);
-    	return approvalFormData; 
+
+        String approvalFormData=new Gson().toJson(map);
+        System.out.println("approvalFormData:"+approvalFormData);
+        return approvalFormData;
     }
 
     private String build(final HashMap<String, Object> map, final String loanProductId, final String savingsID) {
@@ -153,15 +153,15 @@ public class LoanApplicationTestBuilder {
             map.put("maxOutstandingLoanBalance", maxOutstandingLoanBalance);
 
         }
-        
+
         if(isParentAccount!=null){
          map.put("isParentAccount", isParentAccount);
         }
-        
+
         if(totalLoan!=null){
             map.put("totalLoan", totalLoan);
         }
-       
+
         if (datatables != null) {
             map.put("datatables", this.datatables);
         }
@@ -273,7 +273,7 @@ public class LoanApplicationTestBuilder {
         this.submittedOnDate = loanApplicationSubmittedDate;
         return this;
     }
-    
+
     public LoanApplicationTestBuilder withCharges(final List<HashMap> charges) {
         this.charges = charges;
         return this;
@@ -315,18 +315,18 @@ public class LoanApplicationTestBuilder {
         this.repaymentsStartingFromDate = firstRepaymentDate;
         return this;
     }
-    
+
     public LoanApplicationTestBuilder withParentAccount(final String parentAccount) {
         this.isParentAccount = parentAccount;
         return this;
     }
-    
+
     public LoanApplicationTestBuilder withApprovalFormData(final List<Map<String, Object>> approvalFormData) {
-		 this.approvalFormData = new ArrayList<>();
-     	 this.approvalFormData.addAll(approvalFormData);
-     	 return this;
+          this.approvalFormData = new ArrayList<>();
+          this.approvalFormData.addAll(approvalFormData);
+          return this;
     }
-    
+
     /**
      * calendarID parameter is used to sync repayments with group meetings,
      * especially when using jlg loans

@@ -158,7 +158,7 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
     private final StandingInstructionRepository standingInstructionRepository;
     private final BusinessEventNotifierService businessEventNotifierService;
     private final GSIMRepositoy gsimRepository;
-    
+
     private final static Logger logger = LoggerFactory.getLogger(SavingsAccountWritePlatformServiceJpaRepositoryImpl.class);
 
 
@@ -212,23 +212,23 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
         this.businessEventNotifierService = businessEventNotifierService;
         this.gsimRepository=gsimRepository;
     }
-    
-    
+
+
     @Transactional
     @Override
     public CommandProcessingResult gsimActivate(final Long gsimId, final JsonCommand command) {
-    	
+
     	Long parentSavingId=gsimId;
      	GroupSavingsIndividualMonitoring parentSavings=gsimRepository.findById(parentSavingId).get();
      	List<SavingsAccount> childSavings=this.savingAccountRepositoryWrapper.findByGsimId(gsimId);
-     	
+
      	CommandProcessingResult result=null;
      	int count=0;
      	for(SavingsAccount account:childSavings)
      	{
-     		
+
      		result=activate(account.getId(), command);
-     		
+
      		if(result!=null)
      		{
      			count++;
@@ -238,12 +238,12 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
      				gsimRepository.save(parentSavings);
      			}
      		}
-     		
-     		
+
+
      	}
-     	
+
      	return result;
-    	
+
     }
 
     @Transactional
@@ -313,32 +313,32 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
         account.validateAccountBalanceDoesNotBecomeNegative(SavingsAccountTransactionType.PAY_CHARGE.name(),
                 depositAccountOnHoldTransactions);
     }
-    
+
     @Transactional
     @Override
     public CommandProcessingResult gsimDeposit(final Long gsimId, final JsonCommand command) {
-    	
+
     	Long parentSavingId=gsimId;
-     	GroupSavingsIndividualMonitoring parentSavings=gsimRepository.findById(parentSavingId).get();
+     	//GroupSavingsIndividualMonitoring parentSavings=gsimRepository.findById(parentSavingId).get();
      	List<SavingsAccount> childSavings=this.savingAccountRepositoryWrapper.findByGsimId(gsimId);
-     	
+
      	JsonArray savingsArray=command.arrayOfParameterNamed("savingsArray");
-     	
+
      	JsonArray childAccounts=command.arrayOfParameterNamed("childAccounts");
-     	
+
      	int count=0;
      	CommandProcessingResult result=null;
      	for(JsonElement element:savingsArray)
      	{
-     		
+
      		result=deposit(element.getAsJsonObject().get("childAccountId").getAsLong(), JsonCommand.fromExistingCommand(command, element));
      	}
-    
-     	
+
+
      	return result;
-    	
+
     }
-    
+
 
     @Transactional
     @Override
@@ -348,7 +348,7 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
 
         this.savingsAccountTransactionDataValidator.validate(command);
         boolean isGsim=false;
-        
+
        if( this.savingAccountRepositoryWrapper.findOneWithNotFoundDetection(savingsId).getGsim()!=null)
        {
     	   isGsim=true;
@@ -373,7 +373,7 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
 
         	if(isGsim && (deposit.getId()!=null))
         	{
-        		
+
         		logger.debug("Deposit account has been created", deposit);
 
         		GroupSavingsIndividualMonitoring gsim=gsimRepository.findById(account.getGsim().getId()).get();
@@ -384,7 +384,7 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
         		gsim.setParentDeposit(newBalance);
         		gsimRepository.save(gsim);
         		System.out.println("balance after making deposit "+gsimRepository.findById(account.getGsim().getId()).get().getParentDeposit());
-        		
+
         	}
 
         final String noteText = command.stringValueOfParameterNamed("note");
@@ -414,9 +414,9 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
     public CommandProcessingResult withdrawal(final Long savingsId, final JsonCommand command) {
 
         this.savingsAccountTransactionDataValidator.validate(command);
-        
+
         boolean isGsim=false;
-        
+
         if( this.savingAccountRepositoryWrapper.findOneWithNotFoundDetection(savingsId).getGsim()!=null)
         {
      	   isGsim=true;
@@ -442,14 +442,14 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
                 isRegularTransaction, isApplyWithdrawFee, isInterestTransfer, isWithdrawBalance);
         final SavingsAccountTransaction withdrawal = this.savingsAccountDomainService.handleWithdrawal(account, fmt, transactionDate,
                 transactionAmount, paymentDetail, transactionBooleanValues);
-        
+
     	if(isGsim && (withdrawal.getId()!=null))
     	{
     		GroupSavingsIndividualMonitoring gsim=gsimRepository.findById(account.getGsim().getId()).get();
     		BigDecimal currentBalance=gsim.getParentDeposit().subtract(transactionAmount);
     		gsim.setParentDeposit(currentBalance);
     		gsimRepository.save(gsim);
-    		
+
     	}
 
         final String noteText = command.stringValueOfParameterNamed("note");
@@ -783,20 +783,20 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
             if (group.isNotActive()) { throw new GroupNotActiveException(group.getId()); }
         }
     }
-    
+
     @Override
     public CommandProcessingResult bulkGSIMClose(final Long gsimId, final JsonCommand command) {
-    	
+
     	final Long parentSavingId=gsimId;
     	GroupSavingsIndividualMonitoring parentSavings=gsimRepository.findById(parentSavingId).get();
     	List<SavingsAccount> childSavings=this.savingAccountRepositoryWrapper.findByGsimId(gsimId);
-    	
+
     	CommandProcessingResult result=null;
     	int count=0;
     	for(SavingsAccount account:childSavings)
     	{
     		result=close(account.getId(), command);
-    		
+
     		if(result!=null)
     		{
     			count++;
@@ -806,12 +806,12 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
     				gsimRepository.save(parentSavings);
     			}
     		}
-    		
-    		
+
+
     	}
-    	
-    	return result;	
-    	
+
+    	return result;
+
     }
 
     @Override

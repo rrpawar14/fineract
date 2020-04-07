@@ -24,10 +24,7 @@ import com.google.gson.Gson;
 import com.jayway.restassured.specification.RequestSpecification;
 import com.jayway.restassured.specification.ResponseSpecification;
 import java.math.BigDecimal;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.apache.fineract.integrationtests.common.Utils;
 import org.apache.fineract.integrationtests.common.accounting.Account;
@@ -94,8 +91,8 @@ public class SavingsProductHelper {
     private String daysToEscheat = null;
     private Boolean withgsimID = null;
     private Integer gsimID = null;
-  
-    
+
+
     public String build() {
         final HashMap<String, String> map = new HashMap<>();
 
@@ -131,7 +128,7 @@ public class SavingsProductHelper {
         map.put("minRequiredBalance", this.minRequiredBalance);
         map.put("enforceMinRequiredBalance", this.enforceMinRequiredBalance);
         map.put("withHoldTax", this.withHoldTax.toString());
-        
+
         if (withHoldTax) {
             map.put("taxGroupId", taxGroupId);
         }
@@ -145,7 +142,7 @@ public class SavingsProductHelper {
             map.put("daysToEscheat", this.daysToEscheat);
 
         }
-      
+
         String savingsProductCreateJson = new Gson().toJson(map);
         System.out.println(savingsProductCreateJson);
         return savingsProductCreateJson;
@@ -235,10 +232,10 @@ public class SavingsProductHelper {
         }
         return this;
     }
-    
+
     public SavingsProductHelper withgsimID(final Integer gsimID) {
-    	if(withgsimID !=null)	{
-    		 this.gsimID = gsimID;
+        if(withgsimID !=null)	{
+            this.gsimID = gsimID;
         }
         return this;
     }
@@ -302,6 +299,6 @@ public class SavingsProductHelper {
         this.daysToDormancy = "60";
         this.daysToEscheat = "90";
         return this;
-	}
+    }
 
 }

@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.fineract.integrationtests.common.ClientHelper;
 import org.apache.fineract.integrationtests.common.CommonConstants;
 import org.apache.fineract.integrationtests.common.GroupHelper;
@@ -39,7 +38,6 @@ import org.apache.fineract.integrationtests.common.loans.LoanApplicationTestBuil
 import org.apache.fineract.integrationtests.common.loans.LoanProductTestBuilder;
 import org.apache.fineract.integrationtests.common.loans.LoanStatusChecker;
 import org.apache.fineract.integrationtests.common.loans.LoanTransactionHelper;
-import org.apache.fineract.integrationtests.common.savings.SavingsAccountHelper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,60 +71,57 @@ public class GroupLoanIntegrationTest {
         final Integer loanProductID = createLoanProduct();
         final Integer loanID = applyForLoanApplication(groupID, loanProductID);
         final ArrayList<HashMap> loanSchedule = this.loanTransactionHelper.getLoanRepaymentSchedule(this.requestSpec, this.responseSpec,
-                loanID);
+                                                 loanID);
         verifyLoanRepaymentSchedule(loanSchedule);
-
     }
-    
+
     @Test
     public void checkGlimAccountCommands() {
-    	
-    	this.loanTransactionHelper = new LoanTransactionHelper(this.requestSpec, this.responseSpec);
-    	final Integer clientID = ClientHelper.createClient(this.requestSpec, this.responseSpec);
+        this.loanTransactionHelper = new LoanTransactionHelper(this.requestSpec, this.responseSpec);
+        final Integer clientID = ClientHelper.createClient(this.requestSpec, this.responseSpec);
         Integer groupID = GroupHelper.createGroup(this.requestSpec, this.responseSpec, true);
         groupID = GroupHelper.associateClient(this.requestSpec, this.responseSpec, groupID.toString(), clientID.toString());
         final Integer loanProductID = createLoanProduct();
-    
+
         HashMap<String,Integer> glim = applyForGlimApplication(clientID, groupID, loanProductID);
         System.out.println("Glim Loan Application: "+ glim);
-        
+
         final Integer glimId=glim.get("glimId");
         System.out.println("GlimId: "+ glimId);
-        
+
         final Integer loanId=glim.get("loanId");
         System.out.println("LoanId: "+ loanId);
-    
+
         List<Map<String, Object>> approvalFormData = new ArrayList<>();
         approvalFormData.add(approvalFormData(loanId,"22 September 2011"));
-        
+
         HashMap loanStatusHashMap = this.loanTransactionHelper.approveGlimAccount(this.requestSpec, this.responseSpec,
-        		approvalFormData, glimId);
+                                    approvalFormData, glimId);
         System.out.println("glim approval loanSchedule"+ loanStatusHashMap);
         LoanStatusChecker.verifyLoanIsApproved(loanStatusHashMap);
-        
+
         loanStatusHashMap = this.loanTransactionHelper.disburseGlimAccount("25 September 2011", glimId);
         System.out.println("glim disbursement loanSchedule"+ loanStatusHashMap);
         LoanStatusChecker.verifyLoanIsActive(loanStatusHashMap);
-        
+
         loanStatusHashMap = this.loanTransactionHelper.undoDisburseGlimAccount(glimId);
         System.out.println("glim undodisbursement loanSchedule"+ loanStatusHashMap);
         LoanStatusChecker.verifyLoanIsWaitingForDisbursal(loanStatusHashMap);
-        
+
         loanStatusHashMap = this.loanTransactionHelper.undoApprovalGlimAccount(glimId);
         System.out.println("glim undoApproval loanSchedule"+ loanStatusHashMap);
         LoanStatusChecker.verifyLoanIsPending(loanStatusHashMap);
-        
+
         loanStatusHashMap = this.loanTransactionHelper.rejectGlimAccount("22 September 2011",glimId);
         System.out.println("glim reject loanSchedule"+ loanStatusHashMap);
         LoanStatusChecker.verifyLoanAccountRejected(loanStatusHashMap);
     }
-    
+
     @Test
     public void getGlimAccountByGroupId() {
-    	
-    	this.loanTransactionHelper = new LoanTransactionHelper(this.requestSpec, this.responseSpec);
-        
-    	final Integer clientID = ClientHelper.createClient(this.requestSpec, this.responseSpec);
+        this.loanTransactionHelper = new LoanTransactionHelper(this.requestSpec, this.responseSpec);
+
+        final Integer clientID = ClientHelper.createClient(this.requestSpec, this.responseSpec);
         Assert.assertNotNull(clientID);
 
         Integer groupID = GroupHelper.createGroup(this.requestSpec, this.responseSpec, true);
@@ -140,23 +135,22 @@ public class GroupLoanIntegrationTest {
 
         HashMap<String,Integer> glim = applyForGlimApplication(clientID, groupID, loanProductID);
         System.out.println("Glim Loan Application: "+ glim);
-        
+
         final Integer glimId=glim.get("glimId");
         System.out.println("GlimId: "+ glimId);
-        
+
         final Integer loanId=glim.get("loanId");
         System.out.println("LoanId: "+ loanId);
-       
+
         final List<String> retrievedGlimId=GroupHelper.verifyRetrieveGlimAccountsByGroupId(this.requestSpec, this.responseSpec, groupID);
         Assert.assertNotNull(retrievedGlimId.toString());
     }
-    
+
     @Test
     public void getGlimAccountByGlimId() {
-    	
-    	this.loanTransactionHelper = new LoanTransactionHelper(this.requestSpec, this.responseSpec);
-        
-    	final Integer clientID = ClientHelper.createClient(this.requestSpec, this.responseSpec);
+        this.loanTransactionHelper = new LoanTransactionHelper(this.requestSpec, this.responseSpec);
+
+        final Integer clientID = ClientHelper.createClient(this.requestSpec, this.responseSpec);
         Assert.assertNotNull(clientID);
 
         Integer groupID = GroupHelper.createGroup(this.requestSpec, this.responseSpec, true);
@@ -170,17 +164,17 @@ public class GroupLoanIntegrationTest {
 
         HashMap<String,Integer> glim = applyForGlimApplication(clientID, groupID, loanProductID);
         System.out.println("Glim Loan Application: "+ glim);
-        
+
         final Integer glimId=glim.get("glimId");
         System.out.println("GlimId: "+ glimId);
-        
+
         final Integer loanId=glim.get("loanId");
         System.out.println("LoanId: "+ loanId);
-       
+
         final List<String> retrievedGlimAccountId=GroupHelper.verifyRetrieveGlimAccountsByGlimId(this.requestSpec, this.responseSpec, glimId);
         Assert.assertNotNull(retrievedGlimAccountId);
     }
-    
+
     private Map<String, Object> approvalFormData(final Integer loanId, final String approvedOnDate) {
         Map<String, Object> map = new HashMap<>();
         map.put("loanId", loanId);
@@ -224,7 +218,7 @@ public class GroupLoanIntegrationTest {
         System.out.println(loanApplicationJSON);
         return this.loanTransactionHelper.getLoanId(loanApplicationJSON);
     }
-    
+
     private HashMap<String,Integer> applyForGlimApplication(final Integer clientID, final Integer groupID, final Integer loanProductID) {
         System.out.println("--------------------------------APPLYING FOR LOAN APPLICATION--------------------------------");
         final String GlimApplicationJSON = new LoanApplicationTestBuilder() //

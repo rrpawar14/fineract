@@ -37,12 +37,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.integrationtests.common.ClientHelper;
 import org.apache.fineract.integrationtests.common.CommonConstants;
-import org.apache.fineract.integrationtests.common.GroupHelper;
 import org.apache.fineract.integrationtests.common.SchedulerJobHelper;
 import org.apache.fineract.integrationtests.common.TaxComponentHelper;
 import org.apache.fineract.integrationtests.common.TaxGroupHelper;
@@ -2098,33 +2095,6 @@ public class ClientSavingsIntegrationTest {
                 .withMinRequiredBalance(minRequiredBalance).withEnforceMinRequiredBalance(enforceMinRequiredBalance)
                 .withMinimumOpenningBalance(minOpenningBalance).withWithHoldTax(taxGroupId).build();
         return SavingsProductHelper.createSavingsProduct(savingsProductJSON, requestSpec, responseSpec);
-    }
-
-    private Integer createGsimSavingsProduct(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
-            final String minOpenningBalance, String minBalanceForInterestCalculation, String minRequiredBalance,
-            String enforceMinRequiredBalance, final boolean allowOverdraft,String gsimID) {
-    	System.out.println("------------------------------CREATING NEW GSIM SAVINGS PRODUCT ---------------------------------------");
-    	
-    	 SavingsProductHelper savingsProductHelper = new SavingsProductHelper();
-         if (allowOverdraft) {
-             final String overDraftLimit = "2000.0";
-             savingsProductHelper = savingsProductHelper.withOverDraft(overDraftLimit);
-         }
-        
-         System.out.println("gsimid="+gsimID);
-         final String savingsProductJSON = savingsProductHelper
-                 //
-                 .withInterestCompoundingPeriodTypeAsDaily()
-                 //
-                 .withInterestPostingPeriodTypeAsMonthly()
-                 //
-                 .withInterestCalculationPeriodTypeAsDailyBalance()
-                 //
-                 .withMinBalanceForInterestCalculation(minBalanceForInterestCalculation)
-                 //
-                 .withMinRequiredBalance(minRequiredBalance).withEnforceMinRequiredBalance(enforceMinRequiredBalance)
-                 .withMinimumOpenningBalance(minOpenningBalance).build();
-         return SavingsProductHelper.createSavingsProduct(savingsProductJSON, requestSpec, responseSpec);
     }
 
     private Integer createTaxGroup(final String percentage){

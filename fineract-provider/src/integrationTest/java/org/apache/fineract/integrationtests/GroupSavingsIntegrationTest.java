@@ -29,13 +29,11 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import org.apache.fineract.integrationtests.common.ClientHelper;
 import org.apache.fineract.integrationtests.common.CommonConstants;
 import org.apache.fineract.integrationtests.common.GroupHelper;
@@ -119,7 +117,7 @@ public class GroupSavingsIntegrationTest {
         Assert.assertFalse(summaryBefore.equals(summary));
 
         final Object savingsInterest = this.savingsAccountHelper.getSavingsInterest(savingsId);
-        
+
     }
 
     @SuppressWarnings("unchecked")
@@ -169,7 +167,7 @@ public class GroupSavingsIntegrationTest {
         withdrawBalance = "true";
         savingsStatusHashMap =  this.savingsAccountHelper.closeSavingsAccount(savingsId, withdrawBalance);
         SavingsStatusChecker.verifySavingsAccountIsClosed(savingsStatusHashMap);
-        
+
     }
 
     @SuppressWarnings("unchecked")
@@ -219,45 +217,8 @@ public class GroupSavingsIntegrationTest {
         assertEquals("error.msg.saving.account.id.invalid", error.get(0).get(CommonConstants.RESPONSE_ERROR_MESSAGE_CODE));
 
     }
-    
-    //gsimcommands testing
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testGsimSavingsAccount_ACTIVATE_APPLICATION() {
-    	
-    	this.savingsAccountHelper = new SavingsAccountHelper(this.requestSpec, this.responseSpec);
-        SavingsAccountHelper savingsAccountHelperValidationError = new SavingsAccountHelper(this.requestSpec,
-                 new ResponseSpecBuilder().build());
-         
-        final Integer clientID = ClientHelper.createClient(this.requestSpec, this.responseSpec);
-        Assert.assertNotNull(clientID);
-        
-        Integer groupID = GroupHelper.createGroup(this.requestSpec, this.responseSpec, true);
-        Assert.assertNotNull(groupID);
-        final String minBalanceForInterestCalculation = null;
-        final String minRequiredBalance = "1500.0";
-        final String openningBalance = "1600";
-        final String enforceMinRequiredBalance = "true";
-      
-        groupID = GroupHelper.associateClient(this.requestSpec, this.responseSpec, groupID.toString(), clientID.toString());
-        Assert.assertNotNull(groupID);
-        
-        final Integer savingsProductID = createSavingsProduct(this.requestSpec, this.responseSpec, openningBalance,
-                minBalanceForInterestCalculation, minRequiredBalance, enforceMinRequiredBalance);
-        Assert.assertNotNull(savingsProductID);
-        
-        List<Map<String, Object>> clientArray = new ArrayList<>();
-        clientArray.add(clientArray(clientID, groupID, savingsProductID,"08 January 2013"));
-        final Integer gsimID = this.savingsAccountHelper.applyForGsimApplication(clientArray);
-        
-        HashMap savingsStatusHashMap = this.savingsAccountHelper.approveGsimSavings(gsimID);
-        SavingsStatusChecker.verifySavingsIsApproved(savingsStatusHashMap);
-        
-        savingsStatusHashMap = this.savingsAccountHelper.activateGsimSavings(gsimID);
-        SavingsStatusChecker.verifySavingsIsActive(savingsStatusHashMap);
 
-    }
-    
+    //gsimcommands testing
     @SuppressWarnings("unchecked")
     @Test
     public void testGsimSavingsAccount_REJECT_APPLICATION() {
@@ -269,7 +230,7 @@ public class GroupSavingsIntegrationTest {
 
         final Integer clientID = ClientHelper.createClient(this.requestSpec, this.responseSpec);
         Assert.assertNotNull(clientID);
-        
+
         Integer groupID = GroupHelper.createGroup(this.requestSpec, this.responseSpec, true);
         Assert.assertNotNull(groupID);
 
@@ -285,9 +246,9 @@ public class GroupSavingsIntegrationTest {
 
         List<Map<String, Object>> clientArray = new ArrayList<>();
         clientArray.add(clientArray(clientID, groupID, savingsProductID,"08 January 2013"));
-  
+
         final Integer gsimID = this.savingsAccountHelper.applyForGsimApplication(clientArray);
-      
+
         HashMap savingsStatusHashMap = this.savingsAccountHelper.approveGsimSavings(gsimID);
         SavingsStatusChecker.verifySavingsIsApproved(savingsStatusHashMap);
 
@@ -309,16 +270,16 @@ public class GroupSavingsIntegrationTest {
 
         savingsStatusHashMap = this.savingsAccountHelper.rejectGsimApplication(gsimID);
         SavingsStatusChecker.verifySavingsIsRejected(savingsStatusHashMap);
-        
+
     }
-    
+
    @Test
     public void testGsimSavingsAccount_DEPOSIT_APPLICATION() {
 
-    	this.savingsAccountHelper = new SavingsAccountHelper(this.requestSpec, this.responseSpec);
+        this.savingsAccountHelper = new SavingsAccountHelper(this.requestSpec, this.responseSpec);
         SavingsAccountHelper savingsAccountHelperValidationError = new SavingsAccountHelper(this.requestSpec,
                 new ResponseSpecBuilder().build());
-       
+
         final Integer clientID = ClientHelper.createClient(this.requestSpec, this.responseSpec);
         Assert.assertNotNull(clientID);
 
@@ -338,7 +299,7 @@ public class GroupSavingsIntegrationTest {
         List<Map<String, Object>> clientArray = new ArrayList<>();
         clientArray.add(clientArray(clientID, groupID, savingsProductID,"08 January 2013"));
         System.out.println("client Array "+ clientArray);
-       
+
         final Integer savingsId = this.savingsAccountHelper.applyForSavingsApplication(groupID, savingsProductID, ACCOUNT_TYPE_GROUP);
         Assert.assertNotNull(savingsId);
 
@@ -349,25 +310,25 @@ public class GroupSavingsIntegrationTest {
 
         Integer paymentTypeId = PaymentTypeHelper.createPaymentType(requestSpec, responseSpec, name, description, isCashPayment, position);
         Assert.assertNotNull(paymentTypeId);
-        
+
         List<Map<String, Object>> savingsArray = new ArrayList<>();
         final Integer transactionAmount=2500;
         savingsArray.add(savingsArray(paymentTypeId, savingsId, transactionAmount, "10 March 2013"));
-        
+
         HashMap savingsStatusHashMap = SavingsStatusChecker.getStatusOfSavings(this.requestSpec, this.responseSpec, savingsId);
         SavingsStatusChecker.verifySavingsIsPending(savingsStatusHashMap);
 
         savingsStatusHashMap = this.savingsAccountHelper.approveSavings(savingsId);
         SavingsStatusChecker.verifySavingsIsApproved(savingsStatusHashMap);
-        
+
         savingsStatusHashMap = this.savingsAccountHelper.activateSavings(savingsId);
         SavingsStatusChecker.verifySavingsIsActive(savingsStatusHashMap);
-        
+
         final Integer depositId = this.savingsAccountHelper.depositGsimApplication(savingsId, savingsArray);
         Assert.assertNotNull(depositId);
-        
+
      }
-  
+
     @SuppressWarnings("unchecked")
     @Test
     public void testGsimSavingsAccount_CLOSE_APPLICATION() {
@@ -393,12 +354,12 @@ public class GroupSavingsIntegrationTest {
 
         List<Map<String, Object>> clientArray = new ArrayList<>();
         clientArray.add(clientArray(clientID, groupID, savingsProductID,"08 January 2013"));
-        
+
         final Integer gsimID = this.savingsAccountHelper.applyForGsimApplication(clientArray);
-        
+
         HashMap savingsStatusHashMap = this.savingsAccountHelper.approveGsimSavings(gsimID);
         SavingsStatusChecker.verifySavingsIsApproved(savingsStatusHashMap);
-        
+
         savingsStatusHashMap = this.savingsAccountHelper.activateGsimSavings(gsimID);
         SavingsStatusChecker.verifySavingsIsActive(savingsStatusHashMap);
 
@@ -406,17 +367,16 @@ public class GroupSavingsIntegrationTest {
         Calendar todaysDate = Calendar.getInstance();
         final String CLOSEDON_DATE = dateFormat.format(todaysDate.getTime());
         String withdrawBalance = "false";
-        ArrayList<HashMap> savingsAccountErrorData = (ArrayList<HashMap>) validationErrorHelper.closeGsimSavingsAccountAndGetBackRequiredField(
-        		gsimID, withdrawBalance, CommonConstants.RESPONSE_ERROR, CLOSEDON_DATE);
+        ArrayList<HashMap> savingsAccountErrorData = (ArrayList<HashMap>) validationErrorHelper.closeGsimSavingsAccountAndGetBackRequiredField(gsimID, withdrawBalance, CommonConstants.RESPONSE_ERROR, CLOSEDON_DATE);
         assertEquals("validation.msg.savingsaccount.close.results.in.balance.not.zero",
                 savingsAccountErrorData.get(0).get(CommonConstants.RESPONSE_ERROR_MESSAGE_CODE));
 
         withdrawBalance = "true";
         savingsStatusHashMap =  this.savingsAccountHelper.closeGsimSavingsAccount(gsimID, withdrawBalance);
         SavingsStatusChecker.verifySavingsAccountIsClosed(savingsStatusHashMap);
-        
+
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void testGsimSavingsAccount_UPDATE_APPLICATION() {
@@ -442,19 +402,19 @@ public class GroupSavingsIntegrationTest {
 
         List<Map<String, Object>> clientArray = new ArrayList<>();
         clientArray.add(clientArray(clientID, groupID, savingsProductID,"08 January 2013"));
-        
+
         final Integer gsimID = this.savingsAccountHelper.applyForGsimApplication(clientArray);
-        
+
         HashMap savingsStatusHashMap = this.savingsAccountHelper.updateGsimApplication(gsimID, clientID, groupID, savingsProductID);
         System.out.println("savingsStatusHashMap: "+savingsStatusHashMap);
         Assert.assertTrue(savingsStatusHashMap.containsKey("savingsId"));
-        
+
     }
-    
+
     @Test
     public void getGsimAccount() {
-    	
-    	this.savingsAccountHelper = new SavingsAccountHelper(this.requestSpec, this.responseSpec);
+
+        this.savingsAccountHelper = new SavingsAccountHelper(this.requestSpec, this.responseSpec);
         final ResponseSpecification errorResponse = new ResponseSpecBuilder().expectStatusCode(400).build();
         final SavingsAccountHelper validationErrorHelper = new SavingsAccountHelper(this.requestSpec, errorResponse);
 
@@ -477,7 +437,7 @@ public class GroupSavingsIntegrationTest {
         List<Map<String, Object>> clientArray = new ArrayList<>();
         clientArray.add(clientArray(clientID, groupID, savingsProductID,"08 January 2013"));
         final Integer gsimID = this.savingsAccountHelper.applyForGsimApplication(clientArray);
-      
+
         final List<String> retrievedGsimId=GroupHelper.verifyRetrieveGsimAccounts(this.requestSpec, this.responseSpec, groupID);
         Assert.assertNotNull(retrievedGsimId.toString());
      }
@@ -493,7 +453,7 @@ public class GroupSavingsIntegrationTest {
 
         final Integer clientID = ClientHelper.createClient(this.requestSpec, this.responseSpec);
         Assert.assertNotNull(clientID);
-        
+
         Integer groupID = GroupHelper.createGroup(this.requestSpec, this.responseSpec, true);
         Assert.assertNotNull(groupID);
 
@@ -534,7 +494,7 @@ public class GroupSavingsIntegrationTest {
 
         savingsStatusHashMap = this.savingsAccountHelper.rejectApplication(savingsId);
         SavingsStatusChecker.verifySavingsIsRejected(savingsStatusHashMap);
-        
+
     }
 
     @Test
@@ -674,7 +634,7 @@ public class GroupSavingsIntegrationTest {
                 error.get(0).get(CommonConstants.RESPONSE_ERROR_MESSAGE_CODE));
 
     }
-  
+
     @SuppressWarnings("unchecked")
     @Test
     public void testSavingsAccountCharges() {
@@ -817,7 +777,7 @@ public class GroupSavingsIntegrationTest {
                 .withMinimumOpenningBalance(minOpenningBalance).build();
         return SavingsProductHelper.createSavingsProduct(savingsProductJSON, requestSpec, responseSpec);
     }
-   
+
     private Map<String, Object> clientArray(final Integer clientId, final Integer groupId, final Integer productId, final String submittedOnDate) {
         Map<String, Object> map = new HashMap<>();
         map.put("clientId", clientId);
@@ -830,7 +790,7 @@ public class GroupSavingsIntegrationTest {
         map.put("isGSIM", "true");
         return map;
     }
-    
+
     private Map<String, Object> savingsArray(final Integer paymentId, final Integer savingsId, final Integer transactionAmount,  final String transactionDate) {
         Map<String, Object> map = new HashMap<>();
         map.put("transactionDate", transactionDate);
@@ -841,5 +801,5 @@ public class GroupSavingsIntegrationTest {
         map.put("childAccountId", savingsId);
         return map;
     }
-    
+
 }
