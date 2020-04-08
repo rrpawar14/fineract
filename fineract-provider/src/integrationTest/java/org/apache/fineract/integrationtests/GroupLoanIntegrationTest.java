@@ -41,6 +41,8 @@ import org.apache.fineract.integrationtests.common.loans.LoanTransactionHelper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Group Loan Integration Test for checking Loan Application Repayment Schedule.
@@ -51,6 +53,7 @@ public class GroupLoanIntegrationTest {
     private ResponseSpecification responseSpec;
     private RequestSpecification requestSpec;
     private LoanTransactionHelper loanTransactionHelper;
+    private final static Logger LOG = LoggerFactory.getLogger(GroupLoanIntegrationTest.class);
 
     @Before
     public void setup() {
@@ -84,36 +87,36 @@ public class GroupLoanIntegrationTest {
         final Integer loanProductID = createLoanProduct();
 
         HashMap<String,Integer> glim = applyForGlimApplication(clientID, groupID, loanProductID);
-        System.out.println("Glim Loan Application: "+ glim);
+        LOG.info("Glim Loan Application: "+ glim);
 
         final Integer glimId=glim.get("glimId");
-        System.out.println("GlimId: "+ glimId);
+        LOG.info("GlimId: "+ glimId);
 
         final Integer loanId=glim.get("loanId");
-        System.out.println("LoanId: "+ loanId);
+        LOG.info("LoanId: "+ loanId);
 
         List<Map<String, Object>> approvalFormData = new ArrayList<>();
         approvalFormData.add(approvalFormData(loanId,"22 September 2011"));
 
         HashMap loanStatusHashMap = this.loanTransactionHelper.approveGlimAccount(this.requestSpec, this.responseSpec,
                                     approvalFormData, glimId);
-        System.out.println("glim approval loanSchedule"+ loanStatusHashMap);
+        LOG.info("glim approval loanSchedule"+ loanStatusHashMap);
         LoanStatusChecker.verifyLoanIsApproved(loanStatusHashMap);
 
         loanStatusHashMap = this.loanTransactionHelper.disburseGlimAccount("25 September 2011", glimId);
-        System.out.println("glim disbursement loanSchedule"+ loanStatusHashMap);
+        LOG.info("glim disbursement loanSchedule"+ loanStatusHashMap);
         LoanStatusChecker.verifyLoanIsActive(loanStatusHashMap);
 
         loanStatusHashMap = this.loanTransactionHelper.undoDisburseGlimAccount(glimId);
-        System.out.println("glim undodisbursement loanSchedule"+ loanStatusHashMap);
+        LOG.info("glim undodisbursement loanSchedule"+ loanStatusHashMap);
         LoanStatusChecker.verifyLoanIsWaitingForDisbursal(loanStatusHashMap);
 
         loanStatusHashMap = this.loanTransactionHelper.undoApprovalGlimAccount(glimId);
-        System.out.println("glim undoApproval loanSchedule"+ loanStatusHashMap);
+        LOG.info("glim undoApproval loanSchedule"+ loanStatusHashMap);
         LoanStatusChecker.verifyLoanIsPending(loanStatusHashMap);
 
         loanStatusHashMap = this.loanTransactionHelper.rejectGlimAccount("22 September 2011",glimId);
-        System.out.println("glim reject loanSchedule"+ loanStatusHashMap);
+        LOG.info("glim reject loanSchedule"+ loanStatusHashMap);
         LoanStatusChecker.verifyLoanAccountRejected(loanStatusHashMap);
     }
 
@@ -134,13 +137,13 @@ public class GroupLoanIntegrationTest {
         Assert.assertNotNull(loanProductID);
 
         HashMap<String,Integer> glim = applyForGlimApplication(clientID, groupID, loanProductID);
-        System.out.println("Glim Loan Application: "+ glim);
+        LOG.info("Glim Loan Application: "+ glim);
 
         final Integer glimId=glim.get("glimId");
-        System.out.println("GlimId: "+ glimId);
+        LOG.info("GlimId: "+ glimId);
 
         final Integer loanId=glim.get("loanId");
-        System.out.println("LoanId: "+ loanId);
+        LOG.info("LoanId: "+ loanId);
 
         final List<String> retrievedGlimId=GroupHelper.verifyRetrieveGlimAccountsByGroupId(this.requestSpec, this.responseSpec, groupID);
         Assert.assertNotNull(retrievedGlimId.toString());
@@ -163,13 +166,13 @@ public class GroupLoanIntegrationTest {
         Assert.assertNotNull(loanProductID);
 
         HashMap<String,Integer> glim = applyForGlimApplication(clientID, groupID, loanProductID);
-        System.out.println("Glim Loan Application: "+ glim);
+        LOG.info("Glim Loan Application: "+ glim);
 
         final Integer glimId=glim.get("glimId");
-        System.out.println("GlimId: "+ glimId);
+        LOG.info("GlimId: "+ glimId);
 
         final Integer loanId=glim.get("loanId");
-        System.out.println("LoanId: "+ loanId);
+        LOG.info("LoanId: "+ loanId);
 
         final List<String> retrievedGlimAccountId=GroupHelper.verifyRetrieveGlimAccountsByGlimId(this.requestSpec, this.responseSpec, glimId);
         Assert.assertNotNull(retrievedGlimAccountId);
@@ -185,7 +188,7 @@ public class GroupLoanIntegrationTest {
     }
 
     private Integer createLoanProduct() {
-        System.out.println("------------------------------CREATING NEW LOAN PRODUCT ---------------------------------------");
+        LOG.info("------------------------------CREATING NEW LOAN PRODUCT ---------------------------------------");
         final String loanProductJSON = new LoanProductTestBuilder() //
                 .withPrincipal("12,000.00") //
                 .withNumberOfRepayments("4") //
@@ -200,7 +203,7 @@ public class GroupLoanIntegrationTest {
     }
 
     private Integer applyForLoanApplication(final Integer groupID, final Integer loanProductID) {
-        System.out.println("--------------------------------APPLYING FOR LOAN APPLICATION--------------------------------");
+        LOG.info("--------------------------------APPLYING FOR LOAN APPLICATION--------------------------------");
         final String loanApplicationJSON = new LoanApplicationTestBuilder() //
                 .withPrincipal("12,000.00") //
                 .withLoanTermFrequency("4") //
@@ -215,12 +218,12 @@ public class GroupLoanIntegrationTest {
                 .withExpectedDisbursementDate("20 September 2011") //
                 .withSubmittedOnDate("20 September 2011") //
                 .withLoanType("group").build(groupID.toString(), loanProductID.toString(), null);
-        System.out.println(loanApplicationJSON);
+        LOG.info(loanApplicationJSON);
         return this.loanTransactionHelper.getLoanId(loanApplicationJSON);
     }
 
     private HashMap<String,Integer> applyForGlimApplication(final Integer clientID, final Integer groupID, final Integer loanProductID) {
-        System.out.println("--------------------------------APPLYING FOR LOAN APPLICATION--------------------------------");
+        LOG.info("--------------------------------APPLYING FOR LOAN APPLICATION--------------------------------");
         final String GlimApplicationJSON = new LoanApplicationTestBuilder() //
                 .withPrincipal("12,000.00") //
                 .withLoanTermFrequency("4") //
@@ -237,12 +240,12 @@ public class GroupLoanIntegrationTest {
                 .withLoanType("glim")
                 .withtotalLoan("10000")
                 .withParentAccount("1").build(clientID.toString(), groupID.toString(), loanProductID.toString(), null);
-        System.out.println(GlimApplicationJSON);
+        LOG.info(GlimApplicationJSON);
         return this.loanTransactionHelper.getGlimId(GlimApplicationJSON);
     }
 
     private void verifyLoanRepaymentSchedule(final ArrayList<HashMap> loanSchedule) {
-        System.out.println("--------------------VERIFYING THE PRINCIPAL DUES,INTEREST DUE AND DUE DATE--------------------------");
+        LOG.info("--------------------VERIFYING THE PRINCIPAL DUES,INTEREST DUE AND DUE DATE--------------------------");
 
         assertEquals("Checking for Due Date for 1st Month", new ArrayList<>(Arrays.asList(2011, 10, 20)),
                 loanSchedule.get(1).get("dueDate"));

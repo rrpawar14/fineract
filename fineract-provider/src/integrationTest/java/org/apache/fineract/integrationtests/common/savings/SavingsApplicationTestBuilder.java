@@ -23,10 +23,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SavingsApplicationTestBuilder {
 
+    private final static Logger LOG = LoggerFactory.getLogger(SavingsApplicationTestBuilder.class);
     private static final String LOCALE = "en_GB";
 
     private String submittedOnDate = "";
@@ -63,7 +66,7 @@ public class SavingsApplicationTestBuilder {
         }
 
         String savingsApplicationJSON = new Gson().toJson(map);
-        System.out.println(savingsApplicationJSON);
+        LOG.info(savingsApplicationJSON);
         return savingsApplicationJSON;
     }
 

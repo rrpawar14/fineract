@@ -23,9 +23,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoanApplicationTestBuilder {
 
+    private final static Logger LOG = LoggerFactory.getLogger(LoanApplicationTestBuilder.class);
     private static final String DAYS = "0";
     private static final String WEEKS = "1";
     private static final String MONTHS = "2";
@@ -107,7 +110,7 @@ public class LoanApplicationTestBuilder {
          }
 
         String approvalFormData=new Gson().toJson(map);
-        System.out.println("approvalFormData:"+approvalFormData);
+        LOG.info("approvalFormData:"+approvalFormData);
         return approvalFormData;
     }
 
@@ -165,7 +168,7 @@ public class LoanApplicationTestBuilder {
         if (datatables != null) {
             map.put("datatables", this.datatables);
         }
-        System.out.println("Loan Application request : " + map);
+        LOG.info("Loan Application request : " + map);
         return new Gson().toJson(map);
     }
 

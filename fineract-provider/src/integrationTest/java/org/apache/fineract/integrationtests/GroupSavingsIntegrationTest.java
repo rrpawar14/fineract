@@ -47,6 +47,8 @@ import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Group Savings Integration Test for checking Savings Application.
@@ -63,6 +65,7 @@ public class GroupSavingsIntegrationTest {
     private ResponseSpecification responseSpec;
     private RequestSpecification requestSpec;
     private SavingsAccountHelper savingsAccountHelper;
+    private final static Logger LOG = LoggerFactory.getLogger(GroupSavingsIntegrationTest.class);
 
     @Before
     public void setup() {
@@ -298,7 +301,7 @@ public class GroupSavingsIntegrationTest {
 
         List<Map<String, Object>> clientArray = new ArrayList<>();
         clientArray.add(clientArray(clientID, groupID, savingsProductID,"08 January 2013"));
-        System.out.println("client Array "+ clientArray);
+       LOG.info("client Array "+ clientArray);
 
         final Integer savingsId = this.savingsAccountHelper.applyForSavingsApplication(groupID, savingsProductID, ACCOUNT_TYPE_GROUP);
         Assert.assertNotNull(savingsId);
@@ -406,7 +409,7 @@ public class GroupSavingsIntegrationTest {
         final Integer gsimID = this.savingsAccountHelper.applyForGsimApplication(clientArray);
 
         HashMap savingsStatusHashMap = this.savingsAccountHelper.updateGsimApplication(gsimID, clientID, groupID, savingsProductID);
-        System.out.println("savingsStatusHashMap: "+savingsStatusHashMap);
+       LOG.info("savingsStatusHashMap: "+savingsStatusHashMap);
         Assert.assertTrue(savingsStatusHashMap.containsKey("savingsId"));
 
     }
@@ -765,7 +768,7 @@ public class GroupSavingsIntegrationTest {
     public static Integer createSavingsProduct(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
             final String minOpenningBalance, final String minBalanceForInterestCalculation, final String minRequiredBalance,
             final String enforceMinRequiredBalance) {
-        System.out.println("------------------------------CREATING NEW SAVINGS PRODUCT ---------------------------------------");
+       LOG.info("------------------------------CREATING NEW SAVINGS PRODUCT ---------------------------------------");
         SavingsProductHelper savingsProductHelper = new SavingsProductHelper();
         final String savingsProductJSON = savingsProductHelper //
                 .withInterestCompoundingPeriodTypeAsDaily() //

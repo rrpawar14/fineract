@@ -889,7 +889,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
     	for (int i = 0; i < repayments.size(); i++) {
     		
 			jsonObject=repayments.get(i).getAsJsonObject();
-			System.out.println(jsonObject.toString());
+			LOG.info(jsonObject.toString());
 			childLoanId[i]=jsonObject.get("loanId").getAsLong();
     	}
     	

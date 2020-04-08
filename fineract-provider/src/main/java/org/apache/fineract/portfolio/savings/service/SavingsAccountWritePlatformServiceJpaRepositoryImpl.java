@@ -352,7 +352,7 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
        if( this.savingAccountRepositoryWrapper.findOneWithNotFoundDetection(savingsId).getGsim()!=null)
        {
     	   isGsim=true;
-    	   System.out.println("is gsim");
+    	   logger.info("is gsim");
        }
 
         final SavingsAccount account = this.savingAccountAssembler.assembleFrom(savingsId);
@@ -377,13 +377,13 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
         		logger.debug("Deposit account has been created", deposit);
 
         		GroupSavingsIndividualMonitoring gsim=gsimRepository.findById(account.getGsim().getId()).get();
-        		System.out.println("parent deposit "+gsim.getParentDeposit());
-        		System.out.println("child account "+savingsId);
+        		logger.info("parent deposit "+gsim.getParentDeposit());
+        		logger.info("child account "+savingsId);
         		BigDecimal currentBalance=gsim.getParentDeposit();
         		BigDecimal newBalance=currentBalance.add(transactionAmount);
         		gsim.setParentDeposit(newBalance);
         		gsimRepository.save(gsim);
-        		System.out.println("balance after making deposit "+gsimRepository.findById(account.getGsim().getId()).get().getParentDeposit());
+        		logger.info("balance after making deposit "+gsimRepository.findById(account.getGsim().getId()).get().getParentDeposit());
 
         	}
 

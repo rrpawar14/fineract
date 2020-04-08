@@ -73,10 +73,13 @@ import org.apache.fineract.useradministration.domain.AppUser;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class SavingsAccountAssembler {
 
+	private final static Logger LOG = LoggerFactory.getLogger(SavingsAccountAssembler.class);
     private final SavingsAccountTransactionSummaryWrapper savingsAccountTransactionSummaryWrapper;
     private final SavingsHelper savingsHelper;
     private final ClientRepositoryWrapper clientRepository;
@@ -151,7 +154,7 @@ public class SavingsAccountAssembler {
         
         if((Boolean)command.booleanPrimitiveValueOfParameterNamed("isGSIM")!=null)
         {
-        	System.out.println("setting system to gsim");
+        	LOG.info("setting system to gsim");
         	if(command.booleanPrimitiveValueOfParameterNamed("isGSIM"))
         	{
         		accountType = AccountType.GSIM;
