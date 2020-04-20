@@ -257,7 +257,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl
 							// Parent-Not an empty table
 
 							accountNumber = this.accountNumberGenerator.generate(account, accountNumberFormat);
-							account.updateAccountNo(accountNumber + "-1");
+							account.updateAccountNo(accountNumber + "1");
 							gsimAccount = gsimWritePlatformService.addGSIMAccountInfo(accountNumber, group, BigDecimal.ZERO,
 									Long.valueOf(1), true,
 									SavingsAccountStatusType.SUBMITTED_AND_PENDING_APPROVAL.getValue(),applicationId);
