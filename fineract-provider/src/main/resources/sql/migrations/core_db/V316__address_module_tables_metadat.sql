@@ -95,7 +95,7 @@ AUTO_INCREMENT=1
 
 INSERT INTO `m_field_configuration` ( `entity`, `subentity`, `field`, `is_enabled`, `is_mandatory`, `validation_regex`) VALUES
     ('ADDRESS', 'CLIENT', 'addressType', 1, 0, ''),
-    ('ADDRESS', 'CLIENT', 'street', 1, 1, ''),
+    ('ADDRESS', 'CLIENT', 'street', 1, 0, ''),
     ('ADDRESS', 'CLIENT', 'addressLine1', 1, 0, ''),
     ('ADDRESS', 'CLIENT', 'addressLine2', 1, 0, ''),
     ('ADDRESS', 'CLIENT', 'addressLine3', 1, 0, ''),
