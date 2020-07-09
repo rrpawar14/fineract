@@ -16,17 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.infrastructure.creditbureau.domain;
+package org.apache.fineract.infrastructure.creditbureau.data;
 
-import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import java.io.Serializable;
 
-public interface CreditBureauLoanProductMappingRepository
-        extends JpaRepository<CreditBureauLoanProductMapping, Long>, JpaSpecificationExecutor<CreditBureauLoanProductMapping> {
+public final class CreditReportData implements Serializable {
 
-    CreditBureauLoanProductMapping findOneByLoanProduct(LoanProduct loanProduct);
+    private final Long id;
+    @SuppressWarnings("unused")
+    private final Long creditBureauId;
+    @SuppressWarnings("unused")
+    private final String nrc;
 
-    CreditBureauLoanProductMapping findOneByLoanProductId(Long loanProductID);
+    public static CreditReportData instance(final Long id, final Long creditBureauId, final String nrc) {
+        return new CreditReportData(id, creditBureauId, nrc);
+    }
 
+    private CreditReportData(final Long id, final Long creditBureauId, final String nrc) {
+        this.id = id;
+        this.creditBureauId = creditBureauId;
+        this.nrc = nrc;
+
+    }
 }

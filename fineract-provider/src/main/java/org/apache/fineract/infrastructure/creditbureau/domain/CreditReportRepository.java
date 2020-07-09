@@ -18,15 +18,15 @@
  */
 package org.apache.fineract.infrastructure.creditbureau.domain;
 
-import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-public interface CreditBureauLoanProductMappingRepository
-        extends JpaRepository<CreditBureauLoanProductMapping, Long>, JpaSpecificationExecutor<CreditBureauLoanProductMapping> {
+public interface CreditReportRepository extends JpaRepository<CreditReport, Long>, JpaSpecificationExecutor<CreditReport> {
 
-    CreditBureauLoanProductMapping findOneByLoanProduct(LoanProduct loanProduct);
-
-    CreditBureauLoanProductMapping findOneByLoanProductId(Long loanProductID);
+    @Query("SELECT creditBureauReport from CreditReport creditBureauReport where creditBureauReport.nrc = :nrc and creditBureauReport.creditBureauId = :creditBureauId ")
+    CreditReport getThitsaWorksCreditReport(@Param("creditBureauId") Long creditBureauId, @Param("nrc") String nrc);
+    // Since creditReportNumber has became nrc, this query will only be used to fetch ThitsaWorks CreditBureau Reports.
 
 }

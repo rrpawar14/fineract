@@ -19,6 +19,11 @@
 package org.apache.fineract.infrastructure.core.data;
 
 import java.util.Map;
+import org.apache.fineract.infrastructure.creditbureau.data.CreditBureauReportData;
+import org.apache.fineract.infrastructure.creditbureau.domain.CreditBureauToken;
+import org.apache.fineract.infrastructure.creditbureau.domain.CreditReport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents the successful result of an REST API call that results in processing a command.
@@ -38,13 +43,17 @@ public class CommandProcessingResultBuilder {
     private Long glimId;
     private String transactionId;
     private Map<String, Object> changes;
+    private CreditBureauReportData creditBureauReportData;
+    private CreditReport saveCreditReport;
+    private CreditBureauToken creditBureauToken;
     private Long productId;
     private boolean rollbackTransaction = false;
+    private static final Logger LOG = LoggerFactory.getLogger(CommandProcessingResultBuilder.class);
 
     public CommandProcessingResult build() {
         return CommandProcessingResult.fromDetails(this.commandId, this.officeId, this.groupId, this.clientId, this.loanId, this.savingsId,
-                this.resourceIdentifier, this.entityId, this.gsimId, this.glimId, this.transactionId, this.changes, this.productId,
-                this.rollbackTransaction, this.subEntityId);
+                this.resourceIdentifier, this.entityId, this.gsimId, this.glimId, this.creditBureauReportData, this.transactionId,
+                this.changes, this.productId, this.rollbackTransaction, this.subEntityId);
     }
 
     public CommandProcessingResultBuilder withCommandId(final Long withCommandId) {
@@ -114,6 +123,21 @@ public class CommandProcessingResultBuilder {
 
     public CommandProcessingResultBuilder withGlimId(final Long glimId) {
         this.glimId = glimId;
+        return this;
+    }
+
+    public CommandProcessingResultBuilder withCreditReport(final CreditBureauReportData withCreditReport) {
+        this.creditBureauReportData = withCreditReport;
+        return this;
+    }
+
+    public CommandProcessingResultBuilder withCreditReport(final CreditReport saveCreditReport) {
+        this.saveCreditReport = saveCreditReport;
+        return this;
+    }
+
+    public CommandProcessingResultBuilder withCreditBureauToken(final CreditBureauToken creditBureauToken) {
+        this.creditBureauToken = creditBureauToken;
         return this;
     }
 
