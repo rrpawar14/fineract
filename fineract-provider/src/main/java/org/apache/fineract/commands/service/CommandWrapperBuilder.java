@@ -76,6 +76,14 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createCreditBureauToken() {
+        this.actionName = "CREATE";
+        this.entityName = "CREDITBUREAUTOKEN";
+        this.entityId = null;
+        this.href = "/CreditBureauToken/";
+        return this;
+    }
+
     public CommandWrapperBuilder createCreditBureauLoanProductMapping(final long creditBureauId) {
         this.actionName = "CREATE";
         this.entityName = "CREDITBUREAU_LOANPRODUCT_MAPPING";
