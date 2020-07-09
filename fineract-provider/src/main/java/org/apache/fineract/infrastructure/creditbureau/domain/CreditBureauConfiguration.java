@@ -56,7 +56,7 @@ public class CreditBureauConfiguration extends AbstractPersistableCustom {
 
     }
 
-    public CreditBureauConfiguration fromJson(JsonCommand command, OrganisationCreditBureau organisation_creditbureau) {
+    public static CreditBureauConfiguration fromJson(JsonCommand command, OrganisationCreditBureau organisation_creditbureau) {
         final String configkey = command.stringValueOfParameterNamed("configkey");
         final String value = command.stringValueOfParameterNamed("value");
         final String description = command.stringValueOfParameterNamed("description");

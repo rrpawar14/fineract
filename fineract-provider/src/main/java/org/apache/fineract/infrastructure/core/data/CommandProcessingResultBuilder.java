@@ -19,6 +19,9 @@
 package org.apache.fineract.infrastructure.core.data;
 
 import java.util.Map;
+import org.apache.fineract.infrastructure.creditbureau.data.CreditReportData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents the successful result of an REST API call that results in processing a command.
@@ -38,13 +41,15 @@ public class CommandProcessingResultBuilder {
     private Long glimId;
     private String transactionId;
     private Map<String, Object> changes;
+    private CreditReportData creditReportData;
     private Long productId;
     private boolean rollbackTransaction = false;
+    private static final Logger LOG = LoggerFactory.getLogger(CommandProcessingResultBuilder.class);
 
     public CommandProcessingResult build() {
         return CommandProcessingResult.fromDetails(this.commandId, this.officeId, this.groupId, this.clientId, this.loanId, this.savingsId,
-                this.resourceIdentifier, this.entityId, this.gsimId, this.glimId, this.transactionId, this.changes, this.productId,
-                this.rollbackTransaction, this.subEntityId);
+                this.resourceIdentifier, this.entityId, this.gsimId, this.glimId, this.creditReportData, this.transactionId, this.changes,
+                this.productId, this.rollbackTransaction, this.subEntityId);
     }
 
     public CommandProcessingResultBuilder withCommandId(final Long withCommandId) {
@@ -114,6 +119,12 @@ public class CommandProcessingResultBuilder {
 
     public CommandProcessingResultBuilder withGlimId(final Long glimId) {
         this.glimId = glimId;
+        return this;
+    }
+
+    public CommandProcessingResultBuilder withCreditReport(final CreditReportData withCreditReport) {
+        this.creditReportData = withCreditReport;
+        LOG.info("withCreditReport :{}", withCreditReport);
         return this;
     }
 
