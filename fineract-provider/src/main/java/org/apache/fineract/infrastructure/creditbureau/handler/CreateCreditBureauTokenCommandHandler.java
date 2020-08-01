@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+//@Configuration  @Bean import org.springframework.context.annotation.Bean;
 @Service
 @CommandType(entity = "CREDITBUREAUTOKEN", action = "CREATE")
 public class CreateCreditBureauTokenCommandHandler implements NewCommandSourceHandler {
@@ -42,8 +43,7 @@ public class CreateCreditBureauTokenCommandHandler implements NewCommandSourceHa
 
     @Transactional
     @Override
-    public CommandProcessingResult processCommand(JsonCommand command) {
-
-        return this.writePlatformService.addCreditBureauToken(command);
+    public CommandProcessingResult processCommand(final JsonCommand command) {
+        return this.writePlatformService.createCreditBureauToken(command);
     }
 }

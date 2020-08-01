@@ -20,48 +20,60 @@
 package org.apache.fineract.infrastructure.creditbureau.api;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
-import org.apache.fineract.infrastructure.creditbureau.data.CreditBureauData;
 import org.apache.fineract.infrastructure.creditbureau.data.CreditBureauLoanProductMappingData;
-import org.apache.fineract.infrastructure.creditbureau.data.CreditBureauTokenData;
+import org.apache.fineract.infrastructure.creditbureau.data.CreditBureauTokenCredentialData;
+import org.apache.fineract.infrastructure.creditbureau.data.CreditReportData;
 import org.apache.fineract.infrastructure.creditbureau.service.CreditBureauReadConfigurationService;
 import org.apache.fineract.infrastructure.creditbureau.service.CreditBureauReadPlatformService;
+import org.apache.fineract.infrastructure.creditbureau.service.CreditBureauReportsReadPlatformService;
 import org.apache.fineract.infrastructure.creditbureau.service.CreditBureauTokenReadPlatformService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Path("/CreditBureauToken")
+@Path("/creditBureauToken")
 @Component
 @Scope("singleton")
-@Api(value = "CreditBureau Token")
+@Api(value = "CreditBureauToken")
 public class CreditBureauTokenAPI {
 
     private final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList("subscriptionId", "subscriptionKey", "userName"));
-    private final String resourceNameForPermissions = "CreditBureau";
+    private final String resourceNameForPermissions = "CreditBureauToken";
     private final PlatformSecurityContext context;
     private final CreditBureauReadPlatformService readPlatformService;
-    private final DefaultToApiJsonSerializer<CreditBureauData> toApiJsonSerializer;
+    // private final DefaultToApiJsonSerializer<CreditBureauTokenData>
+    // toApiJsonSerializer;
     // private final CreditBureauLoanProductMappingReadPlatformService
     // readPlatformServiceCreditBureauLoanProduct;
     private final CreditBureauTokenReadPlatformService readPlatformServiceCreditBureauToken;
-    private final DefaultToApiJsonSerializer<CreditBureauLoanProductMappingData> toApiJsonSerializerCreditBureauLoanProduct;
-    private final DefaultToApiJsonSerializer<CreditBureauTokenData> toApiJsonSerializerCreditBureauToken;
+    private final CreditBureauReportsReadPlatformService readPlatformServiceCreditBureauReports;
+    // private final
+    // DefaultToApiJsonSerializer<CreditBureauLoanProductMappingData>
+    // toApiJsonSerializerCreditBureauLoanProduct;
+    private final DefaultToApiJsonSerializer<CreditReportData> toCreditReportApiJsonSerializer;
+    private final DefaultToApiJsonSerializer<CreditBureauTokenCredentialData> toApiJsonSerializer;
     // private final DefaultToApiJsonSerializer<CreditBureauTokenData>
     // toApiJsonSerializerReport;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
@@ -70,14 +82,17 @@ public class CreditBureauTokenAPI {
 
     @Autowired
     public CreditBureauTokenAPI(final PlatformSecurityContext context, final CreditBureauReadPlatformService readPlatformService,
-            final DefaultToApiJsonSerializer<CreditBureauData> toApiJsonSerializer,
+            final DefaultToApiJsonSerializer<CreditBureauTokenCredentialData> toApiJsonSerializer,
+            final DefaultToApiJsonSerializer<CreditReportData> toCreditReportApiJsonSerializer,
             // final CreditBureauTokenDataReadPlatformService
             // readPlatformServiceCreditBureauTokenData,
 
             final DefaultToApiJsonSerializer<CreditBureauLoanProductMappingData> toApiJsonSerializerCreditBureauLoanProduct,
             // final OrganisationCreditBureauReadPlatformService
             final CreditBureauTokenReadPlatformService readPlatformServiceCreditBureauToken,
-            final DefaultToApiJsonSerializer<CreditBureauTokenData> toApiJsonSerializerCreditBureauToken,
+            final CreditBureauReportsReadPlatformService readPlatformServiceCreditBureauReports,
+            // final DefaultToApiJsonSerializer<CreditBureauTokenData>
+            // toApiJsonSerializerCreditBureauToken,
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
             // final DefaultToApiJsonSerializer<CreditBureauConfigurationData>
@@ -89,47 +104,71 @@ public class CreditBureauTokenAPI {
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         // this.readPlatformServiceCreditBureauLoanProduct =
         // readPlatformServiceCreditBureauLoanProduct;
-        this.toApiJsonSerializerCreditBureauLoanProduct = toApiJsonSerializerCreditBureauLoanProduct;
+        // this.toApiJsonSerializerCreditBureauLoanProduct =
+        // toApiJsonSerializerCreditBureauLoanProduct;
         this.readPlatformServiceCreditBureauToken = readPlatformServiceCreditBureauToken;
-        this.toApiJsonSerializerCreditBureauToken = toApiJsonSerializerCreditBureauToken;
+        this.readPlatformServiceCreditBureauReports = readPlatformServiceCreditBureauReports;
+        // this.toApiJsonSerializerCreditBureauToken =
+        // toApiJsonSerializerCreditBureauToken;
         this.toApiJsonSerializer = toApiJsonSerializer;
+        this.toCreditReportApiJsonSerializer = toCreditReportApiJsonSerializer;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
         // this.toApiJsonSerializerReport = toApiJsonSerializerReport;
         this.creditBureauConfiguration = creditBureauConfiguration;
 
     }
 
-    /*
-     * @POST
-     *
-     * @Consumes({ MediaType.APPLICATION_JSON })
-     *
-     * @Produces({ MediaType.APPLICATION_JSON }) public String
-     * addOrganisationCreditBureau(@PathParam("organisationCreditBureauId")
-     * final Long organisationCreditBureauId, final String apiRequestBodyAsJson)
-     * {
-     *
-     * // final CommandWrapper commandRequest = new //
-     * CommandWrapperBuilder().createCreditBureauToken().withJson(
-     * apiRequestBodyAsJson).build();
-     *
-     * // final CommandProcessingResult result = //
-     * this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
-     *
-     * return this.toApiJsonSerializer.serialize(result); }
-     */
+    @POST
+    @Path("addtokendata")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    // @ApiOperation(value = "Create a Token", httpMethod = "POST")
+    public String addCreditBureauTokenData(final String apiRequestBodyAsJson) {
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().addCreditBureauTokenData().withJson(apiRequestBodyAsJson).build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        System.out.println("token command request");
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @POST
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    // @ApiOperation(value = "Create a Token", httpMethod = "POST")
+    public String createCreditBureauToken(final String apiRequestBodyAsJson) {
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().createCreditBureauToken().withJson(apiRequestBodyAsJson).build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        System.out.println("token command request");
+        return this.toApiJsonSerializer.serialize(result);
+    }
 
     @GET
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getOrganisationCreditBureau(@Context final UriInfo uriInfo) {
+    public String getCreditBureauToken(@Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
-        final Collection<CreditBureauTokenData> creditBureauTokenData = this.readPlatformServiceCreditBureauToken
-                .retrieveAllCreditBureauToken();
+        final Collection<CreditBureauTokenCredentialData> creditBureauTokenData = this.readPlatformServiceCreditBureauToken
+                .retrieveAllCreditBureauTokenData();
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.toApiJsonSerializerCreditBureauToken.serialize(settings, creditBureauTokenData, this.RESPONSE_DATA_PARAMETERS);
+        return this.toApiJsonSerializer.serialize(settings, creditBureauTokenData, this.RESPONSE_DATA_PARAMETERS);
+
+    }
+
+    @GET
+    @Path("getcreditreport")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String getCreditReport(@Context final UriInfo uriInfo,
+            @QueryParam("searchId") @ApiParam(value = "searchId") final String searchId) {
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final CreditReportData creditReportData = this.readPlatformServiceCreditBureauReports.retrieveAllSearchReport(searchId);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toCreditReportApiJsonSerializer.serialize(settings, creditReportData, this.RESPONSE_DATA_PARAMETERS);
 
     }
 
