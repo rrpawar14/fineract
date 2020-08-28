@@ -104,7 +104,7 @@ public final class CreditBureauLoanProductMappingData {
         return this.stalePeriod;
     }
 
-    public boolean isisActive() {
+    public boolean isIs_active() {
         return this.isActive;
     }
 
