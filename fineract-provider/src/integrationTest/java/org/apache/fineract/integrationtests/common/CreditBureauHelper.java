@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class CreditBureauHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreditBureauHelper.class);
-  
+   
     private static final CreditReportWritePlatformServiceImpl creditBureauWritePlatformServiceImpl = Mockito.mock(CreditReportWritePlatformServiceImpl.class);
 
    

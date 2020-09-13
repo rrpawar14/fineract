@@ -471,7 +471,7 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
         return CreditReportData.instance(Name, Gender, Address, CreditScore, borrowerInfo, ActiveLoans, PaidLoans);
     }
 
-    private String getCreditBureau(final String ProductID, final String CBID) {
+    public String getCreditBureau(final String ProductID, final String CBID) {
         String creditBureauName = null;
 
         String PID = "";
