@@ -16,17 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.infrastructure.creditbureau.domain;
+package org.apache.fineract.infrastructure.creditbureau.data;
 
-import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+public final class CreditBureauToken {
 
-public interface CreditBureauLoanProductMappingRepository
-        extends JpaRepository<CreditBureauLoanProductMapping, Long>, JpaSpecificationExecutor<CreditBureauLoanProductMapping> {
+    // private final String userName;
 
-    CreditBureauLoanProductMapping findOneByLoanProduct(LoanProduct loanProduct);
+    private final String tokens;
 
-    CreditBureauLoanProductMapping findOneByLoanProductId(Long loanProductID);
+    private CreditBureauToken(final String tokens) {
+        // this.userName = userName;
+        this.tokens = tokens;
+
+    }
+
+    public static CreditBureauToken instance(final String tokens) {
+
+        return new CreditBureauToken(tokens);
+    }
 
 }

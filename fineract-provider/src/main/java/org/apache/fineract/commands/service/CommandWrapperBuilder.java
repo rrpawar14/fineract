@@ -76,11 +76,53 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder addCreditBureauTokenData() {
+        this.actionName = "CREATE";
+        this.entityName = "CREDITBUREAUTOKENDATA";
+        this.entityId = null;
+        this.href = "/creditBureauTokenData/template";
+        return this;
+    }
+
+    public CommandWrapperBuilder createCreditBureauToken() {
+        this.actionName = "CREATE";
+        this.entityName = "CREDITBUREAUTOKEN";
+        this.entityId = null;
+        this.href = "/creditBureauToken/template";
+        return this;
+    }
+
+    public CommandWrapperBuilder getCreditReport() {
+        this.actionName = "GET";
+        this.entityName = "CREDITREPORT";
+        this.entityId = null;
+        this.href = "/getCreditReport/template";
+        return this;
+    }
+
     public CommandWrapperBuilder createCreditBureauLoanProductMapping(final long creditBureauId) {
         this.actionName = "CREATE";
         this.entityName = "CREDITBUREAU_LOANPRODUCT_MAPPING";
         this.entityId = creditBureauId;
         this.href = "/creditBureauConfiguration/template";
+        this.creditBureauId = creditBureauId;
+        return this;
+    }
+
+    public CommandWrapperBuilder addCreditBureauConfiguration(final long creditBureauId) {
+        this.actionName = "CREATE";
+        this.entityName = "CREDITBUREAU_CONFIGURATION";
+        this.entityId = creditBureauId;
+        this.href = "/creditBureauConfigurationData/";
+        this.creditBureauId = creditBureauId;
+        return this;
+    }
+
+    public CommandWrapperBuilder updateCreditBureauConfiguration(final long creditBureauId) {
+        this.actionName = "UPDATE";
+        this.entityName = "CREDITBUREAU_CONFIGURATION";
+        this.entityId = creditBureauId;
+        this.href = "/creditBureauConfigurationData/";
         this.creditBureauId = creditBureauId;
         return this;
     }

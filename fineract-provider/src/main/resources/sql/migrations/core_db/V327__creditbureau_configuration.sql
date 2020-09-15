@@ -33,7 +33,7 @@ CREATE TABLE `m_organisation_creditbureau` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `alias` varchar(50) NOT NULL,
   `creditbureau_id` BIGINT NOT NULL,
-  `is_active` TINYINT NOT NULL,
+  `isActive` TINYINT NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `morgcb` (`alias`,`creditbureau_id`),
   KEY `orgcb_cbfk` (`creditbureau_id`),
@@ -66,7 +66,7 @@ CREATE TABLE `m_creditbureau_loanproduct_mapping` (
   `is_creditcheck_mandatory` tinyint DEFAULT NULL,
   `skip_creditcheck_in_failure` tinyint DEFAULT NULL,
   `stale_period` INT DEFAULT NULL,
-  `is_active` tinyint DEFAULT NULL,
+  `isActive` tinyint DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `cblpunique_key` (`organisation_creditbureau_id`,`loan_product_id`),
   KEY `fk_cb_lp2` (`loan_product_id`),
@@ -87,3 +87,5 @@ INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `c
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('configuration', 'CREATE_ORGANISATIONCREDITBUREAU', 'ORGANISATIONCREDITBUREAU', 'CREATE', 0);
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('configuration', 'UPDATE_ORGANISATIONCREDITBUREAU', 'ORGANISATIONCREDITBUREAU', 'UPDATE', 0);
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('configuration', 'UPDATE_CREDITBUREAU_LOANPRODUCT_MAPPING', 'CREDITBUREAU_LOANPRODUCT_MAPPING', 'UPDATE', 0);
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('configuration', 'GET_CREDITREPORT', 'CREDITREPORT', 'GET', 0);
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('configuration', 'CREATE_CREDITBUREAU_CONFIGURATION', 'CREDITBUREAU_CONFIGURATION', 'CREATE', 0);
