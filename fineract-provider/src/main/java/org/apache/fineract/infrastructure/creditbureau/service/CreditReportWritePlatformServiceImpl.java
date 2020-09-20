@@ -171,7 +171,17 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
                 LOG.info("----- result-----{}", result);
                 // results = result;
             } else {
-                LOG.info("Request is Invalid");
+                response = new StringBuilder();
+
+                LOG.info("----- RESPONSE NOT OK-----");
+                BufferedReader in = new BufferedReader(new InputStreamReader(postConnection.getInputStream(), StandardCharsets.UTF_8));
+                while ((readLine = in.readLine()) != null) {
+                    response.append(readLine);
+                }
+                in.close();
+                result = response.toString();
+                LOG.info("----Request is Invalid, result-----{}", result);
+
             }
 
         } catch (IOException e) {
@@ -382,24 +392,39 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
             // to fetch the Unique ID from Result
             JsonObject jsonObject = JsonParser.parseString(result).getAsJsonObject();
             JsonArray jArray = jsonObject.getAsJsonArray("Data");
-            JsonObject jobject = jArray.get(0).getAsJsonObject();
-            String uniqueIdString = jobject.get("UniqueID").toString();
+         
+            if(jArray != null && jArray.size() > 0)
+            {
+            	JsonObject jobject = jArray.get(0).getAsJsonObject();
+                String uniqueIdString = jobject.get("UniqueID").toString();
 
-            // cleaned the uniqueID value. Example id: "123" to 123
-            String TrimUniqueId = uniqueIdString.substring(1, uniqueIdString.length() - 1);
+                // cleaned the uniqueID value. Example id: "123" to 123
+                String TrimUniqueId = uniqueIdString.substring(1, uniqueIdString.length() - 1);
 
-            // unique ID is stored
-            uniqueID = Long.parseLong(TrimUniqueId);
+                // unique ID is stored
+                uniqueID = Long.parseLong(TrimUniqueId);
 
-            // will use "CREDITREPORT" part of code from common http method to fetch creditreport based on UniqueID
-            process = "CREDITREPORT";
-            CreditBureauConfiguration creditReportURL = this.configDataRepository.getCreditBureauConfigData(Id, "creditreporturl");
-            url = creditReportURL.getValue();
-            result = this.httpConnectionMethod(process, nrcId, userName, password, subscriptionKey, subscriptionId, url, token, uniqueID);
+                // will use "CREDITREPORT" part of code from common http method to fetch creditreport based on UniqueID
+                process = "CREDITREPORT";
+                CreditBureauConfiguration creditReportURL = this.configDataRepository.getCreditBureauConfigData(Id, "creditreporturl");
+                url = creditReportURL.getValue();
+                result = this.httpConnectionMethod(process, nrcId, userName, password, subscriptionKey, subscriptionId, url, token, uniqueID);
 
-            LOG.info("result : {} ", result);
+                LOG.info("result : {} ", result);
+            }
+          //response message when NRC record is not found
+            else
+            {
+            	
+            	JsonArray ResponseMessage = jsonObject.getAsJsonArray("ResponseMessage");
+            	LOG.info("ResponseMessage : {} ", ResponseMessage);
+            
+            }
+            
+            
 
         }
+        
 
         // after fetching the data from httpconnection it will be come back here to assign data(result) to generic
         // creditreportdata object
