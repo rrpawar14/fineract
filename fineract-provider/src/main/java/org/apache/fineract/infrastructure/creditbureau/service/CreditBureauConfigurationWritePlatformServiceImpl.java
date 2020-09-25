@@ -18,16 +18,21 @@
  */
 package org.apache.fineract.infrastructure.creditbureau.service;
 
+import java.util.Map;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
+import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.creditbureau.domain.CreditBureauConfiguration;
 import org.apache.fineract.infrastructure.creditbureau.domain.CreditBureauConfigurationRepository;
 import org.apache.fineract.infrastructure.creditbureau.domain.OrganisationCreditBureau;
 import org.apache.fineract.infrastructure.creditbureau.domain.OrganisationCreditBureauRepository;
+import org.apache.fineract.infrastructure.creditbureau.exception.CreditReportNotFoundException;
 import org.apache.fineract.infrastructure.creditbureau.serialization.CreditBureauConfigurationCommandFromApiJsonDeserializer;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,18 +78,33 @@ public class CreditBureauConfigurationWritePlatformServiceImpl implements Credit
     @Transactional
     @Override
     public CommandProcessingResult updateCreditBureauConfiguration(Long creditBureauId, JsonCommand command) {
-        this.context.authenticatedUser();
+        try {
+            this.context.authenticatedUser();
 
-        this.fromApiJsonDeserializer.validateForCreate(command.json(), creditBureauId);
+            this.fromApiJsonDeserializer.validateForUpdate(command.json());
 
-        final OrganisationCreditBureau orgcb = this.organisationCreditBureauRepository.getOne(creditBureauId);
+            final CreditBureauConfiguration config = retrieveConfigBy(creditBureauId);
+            final Map<String, Object> changes = config.update(command);
 
-        final CreditBureauConfiguration cb_config = CreditBureauConfiguration.fromJson(command, orgcb);
+            if (!changes.isEmpty()) {
+                this.creditBureauConfigurationRepository.save(config);
+            }
 
-        this.creditBureauConfigurationRepository.save(cb_config);
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .withEntityId(creditBureauId) //
+                    .with(changes) //
+                    .build();
 
-        return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(cb_config.getId()).build();
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            throw new PlatformDataIntegrityException("error.msg.cund.unknown.data.integrity.issue",
+                    "Unknown data integrity issue with resource: " + dve.getMostSpecificCause(), dve);
+        }
 
     }
 
+    private CreditBureauConfiguration retrieveConfigBy(final Long creditBureauId) {
+        return this.creditBureauConfigurationRepository.findById(creditBureauId)
+                .orElseThrow(() -> new CreditReportNotFoundException(creditBureauId));
+    }
 }

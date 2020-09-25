@@ -18,15 +18,14 @@
  */
 package org.apache.fineract.infrastructure.creditbureau.service;
 
+import java.io.File;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-@Component
 public interface CreditReportWritePlatformService {
 
-    @Transactional
     CommandProcessingResult getCreditReport(JsonCommand command);
+
+    String addCreditReport(File creditreport, String creditBureauId);
 
 }

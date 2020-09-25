@@ -77,6 +77,32 @@ public final class CreditBureauConfigurationCommandFromApiJsonDeserializer {
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }
 
+    public void validateForUpdate(final String json) {
+        if (StringUtils.isBlank(json)) {
+            throw new InvalidJsonException();
+        }
+
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParameters);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("config");
+
+        final JsonElement element = this.fromApiJsonHelper.parse(json);
+
+        if (this.fromApiJsonHelper.parameterExists("value", element)) {
+            final String value = this.fromApiJsonHelper.extractStringNamed("value", element);
+            baseDataValidator.reset().parameter("value").value(value).notBlank().notExceedingLengthOf(100);
+        }
+
+        if (this.fromApiJsonHelper.parameterExists("description", element)) {
+            final String description = this.fromApiJsonHelper.extractStringNamed("description", element);
+            baseDataValidator.reset().parameter("description").value(description).notBlank().notExceedingLengthOf(100);
+        }
+
+        throwExceptionIfValidationWarningsExist(dataValidationErrors);
+    }
+
     private void throwExceptionIfValidationWarningsExist(final List<ApiParameterError> dataValidationErrors) {
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",

@@ -25,6 +25,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -73,7 +74,6 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
     private final CreditBureauTokenCommandFromApiJsonDeserializer fromApiJsonDeserializer;
     private final CreditBureauLoanProductMappingRepository loanProductMappingRepository;
     private final CreditBureauRepository creditBureauRepository;
-    private String creditBureauID = null;
 
     @Autowired
     public CreditReportWritePlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource,
@@ -95,7 +95,7 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
     private static final Logger LOG = LoggerFactory.getLogger(CreditReportWritePlatformServiceImpl.class);
 
     public String httpConnectionMethod(String process, String nrcID, String userName, String password, String subscriptionKey,
-            String subscriptionId, String url, String token, Long uniqueID) {
+            String subscriptionId, String url, String token, Long uniqueID, File report) {
 
         String result = null;
 
@@ -115,16 +115,27 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
                 postConnection.setRequestMethod("POST");
 
             } else if (process.equals("NRC")) {
-                // Search Methods
-                post_params = "BODY=x-www-form-urlencoded&nrc=" + nrcID + "&";
 
+                post_params = "BODY=x-www-form-urlencoded&nrc=" + nrcID + "&";
                 URL NrcURL = new URL(url + nrcID);
                 postConnection = (HttpURLConnection) NrcURL.openConnection();
                 postConnection.setRequestMethod("POST");
-            } else if (process.equals("CREDITREPORT")) {
+
+            } else if (process.equals("CreditReport")) {
+
                 URL CreditReportURL = new URL(url + uniqueID);
                 postConnection = (HttpURLConnection) CreditReportURL.openConnection();
                 postConnection.setRequestMethod("GET");
+
+            } else if (process.equals("UploadCreditReport")) {
+
+                post_params = "BODY=formdata&" + report + "&" + "userName=" + userName + "&";
+                LOG.info("post_params {}", post_params);
+                LOG.info("report {}", report);
+                URL addCreditReporturl = new URL(url);
+                readLine = null;
+                postConnection = (HttpURLConnection) addCreditReporturl.openConnection();
+                postConnection.setRequestMethod("POST");
 
             }
 
@@ -138,14 +149,13 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
                 postConnection.setRequestProperty("Authorization", "Bearer " + token);
             }
 
-            // this set of code only required for fetching uniqueID from Nrc fetched data (POST-SimpleSearch)
-            if (process.equals("NRC") || process.equals("token")) {
+            // this set is required only for (POST METHOD)- fetching uniqueID from NRC/Creating Token/Add Credit report
+            if (process.equals("NRC") || process.equals("token") || process.equals("UploadCreditReport")) {
                 postConnection.setDoOutput(true);
                 OutputStream os = postConnection.getOutputStream();
                 os.write(post_params.getBytes(StandardCharsets.UTF_8));
                 os.flush();
                 os.close();
-
             }
 
             // common part of code in http connection method
@@ -162,7 +172,7 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
                 in.close();
                 result = response.toString();
                 LOG.info("----- result-----{}", result);
-                // results = result;
+
             } else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) {
 
                 LOG.info("-----IP FORBIDDEN-----");
@@ -183,24 +193,20 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
     @Override
     @Transactional
     public CommandProcessingResult getCreditReport(JsonCommand command) {
-        // TODO Auto-generated method stub
 
         try {
             this.context.authenticatedUser();
-            // creditBureauID = null;
-            String loanProductID = null;
 
-            creditBureauID = command.stringValueOfParameterNamed("creditBureauID");
-            loanProductID = command.stringValueOfParameterNamed("loanProductID");
+            String creditBureauID = command.stringValueOfParameterNamed("creditBureauID");
 
-            String creditBureauName = getCreditBureau(loanProductID, creditBureauID);
+            String creditBureauName = getCreditBureau(creditBureauID);
 
             CreditReportData reportobj = null;
 
             if (creditBureauName.equals(CreditBureaNames.THITSAWORKS.toString())) {
                 reportobj = getCreditReportFromThitsaWorks(command);
-
             }
+
             return new CommandProcessingResultBuilder().withCreditReport(reportobj).build();
         } catch (final DataIntegrityViolationException dve) {
             handleTokenDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
@@ -211,6 +217,29 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
             return CommandProcessingResult.empty();
         }
 
+    }
+
+    private String getCreditBureau(final String creditBureauID) {
+
+        String creditBureauName = null;
+        CreditBureau creditBureau = null;
+        if (creditBureauID != null) {
+
+            Long bureauID = Long.parseLong(creditBureauID);
+
+            try {
+                creditBureau = this.creditBureauRepository.findById(bureauID).get();
+            } catch (NoSuchElementException dve) {
+
+                handleCreditBureauNamesIntegrityIssues(dve);
+
+            }
+
+            creditBureauName = creditBureau.getName();
+            LOG.info("Credit Bureau Name from CBID {}", creditBureauName);
+        }
+
+        return creditBureauName;
     }
 
     @SuppressWarnings("StringSplitter")
@@ -230,6 +259,7 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
 
         this.context.authenticatedUser();
 
+        String creditBureauID = command.stringValueOfParameterNamed("creditBureauID");
         Integer Id = Integer.parseInt(creditBureauID);
         CreditBureauConfiguration SubscriptionId = this.configDataRepository.getCreditBureauConfigData(Id, "SubscriptionId");
         CreditBureauConfiguration SubscriptionKey = this.configDataRepository.getCreditBureauConfigData(Id, "SubscriptionKey");
@@ -251,70 +281,14 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
             this.fromApiJsonDeserializer.validateForUsingTokenConfig(configJson);
         }
 
-        CreditBureauToken creditbureautoken = this.tokenRepository.getToken();
-
-        // check the expiry date of the previous token.
-        if (creditbureautoken != null) {
-            Date current = new Date();
-            Date getExpiryDate = creditbureautoken.getTokenExpiryDate();
-
-            if (getExpiryDate.before(current)) {
-                this.tokenRepository.delete(creditbureautoken);
-                creditbureautoken = null;
-            }
-        }
-        // storing token if it is valid token(not expired)
-        if (creditbureautoken != null) {
-            token = creditbureautoken.getCurrentToken();
-        }
-
         // if token is not available or previous token is expired then create a new token
-        if (creditbureautoken == null) {
-
-            process = "token";
-            CreditBureauConfiguration tokenURL = this.configDataRepository.getCreditBureauConfigData(Id, "tokenurl");
-            String url = tokenURL.getValue();
-
-            result = this.httpConnectionMethod(process, nrcId, userName, password, subscriptionKey, subscriptionId, url, token, uniqueID);
-
-            // created token will be storing it into database
-            final CommandWrapper wrapper = new CommandWrapperBuilder().withJson(result).build();
-            final String json = wrapper.getJson();
-            result = null;
-            JsonCommand apicommand = null;
-            boolean isApprovedByChecker = false;
-            final JsonElement parsedCommand = this.fromApiJsonHelper.parse(json);
-
-            apicommand = JsonCommand.from(json, parsedCommand, this.fromApiJsonHelper, wrapper.getEntityName(), wrapper.getEntityId(),
-                    wrapper.getSubentityId(), wrapper.getGroupId(), wrapper.getClientId(), wrapper.getLoanId(), wrapper.getSavingsId(),
-                    wrapper.getTransactionId(), wrapper.getHref(), wrapper.getProductId(), wrapper.getCreditBureauId(),
-                    wrapper.getOrganisationCreditBureauId());
-
-            this.fromApiJsonDeserializer.validateForCreate(apicommand.json());
-
-            final CreditBureauToken generatedtoken = CreditBureauToken.fromJson(apicommand);
-
-            final CreditBureauToken credittoken = this.tokenRepository.getToken();
-            if (credittoken != null) {
-                // String fetoken = credittoken.getToken();
-                this.tokenRepository.delete(credittoken);
-            }
-
-            // saved new token
-            this.tokenRepository.save(generatedtoken);
-
-            // fetched new token
-            creditbureautoken = this.tokenRepository.getToken();
-            token = creditbureautoken.getCurrentToken();
-
-            // at this stage token is available for all cases i.e.(deleted expired token and saved new token)
-        }
+        token = createToken(userName, password, subscriptionId, subscriptionKey, Id);
 
         // will use only "NRC" part of code from common http method to get data based on nrc
         process = "NRC";
         CreditBureauConfiguration SearchURL = this.configDataRepository.getCreditBureauConfigData(Id, "searchurl");
         String url = SearchURL.getValue();
-        result = this.httpConnectionMethod(process, nrcId, userName, password, subscriptionKey, subscriptionId, url, token, uniqueID);
+        result = this.httpConnectionMethod(process, nrcId, userName, password, subscriptionKey, subscriptionId, url, token, uniqueID, null);
 
         // after fetching the data from httpconnection it will be come back here for fetching UniqueID from data
         if (process.equals("NRC")) {
@@ -331,24 +305,18 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
             // unique ID is stored
             uniqueID = Long.parseLong(TrimUniqueId);
 
-            // will use "CREDITREPORT" part of code from common http method to fetch creditreport based on UniqueID
-            process = "CREDITREPORT";
+            // will use "CreditReport" part of code from common http method to fetch creditreport based on UniqueID
+            process = "CreditReport";
             CreditBureauConfiguration creditReportURL = this.configDataRepository.getCreditBureauConfigData(Id, "creditreporturl");
             url = creditReportURL.getValue();
-            result = this.httpConnectionMethod(process, nrcId, userName, password, subscriptionKey, subscriptionId, url, token, uniqueID);
-
-            LOG.info("result : {} ", result);
-
+            result = this.httpConnectionMethod(process, nrcId, userName, password, subscriptionKey, subscriptionId, url, token, uniqueID,
+                    null);
         }
 
-        // after fetching the data from httpconnection it will be come back here to assign data(result) to generic
+        // after getting the result(creditreport) from httpconnection-response it will assign creditreport to generic
         // creditreportdata object
 
-        // results
-
         JsonObject reportObject = JsonParser.parseString(result).getAsJsonObject();
-
-        // LOG.info("result_jsonObject : {} ", result);
 
         JsonObject borrowerInfos = null;
         String borrowerInfo = null;
@@ -369,9 +337,8 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
         element = data.get("BorrowerInfo");
         if (!(element instanceof JsonNull)) {
             borrowerInfos = (JsonObject) element;
-            // LOG.info("borrowerInfo : {} ", borrowerInfos);
-            Gson gson = new Gson();
 
+            Gson gson = new Gson();
             borrowerInfo = gson.toJson(borrowerInfos);
         }
 
@@ -382,25 +349,22 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
         element = data.get("CreditScore");
         if (!(element instanceof JsonNull)) {
             JsonObject Score = (JsonObject) element;
-            // LOG.info("CreditScore : {} ", CreditScore);
-            Gson gson = new Gson();
 
+            Gson gson = new Gson();
             CreditScore = gson.toJson(Score);
         }
 
         element = data.get("ActiveLoans");
         if (!(element instanceof JsonNull)) {
             JsonArray ActiveLoan = (JsonArray) element;
-            // LOG.info("ActiveLoans : {} ", ActiveLoans);
-            Gson gson = new Gson();
 
+            Gson gson = new Gson();
             ActiveLoans = gson.toJson(ActiveLoan);
         }
 
         element = data.get("WriteOffLoans");
         if (!(element instanceof JsonNull)) {
             JsonArray PaidLoan = (JsonArray) element;
-            // LOG.info("PaidLoans : {} ", PaidLoans);
 
             Gson gson = new Gson();
             PaidLoans = gson.toJson(PaidLoan);
@@ -409,27 +373,117 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
         return CreditReportData.instance(Name, Gender, Address, CreditScore, borrowerInfo, ActiveLoans, PaidLoans);
     }
 
-    private String getCreditBureau(final String productID, final String creditBureauID) {
+    @Override
+    public String addCreditReport(File report, String bureauId) {
 
-        String creditBureauName = null;
-        CreditBureau creditBureau = null;
-        if (creditBureauID != null) {
+        String result = null;
 
-            Long bureauID = Long.parseLong(creditBureauID);
+        String creditBureauName = getCreditBureau(bureauId);
+        LOG.info("Credit Bureau Name {}", creditBureauName);
+        if (creditBureauName.equals(CreditBureaNames.THITSAWORKS.toString())) {
 
-            try {
-                creditBureau = this.creditBureauRepository.findById(bureauID).get();
-            } catch (NoSuchElementException dve) {
+            String userName = "";
+            String password = "";
+            String subscriptionId = "";
+            String subscriptionKey = "";
 
-                handleCreditBureauNamesIntegrityIssues(dve);
+            Integer Id = Integer.parseInt(bureauId);
 
+            CreditBureauConfiguration SubscriptionId = this.configDataRepository.getCreditBureauConfigData(Id, "SubscriptionId");
+            CreditBureauConfiguration SubscriptionKey = this.configDataRepository.getCreditBureauConfigData(Id, "SubscriptionKey");
+            CreditBureauConfiguration UserName = this.configDataRepository.getCreditBureauConfigData(Id, "Username");
+            CreditBureauConfiguration Password = this.configDataRepository.getCreditBureauConfigData(Id, "Password");
+
+            if (SubscriptionId != null || SubscriptionKey != null || UserName != null || Password != null) {
+
+                subscriptionId = SubscriptionId.getValue();
+                subscriptionKey = SubscriptionKey.getValue();
+                userName = UserName.getValue();
+                password = Password.getValue();
+
+            } else {
+
+                String configJson = "{ 'userName':'" + userName + "','password':'" + password + "','subscriptionId':'" + subscriptionId
+                        + "','subscriptionKey':'" + subscriptionKey + "'}";
+
+                this.fromApiJsonDeserializer.validateForUsingTokenConfig(configJson);
             }
 
-            creditBureauName = creditBureau.getName();
-            LOG.info("Credit Bureau Name from CBID {}", creditBureauName);
+            String token = createToken(userName, password, subscriptionId, subscriptionKey, Id);
+
+            CreditBureauConfiguration addReportURL = this.configDataRepository.getCreditBureauConfigData(Id, "AddCreditReport");
+            String url = addReportURL.getValue();
+
+            String process = "UploadCreditReport";
+            result = this.httpConnectionMethod(process, null, userName, password, subscriptionKey, subscriptionId, url, token, null,
+                    report);
+
         }
 
-        return creditBureauName;
+        return result;
+    }
+
+    private String createToken(String userName, String password, String subscriptionId, String subscriptionKey, Integer creditBureauId) {
+
+        String nrcId = null;
+        String token = null;
+        String result = null;
+        Long uniqueID = 0L;
+
+        CreditBureauToken creditbureautoken = this.tokenRepository.getToken();
+
+        // check the expiry date of the previous token.
+        if (creditbureautoken != null) {
+            Date current = new Date();
+            Date getExpiryDate = creditbureautoken.getTokenExpiryDate();
+
+            if (getExpiryDate.before(current)) {
+                this.tokenRepository.delete(creditbureautoken);
+                creditbureautoken = null;
+            }
+        }
+        // storing token if it is valid token(not expired)
+        if (creditbureautoken != null) {
+            token = creditbureautoken.getCurrentToken();
+        }
+
+        if (creditbureautoken == null) {
+            CreditBureauConfiguration tokenURL = this.configDataRepository.getCreditBureauConfigData(creditBureauId, "tokenurl");
+            String url = tokenURL.getValue();
+
+            String process = "token";
+            result = this.httpConnectionMethod(process, nrcId, userName, password, subscriptionKey, subscriptionId, url, token, uniqueID,
+                    null);
+
+            // created token will be storing it into database
+            final CommandWrapper wrapper = new CommandWrapperBuilder().withJson(result).build();
+            final String json = wrapper.getJson();
+
+            JsonCommand apicommand = null;
+            boolean isApprovedByChecker = false;
+            final JsonElement parsedCommand = this.fromApiJsonHelper.parse(json);
+
+            apicommand = JsonCommand.from(json, parsedCommand, this.fromApiJsonHelper, wrapper.getEntityName(), wrapper.getEntityId(),
+                    wrapper.getSubentityId(), wrapper.getGroupId(), wrapper.getClientId(), wrapper.getLoanId(), wrapper.getSavingsId(),
+                    wrapper.getTransactionId(), wrapper.getHref(), wrapper.getProductId(), wrapper.getCreditBureauId(),
+                    wrapper.getOrganisationCreditBureauId());
+
+            this.fromApiJsonDeserializer.validateForCreate(apicommand.json());
+
+            final CreditBureauToken generatedtoken = CreditBureauToken.fromJson(apicommand);
+
+            final CreditBureauToken credittoken = this.tokenRepository.getToken();
+            if (credittoken != null) {
+                this.tokenRepository.delete(credittoken);
+            }
+
+            this.tokenRepository.save(generatedtoken);
+
+            creditbureautoken = this.tokenRepository.getToken();
+            token = creditbureautoken.getCurrentToken();
+
+        }
+        return token;
     }
 
     private void handleTokenDataIntegrityIssues(final JsonCommand command, final Throwable realCause, final Exception dve) {

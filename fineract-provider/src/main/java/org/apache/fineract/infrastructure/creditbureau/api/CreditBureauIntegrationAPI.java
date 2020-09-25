@@ -20,6 +20,9 @@
 package org.apache.fineract.infrastructure.creditbureau.api;
 
 import com.google.gson.Gson;
+import com.sun.jersey.multipart.FormDataParam;
+import io.swagger.v3.oas.annotations.Parameter;
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,6 +31,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -41,6 +45,7 @@ import org.apache.fineract.infrastructure.creditbureau.data.CreditBureauLoanProd
 import org.apache.fineract.infrastructure.creditbureau.data.CreditReportData;
 import org.apache.fineract.infrastructure.creditbureau.service.CreditBureauReadConfigurationService;
 import org.apache.fineract.infrastructure.creditbureau.service.CreditBureauReadPlatformService;
+import org.apache.fineract.infrastructure.creditbureau.service.CreditReportWritePlatformService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +67,7 @@ public class CreditBureauIntegrationAPI {
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final CreditBureauReadConfigurationService creditBureauConfiguration;
+    private final CreditReportWritePlatformService creditReportWritePlatformService;
     private static final Logger LOG = LoggerFactory.getLogger(CreditBureauIntegrationAPI.class);
 
     @Autowired
@@ -70,13 +76,15 @@ public class CreditBureauIntegrationAPI {
             final DefaultToApiJsonSerializer<CreditBureauLoanProductMappingData> toApiJsonSerializerCreditBureauLoanProduct,
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
-            final CreditBureauReadConfigurationService creditBureauConfiguration) {
+            final CreditBureauReadConfigurationService creditBureauConfiguration,
+            final CreditReportWritePlatformService creditReportWritePlatformService) {
         this.context = context;
         this.readPlatformService = readPlatformService;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.toCreditReportApiJsonSerializer = toCreditReportApiJsonSerializer;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
         this.creditBureauConfiguration = creditBureauConfiguration;
+        this.creditReportWritePlatformService = creditReportWritePlatformService;
 
     }
 
@@ -93,5 +101,15 @@ public class CreditBureauIntegrationAPI {
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         return this.toCreditReportApiJsonSerializer.serialize(result);
 
+    }
+
+    @POST
+    @Path("addCreditReport")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public String addCreditReport(@FormDataParam("file") final File creditreport,
+            @QueryParam("creditBureauId") @Parameter(description = "creditBureauId") final String creditBureauId) {
+        LOG.info("creditreport api {}", creditreport);
+        final String importDocumentId = creditReportWritePlatformService.addCreditReport(creditreport, creditBureauId);
+        return this.toCreditReportApiJsonSerializer.serialize(importDocumentId);
     }
 }

@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
+import java.io.File;
 import org.apache.fineract.infrastructure.creditbureau.service.CreditReportWritePlatformServiceImpl;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -53,6 +54,7 @@ public class CreditBureauHelper {
     static String url = "url";
     static String token = "token";
     static Long uniqueID = 1L;
+    static File file;
 
     static String testresult = "{   'Data': {'BorrowerInfo': {'MainIdentifier': '2113439293', 'Name': 'Aung Khant Min',"
             + "            'NRC': '13/MiFoS(N)163525', 'Gender': '', 'DOB': '1990-01-20', 'FatherName': '', 'Address': '',"
@@ -76,10 +78,10 @@ public class CreditBureauHelper {
     public static String getCreditReport() {
 
         when(creditBureauWritePlatformServiceImpl.httpConnectionMethod(process, nrcID, userName, password, subscriptionKey, subscriptionId,
-                url, token, uniqueID)).thenReturn(testresult);
+                url, token, uniqueID, file)).thenReturn(testresult);
 
         String test = creditBureauWritePlatformServiceImpl.httpConnectionMethod(process, nrcID, userName, password, subscriptionKey,
-                subscriptionId, url, token, uniqueID);
+                subscriptionId, url, token, uniqueID, file);
         return test;
 
     }
