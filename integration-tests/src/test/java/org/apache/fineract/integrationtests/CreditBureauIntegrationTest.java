@@ -25,7 +25,7 @@ import com.google.gson.JsonParser;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.apache.fineract.infrastructure.creditbureau.service.CreditReportWritePlatformServiceImpl;
+import org.apache.fineract.infrastructure.creditbureau.service.ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl;
 import org.apache.fineract.integrationtests.common.CreditBureauHelper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -52,7 +52,8 @@ public class CreditBureauIntegrationTest {
     static String token = "token";
     static Long uniqueID = 1L;
 
-    CreditReportWritePlatformServiceImpl creditReportWritePlatformServiceImpl = Mockito.mock(CreditReportWritePlatformServiceImpl.class);
+    ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl creditReportWritePlatformServiceImpl = Mockito
+            .mock(ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl.class);
 
     @Test
     public void getCreditreport() {

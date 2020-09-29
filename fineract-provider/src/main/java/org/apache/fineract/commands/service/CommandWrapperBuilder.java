@@ -100,6 +100,14 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder saveCreditReport() {
+        this.actionName = "SAVE";
+        this.entityName = "CREDITREPORT";
+        this.entityId = null;
+        this.href = "/saveCreditReport/";
+        return this;
+    }
+
     public CommandWrapperBuilder createCreditBureauLoanProductMapping(final long creditBureauId) {
         this.actionName = "CREATE";
         this.entityName = "CREDITBUREAU_LOANPRODUCT_MAPPING";

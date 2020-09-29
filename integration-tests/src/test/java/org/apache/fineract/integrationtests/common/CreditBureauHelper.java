@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import java.io.File;
-import org.apache.fineract.infrastructure.creditbureau.service.CreditReportWritePlatformServiceImpl;
+import org.apache.fineract.infrastructure.creditbureau.service.ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +40,8 @@ public class CreditBureauHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreditBureauHelper.class);
 
-    private static final CreditReportWritePlatformServiceImpl creditBureauWritePlatformServiceImpl = Mockito
-            .mock(CreditReportWritePlatformServiceImpl.class);
+    private static final ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl creditBureauWritePlatformServiceImpl = Mockito
+            .mock(ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl.class);
 
     static String process = "process";
     static String nrcID = "13/MiFoS(N)163525";

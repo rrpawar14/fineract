@@ -46,6 +46,7 @@ import org.apache.fineract.infrastructure.creditbureau.data.CreditReportData;
 import org.apache.fineract.infrastructure.creditbureau.service.CreditBureauReadConfigurationService;
 import org.apache.fineract.infrastructure.creditbureau.service.CreditBureauReadPlatformService;
 import org.apache.fineract.infrastructure.creditbureau.service.CreditReportWritePlatformService;
+import org.apache.fineract.infrastructure.creditbureau.service.ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +69,7 @@ public class CreditBureauIntegrationAPI {
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final CreditBureauReadConfigurationService creditBureauConfiguration;
     private final CreditReportWritePlatformService creditReportWritePlatformService;
+    private final ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl;
     private static final Logger LOG = LoggerFactory.getLogger(CreditBureauIntegrationAPI.class);
 
     @Autowired
@@ -77,7 +79,8 @@ public class CreditBureauIntegrationAPI {
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
             final CreditBureauReadConfigurationService creditBureauConfiguration,
-            final CreditReportWritePlatformService creditReportWritePlatformService) {
+            final CreditReportWritePlatformService creditReportWritePlatformService,
+            final ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl) {
         this.context = context;
         this.readPlatformService = readPlatformService;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
@@ -85,6 +88,7 @@ public class CreditBureauIntegrationAPI {
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
         this.creditBureauConfiguration = creditBureauConfiguration;
         this.creditReportWritePlatformService = creditReportWritePlatformService;
+        this.thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl = thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl;
 
     }
 
@@ -111,5 +115,32 @@ public class CreditBureauIntegrationAPI {
         LOG.info("creditreport api {}", creditreport);
         final String importDocumentId = creditReportWritePlatformService.addCreditReport(creditreport, creditBureauId);
         return this.toCreditReportApiJsonSerializer.serialize(importDocumentId);
+    }
+
+    @POST
+    @Path("saveCreditReport")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String saveCreditReport(@RequestParam("apiRequestBodyAsJson") final String apiRequestBodyAsJson) {
+        // public String saveCreditReport(@RequestParam("borrowerInfo") final String borrowerInfo,
+        // @RequestParam("creditscore") final String creditscore,
+        // @RequestParam("ActiveLoans") final String ActiveLoans, @RequestParam("PaidLoans") final String PaidLoans) {
+
+        // Gson gson = new Gson();
+        // final String json = gson.toJson(params);
+        // final CommandWrapper commandRequest = new CommandWrapperBuilder().getCreditReport().withJson(json).build();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .saveCreditReport() //
+                .withJson(apiRequestBodyAsJson) //
+                .build(); //
+
+        // final CommandProcessingResult result =
+        // thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl.saveCreditReport(borrowerInfo, creditscore,
+        // ActiveLoans, PaidLoans);
+        // return this.toCreditReportApiJsonSerializer.serialize(result);
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        return this.toCreditReportApiJsonSerializer.serialize(result);
+
     }
 }
