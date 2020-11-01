@@ -59,22 +59,3 @@ CREATE TABLE `oauth_refresh_token` (
 )
 COLLATE='utf8mb4_general_ci'
 ENGINE=InnoDB;
-
--- permissions added
-
-
-INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('configuration', 'CREATE_CREDITBUREAUTOKEN', 'CREDITBUREAUTOKEN', 'CREATE', 0);
-INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('configuration', 'CREATE_CREDITBUREAUTOKENDATA', 'CREDITBUREAUTOKENDATA', 'CREATE', 0);
-
-CREATE TABLE `m_creditbureau_token` (
-  `id` INT(128) NOT NULL AUTO_INCREMENT,
-  `username` varchar(128) DEFAULT NULL,
-  `token` varchar(256) DEFAULT NULL,
-  `token_type` varchar(128) DEFAULT NULL,
-  `expires_in` varchar(128) DEFAULT NULL,
-  `issued` varchar(128) DEFAULT NULL,
-  `expires` varchar(128) DEFAULT NULL,
-   PRIMARY KEY (`id`)
-)
-COLLATE='utf8mb4_general_ci'
-ENGINE=InnoDB;
