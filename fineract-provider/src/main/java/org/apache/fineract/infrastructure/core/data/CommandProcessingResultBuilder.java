@@ -20,6 +20,7 @@ package org.apache.fineract.infrastructure.core.data;
 
 import java.util.Map;
 import org.apache.fineract.infrastructure.creditbureau.data.CreditReportData;
+import org.apache.fineract.infrastructure.creditbureau.domain.CreditReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ public class CommandProcessingResultBuilder {
     private String transactionId;
     private Map<String, Object> changes;
     private CreditReportData creditReportData;
+    private CreditReport saveCreditReport;
     private Long productId;
     private boolean rollbackTransaction = false;
     private static final Logger LOG = LoggerFactory.getLogger(CommandProcessingResultBuilder.class);
@@ -125,6 +127,12 @@ public class CommandProcessingResultBuilder {
     public CommandProcessingResultBuilder withCreditReport(final CreditReportData withCreditReport) {
         this.creditReportData = withCreditReport;
         LOG.info("withCreditReport :{}", withCreditReport);
+        return this;
+    }
+
+    public CommandProcessingResultBuilder withCreditReport(final CreditReport saveCreditReport) {
+        this.saveCreditReport = saveCreditReport;
+        LOG.info("saveCreditReport :{}", saveCreditReport);
         return this;
     }
 

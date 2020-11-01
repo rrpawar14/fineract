@@ -37,6 +37,8 @@ import org.apache.fineract.infrastructure.creditbureau.domain.CreditBureauConfig
 import org.apache.fineract.infrastructure.creditbureau.domain.CreditBureauConfigurationRepositoryWrapper;
 import org.apache.fineract.infrastructure.creditbureau.domain.CreditBureauLoanProductMappingRepository;
 import org.apache.fineract.infrastructure.creditbureau.domain.CreditBureauRepository;
+import org.apache.fineract.infrastructure.creditbureau.domain.CreditReport;
+import org.apache.fineract.infrastructure.creditbureau.domain.CreditReportRepository;
 import org.apache.fineract.infrastructure.creditbureau.domain.TokenRepositoryWrapper;
 import org.apache.fineract.infrastructure.creditbureau.serialization.CreditBureauTokenCommandFromApiJsonDeserializer;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
@@ -59,6 +61,7 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
     private final CreditBureauTokenCommandFromApiJsonDeserializer fromApiJsonDeserializer;
     private final CreditBureauLoanProductMappingRepository loanProductMappingRepository;
     private final CreditBureauRepository creditBureauRepository;
+    private final CreditReportRepository creditReportRepository;
     private final ThitsaWorksCreditBureauIntegrationWritePlatformService thitsaWorksCreditBureauIntegrationWritePlatformService;
 
     @Autowired
@@ -67,7 +70,7 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
             final CreditBureauConfigurationRepositoryWrapper configDataRepository,
             final CreditBureauTokenCommandFromApiJsonDeserializer fromApiJsonDeserializer,
             final CreditBureauLoanProductMappingRepository loanProductMappingRepository,
-            final CreditBureauRepository creditBureauRepository,
+            final CreditBureauRepository creditBureauRepository, final CreditReportRepository creditReportRepository,
             final ThitsaWorksCreditBureauIntegrationWritePlatformService thitsaWorksCreditBureauIntegrationWritePlatformService) {
         this.context = context;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -77,6 +80,7 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.loanProductMappingRepository = loanProductMappingRepository;
         this.creditBureauRepository = creditBureauRepository;
+        this.creditReportRepository = creditReportRepository;
         this.thitsaWorksCreditBureauIntegrationWritePlatformService = thitsaWorksCreditBureauIntegrationWritePlatformService;
     }
 
@@ -98,11 +102,9 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
 
             if (creditBureauName.equals(CreditBureaNames.THITSAWORKS.toString())) {
                 reportobj = this.thitsaWorksCreditBureauIntegrationWritePlatformService.getCreditReportFromThitsaWorks(command);
+            } else {
+                this.handleCreditBureauNotmatchedIntegrityIssues();
             }
-            else {
-            	 this.handleCreditBureauNotmatchedIntegrityIssues();
-            }
-            	
 
             return new CommandProcessingResultBuilder().withCreditReport(reportobj).build();
         } catch (final DataIntegrityViolationException dve) {
@@ -130,8 +132,7 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
 
                 handleCreditBureauNamesIntegrityIssues(dve);
 
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
 
                 handleCreditBureauNamesIntegrityIssues(e);
 
@@ -204,19 +205,26 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
         try {
             this.context.authenticatedUser();
 
-            String creditBureauID = command.stringValueOfParameterNamed("creditBureauID");
+            // String creditBureauID = command.stringValueOfParameterNamed("creditBureauID");
 
-            String creditBureauName = getCreditBureau(creditBureauID);
+            // String creditBureauName = getCreditBureau(creditBureauID);
 
             CreditReportData reportobj = null;
+            String reportData = command.stringValueOfParameterNamed("apiRequestBodyAsJson");
 
-            // save the creditreport with the organisation creditbureauId in the database.
+            LOG.info("reportData {}", reportData);
 
-            if (creditBureauName.equals(CreditBureaNames.THITSAWORKS.toString())) {
-                reportobj = this.thitsaWorksCreditBureauIntegrationWritePlatformService.getCreditReportFromThitsaWorks(command);
-            }
+            // work on it
+            String nrc = command.stringValueOfParameterNamed("nrc");
 
-            return new CommandProcessingResultBuilder().withCreditReport(reportobj).build();
+            byte[] creditReportArray = reportData.getBytes();
+            organisationCreditBureauId = 1L;
+
+            LOG.info("creditReportArray : {}", creditReportArray);
+            final CreditReport creditReports = CreditReport.instance(organisationCreditBureauId, nrc, creditReportArray);
+            this.creditReportRepository.saveAndFlush(creditReports);
+
+            return new CommandProcessingResultBuilder().withCreditReport(creditReports).build();
         } catch (final DataIntegrityViolationException dve) {
             handleTokenDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
             return CommandProcessingResult.empty();
@@ -239,7 +247,7 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
         throw new PlatformDataIntegrityException("Credit Bureau not Found", "Credit Bureau not Found" + dve.getMessage());
 
     }
-    
+
     private void handleCreditBureauNotmatchedIntegrityIssues() {
 
         throw new PlatformDataIntegrityException("Credit Bureau has not been Integrated", "Credit Bureau has not been Integrated");

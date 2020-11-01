@@ -107,6 +107,7 @@ public class CreditBureauIntegrationAPI {
 
     }
 
+    // submit to thitsawork
     @POST
     @Path("addCreditReport")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -117,11 +118,13 @@ public class CreditBureauIntegrationAPI {
         return this.toCreditReportApiJsonSerializer.serialize(importDocumentId);
     }
 
+    // save creditreport in local database
     @POST
     @Path("saveCreditReport")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String saveCreditReport(@RequestParam("apiRequestBodyAsJson") final String apiRequestBodyAsJson) {
+    public String saveCreditReport(@RequestParam("apiRequestBodyAsJson") final String apiRequestBodyAsJson,
+            @QueryParam("creditBureauId") @Parameter(description = "creditBureauId") final String creditBureauId) {
         // public String saveCreditReport(@RequestParam("borrowerInfo") final String borrowerInfo,
         // @RequestParam("creditscore") final String creditscore,
         // @RequestParam("ActiveLoans") final String ActiveLoans, @RequestParam("PaidLoans") final String PaidLoans) {
@@ -129,11 +132,13 @@ public class CreditBureauIntegrationAPI {
         // Gson gson = new Gson();
         // final String json = gson.toJson(params);
         // final CommandWrapper commandRequest = new CommandWrapperBuilder().getCreditReport().withJson(json).build();
+
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .saveCreditReport() //
                 .withJson(apiRequestBodyAsJson) //
                 .build(); //
 
+        LOG.info("apiRequestBodyAsJson api {}", apiRequestBodyAsJson);
         // final CommandProcessingResult result =
         // thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl.saveCreditReport(borrowerInfo, creditscore,
         // ActiveLoans, PaidLoans);
