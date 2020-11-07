@@ -38,12 +38,9 @@ import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
-import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.infrastructure.creditbureau.data.CreditReportData;
 import org.apache.fineract.infrastructure.creditbureau.domain.CreditBureauConfiguration;
 import org.apache.fineract.infrastructure.creditbureau.domain.CreditBureauConfigurationRepositoryWrapper;
-import org.apache.fineract.infrastructure.creditbureau.domain.CreditBureauLoanProductMappingRepository;
-import org.apache.fineract.infrastructure.creditbureau.domain.CreditBureauRepository;
 import org.apache.fineract.infrastructure.creditbureau.domain.CreditBureauToken;
 import org.apache.fineract.infrastructure.creditbureau.domain.TokenRepositoryWrapper;
 import org.apache.fineract.infrastructure.creditbureau.serialization.CreditBureauTokenCommandFromApiJsonDeserializer;
@@ -51,7 +48,6 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,30 +56,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implements ThitsaWorksCreditBureauIntegrationWritePlatformService {
 
-    private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
     private final FromJsonHelper fromApiJsonHelper;
     private final TokenRepositoryWrapper tokenRepository;
     private final CreditBureauConfigurationRepositoryWrapper configDataRepository;
     private final CreditBureauTokenCommandFromApiJsonDeserializer fromApiJsonDeserializer;
-    private final CreditBureauLoanProductMappingRepository loanProductMappingRepository;
-    private final CreditBureauRepository creditBureauRepository;
 
     @Autowired
     public ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl(final PlatformSecurityContext context,
-            final RoutingDataSource dataSource, final FromJsonHelper fromApiJsonHelper, final TokenRepositoryWrapper tokenRepository,
+            final FromJsonHelper fromApiJsonHelper, final TokenRepositoryWrapper tokenRepository,
             final CreditBureauConfigurationRepositoryWrapper configDataRepository,
-            final CreditBureauTokenCommandFromApiJsonDeserializer fromApiJsonDeserializer,
-            final CreditBureauLoanProductMappingRepository loanProductMappingRepository,
-            final CreditBureauRepository creditBureauRepository) {
+            final CreditBureauTokenCommandFromApiJsonDeserializer fromApiJsonDeserializer) {
         this.context = context;
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.tokenRepository = tokenRepository;
         this.configDataRepository = configDataRepository;
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
-        this.loanProductMappingRepository = loanProductMappingRepository;
-        this.creditBureauRepository = creditBureauRepository;
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl.class);
@@ -96,73 +84,101 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
         String result = null;
 
         try {
-            String readLine = null;
             String post_params = null;
-            HttpURLConnection postConnection = null;
-            StringBuilder response = new StringBuilder();
+            HttpURLConnection httpConnection = this.process(process, nrcID, userName, password, subscriptionKey, subscriptionId, url, token,
+                    uniqueID, report);
 
             if (process.equals("token")) {
                 post_params = "" + "BODY=x-www-form-urlencoded&\r" + "grant_type=password&\r" + "userName=" + userName + "&\r" + "password="
                         + password + "&\r";
-
-                URL tokenurl = new URL(url);
-                readLine = null;
-                postConnection = (HttpURLConnection) tokenurl.openConnection();
-                postConnection.setRequestMethod("POST");
-
             } else if (process.equals("NRC")) {
 
                 post_params = "BODY=x-www-form-urlencoded&nrc=" + nrcID + "&";
-                URL NrcURL = new URL(url + nrcID);
-                postConnection = (HttpURLConnection) NrcURL.openConnection();
-                postConnection.setRequestMethod("POST");
-
-            } else if (process.equals("CreditReport")) {
-
-                URL CreditReportURL = new URL(url + uniqueID);
-                postConnection = (HttpURLConnection) CreditReportURL.openConnection();
-                postConnection.setRequestMethod("GET");
-
             } else if (process.equals("UploadCreditReport")) {
 
                 post_params = "BODY=formdata&" + report + "&" + "userName=" + userName + "&";
-                LOG.info("post_params {}", post_params);
-                URL addCreditReporturl = new URL(url);
-                readLine = null;
-                postConnection = (HttpURLConnection) addCreditReporturl.openConnection();
-                postConnection.setRequestMethod("POST");
-
             }
-
-            // common set of headers
-            postConnection.setRequestProperty("mcix-subscription-key", subscriptionKey);
-            postConnection.setRequestProperty("mcix-subscription-id", subscriptionId);
-            postConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             // token header not used when creating token i.e. when token will be null
             if (token != null) {
-                postConnection.setRequestProperty("Authorization", "Bearer " + token);
+                httpConnection.setRequestProperty("Authorization", "Bearer " + token);
             }
 
             // this set is required only for (POST METHOD)- fetching uniqueID from NRC/Creating Token/Add Credit report
             if (process.equals("NRC") || process.equals("token") || process.equals("UploadCreditReport")) {
-                postConnection.setDoOutput(true);
-                OutputStream os = postConnection.getOutputStream();
+                httpConnection.setDoOutput(true);
+                OutputStream os = httpConnection.getOutputStream();
                 os.write(post_params.getBytes(StandardCharsets.UTF_8));
                 os.flush();
                 os.close();
             }
 
-            // common part of code in http connection method
-            int responseCode = postConnection.getResponseCode();
-            LOG.info("----- responseCode-----{}", responseCode);
+            result = this.httpResponse(httpConnection);
 
+        } catch (IOException e) {
+            LOG.error("Error occured.", e);
+        }
+        return result;
+
+    }
+
+    private HttpURLConnection process(String process, String nrcID, String userName, String password, String subscriptionKey,
+            String subscriptionId, String url, String token, Long uniqueID, File report) {
+
+        HttpURLConnection httpConnection = null;
+
+        try {
+            if (process.equals("token")) {
+
+                URL tokenurl = new URL(url);
+                httpConnection = (HttpURLConnection) tokenurl.openConnection();
+                httpConnection.setRequestMethod("POST");
+
+            } else if (process.equals("NRC")) {
+
+                URL NrcURL = new URL(url + nrcID);
+                httpConnection = (HttpURLConnection) NrcURL.openConnection();
+                httpConnection.setRequestMethod("POST");
+
+            } else if (process.equals("CreditReport")) {
+
+                URL CreditReportURL = new URL(url + uniqueID);
+                httpConnection = (HttpURLConnection) CreditReportURL.openConnection();
+                httpConnection.setRequestMethod("GET");
+
+            } else if (process.equals("UploadCreditReport")) {
+
+                URL addCreditReporturl = new URL(url);
+                httpConnection = (HttpURLConnection) addCreditReporturl.openConnection();
+                httpConnection.setRequestMethod("POST");
+            }
+
+            // common set of headers
+            httpConnection.setRequestProperty("mcix-subscription-key", subscriptionKey);
+            httpConnection.setRequestProperty("mcix-subscription-id", subscriptionId);
+            httpConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+        } catch (IOException e) {
+            LOG.error("Error occured.", e);
+        }
+        return httpConnection;
+    }
+
+    public String httpResponse(HttpURLConnection httpConnection) {
+
+        String result = null; // return type of this method
+        try {
+            int responseCode = httpConnection.getResponseCode();
+
+            StringBuilder response = new StringBuilder();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 response = new StringBuilder();
 
                 LOG.info("----- RESPONSE OK-----");
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(postConnection.getInputStream(), StandardCharsets.UTF_8));
+                BufferedReader in = new BufferedReader(new InputStreamReader(httpConnection.getInputStream(), StandardCharsets.UTF_8));
+
+                String readLine = null;
                 while ((readLine = in.readLine()) != null) {
                     response.append(readLine);
                 }
@@ -188,58 +204,54 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
             LOG.error("Error occured.", e);
         }
         return result;
-
     }
 
     @Transactional
     @Override
     @SuppressWarnings("StringSplitter")
     public CreditReportData getCreditReportFromThitsaWorks(final JsonCommand command) {
-        String Name;
-        String Gender;
-        String nrcId = command.stringValueOfParameterNamed("NRC");
-        String Address = null;
-        String userName = "";
-        String password = "";
-        String subscriptionId = "";
-        String subscriptionKey = "";
-        String token = null;
-        String process = null;
-        String result = null;
-        Long uniqueID = 0L;
 
         this.context.authenticatedUser();
+        String nrcId = command.stringValueOfParameterNamed("NRC");
+        String bureauID = command.stringValueOfParameterNamed("creditBureauID");
+        Integer creditBureauId = Integer.parseInt(bureauID);
 
-        String creditBureauID = command.stringValueOfParameterNamed("creditBureauID");
-        Integer Id = Integer.parseInt(creditBureauID);
-        CreditBureauConfiguration SubscriptionId = this.configDataRepository.getCreditBureauConfigData(Id, "SubscriptionId");
-        CreditBureauConfiguration SubscriptionKey = this.configDataRepository.getCreditBureauConfigData(Id, "SubscriptionKey");
-        CreditBureauConfiguration UserName = this.configDataRepository.getCreditBureauConfigData(Id, "Username");
-        CreditBureauConfiguration Password = this.configDataRepository.getCreditBureauConfigData(Id, "Password");
+        CreditBureauConfiguration subscriptionIdData = this.configDataRepository.getCreditBureauConfigData(creditBureauId,
+                "SubscriptionId");
+        CreditBureauConfiguration subscriptionKeyData = this.configDataRepository.getCreditBureauConfigData(creditBureauId,
+                "SubscriptionKey");
+        CreditBureauConfiguration userNameData = this.configDataRepository.getCreditBureauConfigData(creditBureauId, "Username");
+        CreditBureauConfiguration passwordData = this.configDataRepository.getCreditBureauConfigData(creditBureauId, "Password");
 
-        if (SubscriptionId != null || SubscriptionKey != null || UserName != null || Password != null) {
+        String subscriptionId = "";
+        String subscriptionKey = "";
+        String userName = "";
+        String password = "";
 
-            subscriptionId = SubscriptionId.getValue();
-            subscriptionKey = SubscriptionKey.getValue();
-            userName = UserName.getValue();
-            password = Password.getValue();
-
-        } else {
-
-            String configJson = "{ 'userName':'" + userName + "','password':'" + password + "','subscriptionId':'" + subscriptionId
-                    + "','subscriptionKey':'" + subscriptionKey + "'}";
-
-            this.fromApiJsonDeserializer.validateForUsingTokenConfig(configJson);
+        try {
+            subscriptionId = subscriptionIdData.getValue();
+            subscriptionKey = subscriptionKeyData.getValue();
+            userName = userNameData.getValue();
+            password = passwordData.getValue();
+        } catch (NullPointerException ex) {
+            throw new PlatformDataIntegrityException("Credit Bureau Configuration is not available",
+                    "Credit Bureau Configuration is not available" + ex);
         }
 
-        // if token is not available or previous token is expired then create a new token
-        token = createToken(userName, password, subscriptionId, subscriptionKey, Id);
+        String token = null;
+        if (!"".equals(subscriptionId) && !"".equals(subscriptionKey) && !"".equals(userName) && !"".equals(password)) {
+            token = createToken(userName, password, subscriptionId, subscriptionKey, creditBureauId);
+        } else {
+            throw new PlatformDataIntegrityException("Credit Bureau Configuration is not available",
+                    "Credit Bureau Configuration is not available");
+        }
 
         // will use only "NRC" part of code from common http method to get data based on nrc
-        process = "NRC";
-        CreditBureauConfiguration SearchURL = this.configDataRepository.getCreditBureauConfigData(Id, "searchurl");
+        String process = "NRC";
+        CreditBureauConfiguration SearchURL = this.configDataRepository.getCreditBureauConfigData(creditBureauId, "searchurl");
         String url = SearchURL.getValue();
-        result = this.httpConnectionMethod(process, nrcId, userName, password, subscriptionKey, subscriptionId, url, token, uniqueID, null);
+        String result = this.httpConnectionMethod(process, nrcId, userName, password, subscriptionKey, subscriptionId, url, token, 0L,
+                null);
 
         // after fetching the data from httpconnection it will be come back here for fetching UniqueID from data
         if (process.equals("NRC")) {
@@ -255,6 +267,7 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
 
             // to fetch the Unique ID from Result
             JsonObject jsonObject = JsonParser.parseString(result).getAsJsonObject();
+            Long uniqueID = 0L;
             try {
                 JsonArray jArray = jsonObject.getAsJsonArray("Data");
                 JsonObject jobject = jArray.get(0).getAsJsonObject();
@@ -268,7 +281,8 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
             }
 
             process = "CreditReport";
-            CreditBureauConfiguration creditReportURL = this.configDataRepository.getCreditBureauConfigData(Id, "creditreporturl");
+            CreditBureauConfiguration creditReportURL = this.configDataRepository.getCreditBureauConfigData(creditBureauId,
+                    "creditReporturl");
             url = creditReportURL.getValue();
             result = this.httpConnectionMethod(process, nrcId, userName, password, subscriptionKey, subscriptionId, url, token, uniqueID,
                     null);
@@ -304,9 +318,9 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
             borrowerInfo = gson.toJson(borrowerInfos);
         }
 
-        Name = borrowerInfos.get("Name").toString();
-        Gender = borrowerInfos.get("Gender").toString();
-        Address = borrowerInfos.get("Address").toString();
+        String Name = borrowerInfos.get("Name").toString();
+        String Gender = borrowerInfos.get("Gender").toString();
+        String Address = borrowerInfos.get("Address").toString();
 
         element = data.get("CreditScore");
         if (!(element instanceof JsonNull)) {
@@ -339,11 +353,6 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
     @Override
     public String createToken(String userName, String password, String subscriptionId, String subscriptionKey, Integer creditBureauId) {
 
-        String nrcId = null;
-        String token = null;
-        String result = null;
-        Long uniqueID = 0L;
-
         CreditBureauToken creditbureautoken = this.tokenRepository.getToken();
 
         // check the expiry date of the previous token.
@@ -357,6 +366,7 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
             }
         }
         // storing token if it is valid token(not expired)
+        String token = null;
         if (creditbureautoken != null) {
             token = creditbureautoken.getCurrentToken();
         }
@@ -366,15 +376,16 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
             String url = tokenURL.getValue();
 
             String process = "token";
-            result = this.httpConnectionMethod(process, nrcId, userName, password, subscriptionKey, subscriptionId, url, token, uniqueID,
-                    null);
+            String nrcId = null;
+            Long uniqueID = 0L;
+            String result = this.httpConnectionMethod(process, nrcId, userName, password, subscriptionKey, subscriptionId, url, token,
+                    uniqueID, null);
 
             // created token will be storing it into database
             final CommandWrapper wrapper = new CommandWrapperBuilder().withJson(result).build();
             final String json = wrapper.getJson();
 
             JsonCommand apicommand = null;
-            boolean isApprovedByChecker = false;
             final JsonElement parsedCommand = this.fromApiJsonHelper.parse(json);
 
             apicommand = JsonCommand.from(json, parsedCommand, this.fromApiJsonHelper, wrapper.getEntityName(), wrapper.getEntityId(),

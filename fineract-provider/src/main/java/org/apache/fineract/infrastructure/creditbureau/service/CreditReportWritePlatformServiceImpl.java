@@ -18,10 +18,13 @@
  */
 package org.apache.fineract.infrastructure.creditbureau.service;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.File;
-import java.util.NoSuchElementException;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.Optional;
 import javax.persistence.PersistenceException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
@@ -86,7 +89,6 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
 
     private static final Logger LOG = LoggerFactory.getLogger(CreditReportWritePlatformServiceImpl.class);
 
-    @SuppressWarnings({ "CatchAndPrintStackTrace", "DefaultCharset" })
     @Override
     @Transactional
     public CommandProcessingResult getCreditReport(JsonCommand command) {
@@ -94,19 +96,22 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
         try {
             this.context.authenticatedUser();
 
-            String creditBureauID = command.stringValueOfParameterNamed("creditBureauID");
+            Long creditBureauID = command.longValueOfParameterNamed("creditBureauID");
 
-            String creditBureauName = getCreditBureau(creditBureauID);
+            Optional<String> creditBureauName = getCreditBureau(creditBureauID);
 
-            CreditReportData reportobj = null;
-
-            if (creditBureauName.equals(CreditBureaNames.THITSAWORKS.toString())) {
-                reportobj = this.thitsaWorksCreditBureauIntegrationWritePlatformService.getCreditReportFromThitsaWorks(command);
-            } else {
-                this.handleCreditBureauNotmatchedIntegrityIssues();
+            if (creditBureauName.isEmpty()) {
+                throw new PlatformDataIntegrityException("Credit Bureau has not been Integrated", "Credit Bureau has not been Integrated");
             }
 
-            return new CommandProcessingResultBuilder().withCreditReport(reportobj).build();
+            if (Objects.equals(creditBureauName.get(), CreditBureaNames.THITSAWORKS.toString())) {
+                CreditReportData reportobj = this.thitsaWorksCreditBureauIntegrationWritePlatformService
+                        .getCreditReportFromThitsaWorks(command);
+                return new CommandProcessingResultBuilder().withCreditReport(reportobj).build();
+            }
+
+            throw new PlatformDataIntegrityException("Credit Bureau has not been Integrated", "Credit Bureau has not been Integrated");
+
         } catch (final DataIntegrityViolationException dve) {
             handleTokenDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
             return CommandProcessingResult.empty();
@@ -118,110 +123,108 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
 
     }
 
-    private String getCreditBureau(final String creditBureauID) {
+    private Optional<String> getCreditBureau(Long creditBureauID) {
 
-        String creditBureauName = null;
-        CreditBureau creditBureau = null;
         if (creditBureauID != null) {
+            Optional<CreditBureau> creditBureau = this.creditBureauRepository.findById(creditBureauID);
 
-            Long bureauID = Long.parseLong(creditBureauID);
-
-            try {
-                creditBureau = this.creditBureauRepository.findById(bureauID).get();
-            } catch (NoSuchElementException dve) {
-
-                handleCreditBureauNamesIntegrityIssues(dve);
-
-            } catch (NullPointerException e) {
-
-                handleCreditBureauNamesIntegrityIssues(e);
-
+            if (creditBureau.isEmpty()) {
+                LOG.info("Credit Bureau Id {} not found", creditBureauID);
+                return Optional.empty();
             }
 
-            creditBureauName = creditBureau.getName();
-            LOG.info("Credit Bureau Name from CBID {}", creditBureauName);
+            return Optional.of(creditBureau.get().getName());
+
         }
 
-        return creditBureauName;
+        return Optional.empty();
     }
 
     @Override
-    public String addCreditReport(File report, String bureauId) {
+    public String addCreditReport(File report, Long bureauId) {
 
-        String result = null;
+        Optional<String> creditBureauName = getCreditBureau(bureauId);
 
-        String creditBureauName = getCreditBureau(bureauId);
-        if (creditBureauName.equals(CreditBureaNames.THITSAWORKS.toString())) {
+        if (Objects.equals(creditBureauName.get(), CreditBureaNames.THITSAWORKS.toString())) {
 
-            String userName = "";
-            String password = "";
+            Integer creditBureauId = bureauId.intValue();
+
+            // make lower case
+            CreditBureauConfiguration subscriptionIdData = this.configDataRepository.getCreditBureauConfigData(creditBureauId,
+                    "SubscriptionId");
+            CreditBureauConfiguration subscriptionKeyData = this.configDataRepository.getCreditBureauConfigData(creditBureauId,
+                    "SubscriptionKey");
+            CreditBureauConfiguration userNameData = this.configDataRepository.getCreditBureauConfigData(creditBureauId, "Username");
+            CreditBureauConfiguration passwordData = this.configDataRepository.getCreditBureauConfigData(creditBureauId, "Password");
+
             String subscriptionId = "";
             String subscriptionKey = "";
+            String userName = "";
+            String password = "";
 
-            Integer Id = Integer.parseInt(bureauId);
-
-            CreditBureauConfiguration SubscriptionId = this.configDataRepository.getCreditBureauConfigData(Id, "SubscriptionId");
-            CreditBureauConfiguration SubscriptionKey = this.configDataRepository.getCreditBureauConfigData(Id, "SubscriptionKey");
-            CreditBureauConfiguration UserName = this.configDataRepository.getCreditBureauConfigData(Id, "Username");
-            CreditBureauConfiguration Password = this.configDataRepository.getCreditBureauConfigData(Id, "Password");
-
-            if (SubscriptionId != null || SubscriptionKey != null || UserName != null || Password != null) {
-
-                subscriptionId = SubscriptionId.getValue();
-                subscriptionKey = SubscriptionKey.getValue();
-                userName = UserName.getValue();
-                password = Password.getValue();
-
-            } else {
-
-                String configJson = "{ 'userName':'" + userName + "','password':'" + password + "','subscriptionId':'" + subscriptionId
-                        + "','subscriptionKey':'" + subscriptionKey + "'}";
-
-                this.fromApiJsonDeserializer.validateForUsingTokenConfig(configJson);
+            try {
+                subscriptionId = subscriptionIdData.getValue();
+                subscriptionKey = subscriptionKeyData.getValue();
+                userName = userNameData.getValue();
+                password = passwordData.getValue();
+            } catch (NullPointerException ex) {
+                throw new PlatformDataIntegrityException("Credit Bureau Configuration is not available",
+                        "Credit Bureau Configuration is not available" + ex);
             }
 
-            String token = this.thitsaWorksCreditBureauIntegrationWritePlatformService.createToken(userName, password, subscriptionId,
-                    subscriptionKey, Id);
+            LOG.info("subscriptionIdData {}", subscriptionIdData + "subscriptionId {}", subscriptionId);
 
-            CreditBureauConfiguration addReportURL = this.configDataRepository.getCreditBureauConfigData(Id, "AddCreditReport");
-            String url = addReportURL.getValue();
+            if (!"".equals(subscriptionId) && !"".equals(subscriptionKey) && !"".equals(userName) && !"".equals(password)) {
 
-            String process = "UploadCreditReport";
-            result = this.thitsaWorksCreditBureauIntegrationWritePlatformService.httpConnectionMethod(process, null, userName, password,
-                    subscriptionKey, subscriptionId, url, token, null, report);
+                String token = this.thitsaWorksCreditBureauIntegrationWritePlatformService.createToken(userName, password, subscriptionId,
+                        subscriptionKey, creditBureauId);
 
+                CreditBureauConfiguration addReportURL = this.configDataRepository.getCreditBureauConfigData(creditBureauId,
+                        "addCreditReporturl");
+                String url = addReportURL.getValue();
+
+                String process = "UploadCreditReport";
+                String result = this.thitsaWorksCreditBureauIntegrationWritePlatformService.httpConnectionMethod(process, null, userName,
+                        password, subscriptionKey, subscriptionId, url, token, null, report);
+
+                JsonObject reportObject = JsonParser.parseString(result).getAsJsonObject();
+                String responseMessage = reportObject.get("ResponseMessage").getAsString();
+
+                return responseMessage;
+            }
+
+            throw new PlatformDataIntegrityException("Credit Bureau Configuration is not available",
+                    "Credit Bureau Configuration is not available");
+
+        } else {
+
+            throw new PlatformDataIntegrityException("Credit Bureau has not been Integrated", "Credit Bureau has not been Integrated");
         }
-        JsonObject reportObject = JsonParser.parseString(result).getAsJsonObject();
-        String responseMessage = reportObject.get("ResponseMessage").getAsString();
 
-        return responseMessage;
     }
 
-    @SuppressWarnings({ "CatchAndPrintStackTrace", "DefaultCharset" })
+    // saving the fetched creditreport into local database
     @Override
+    @SuppressWarnings("DefaultCharset")
     @Transactional
-    public CommandProcessingResult saveCreditReport(Long organisationCreditBureauId, JsonCommand command) {
+    public CommandProcessingResult saveCreditReport(Long creditBureauId, JsonCommand command) {
 
         try {
             this.context.authenticatedUser();
 
-            // String creditBureauID = command.stringValueOfParameterNamed("creditBureauID");
-
-            // String creditBureauName = getCreditBureau(creditBureauID);
-
-            CreditReportData reportobj = null;
             String reportData = command.stringValueOfParameterNamed("apiRequestBodyAsJson");
 
             LOG.info("reportData {}", reportData);
 
-            // work on it
-            String nrc = command.stringValueOfParameterNamed("nrc");
+            // test it and assign that to specific thitsawork credit bureau
+            JsonObject jsonObject = JsonParser.parseString(reportData).getAsJsonObject();
+            JsonArray jArray = jsonObject.getAsJsonArray("Data");
+            JsonObject jobject = jArray.get(0).getAsJsonObject();
+            String nrc = jobject.get("NRC").toString();
 
-            byte[] creditReportArray = reportData.getBytes();
-            organisationCreditBureauId = 1L;
+            byte[] creditReportArray = reportData.getBytes(StandardCharsets.UTF_8);
 
-            LOG.info("creditReportArray : {}", creditReportArray);
-            final CreditReport creditReports = CreditReport.instance(organisationCreditBureauId, nrc, creditReportArray);
+            final CreditReport creditReports = CreditReport.instance(creditBureauId, nrc, creditReportArray);
             this.creditReportRepository.saveAndFlush(creditReports);
 
             return new CommandProcessingResultBuilder().withCreditReport(creditReports).build();
@@ -239,18 +242,6 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
 
         throw new PlatformDataIntegrityException("error.msg.cund.unknown.data.integrity.issue",
                 "Unknown data integrity issue with resource: " + realCause.getMessage());
-
-    }
-
-    private void handleCreditBureauNamesIntegrityIssues(final Exception dve) {
-
-        throw new PlatformDataIntegrityException("Credit Bureau not Found", "Credit Bureau not Found" + dve.getMessage());
-
-    }
-
-    private void handleCreditBureauNotmatchedIntegrityIssues() {
-
-        throw new PlatformDataIntegrityException("Credit Bureau has not been Integrated", "Credit Bureau has not been Integrated");
 
     }
 

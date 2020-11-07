@@ -21,7 +21,7 @@
 CREATE TABLE `m_creditbureau_token` (
   `id` INT(128) NOT NULL AUTO_INCREMENT,
   `username` varchar(128) DEFAULT NULL,
-  `token` mediumtext(256) DEFAULT NULL,
+  `token` MEDIUMTEXT DEFAULT NULL,
   `token_type` varchar(128) DEFAULT NULL,
   `expires_in` varchar(128) DEFAULT NULL,
   `issued` varchar(128) DEFAULT NULL,
@@ -31,6 +31,15 @@ CREATE TABLE `m_creditbureau_token` (
 COLLATE='utf8mb4_general_ci'
 ENGINE=InnoDB;
 
+CREATE TABLE `m_creditreport` (
+  `id` INT(128) NOT NULL AUTO_INCREMENT,
+  `creditBureauId` varchar(128) DEFAULT NULL,
+  `nrc` varchar(128) DEFAULT NULL,
+  `creditReport` BLOB DEFAULT NULL,
+   PRIMARY KEY (`id`)
+)
+COLLATE='utf8mb4_general_ci'
+ENGINE=InnoDB;
 
 
 ALTER TABLE m_creditbureau_configuration
@@ -39,6 +48,8 @@ DROP FOREIGN KEY cbConfigfk1;
 ALTER TABLE m_creditbureau_configuration
 ADD CONSTRAINT cbConfigfk1
 FOREIGN KEY (organisation_creditbureau_id) REFERENCES `m_creditbureau` (`id`);
+
+ALTER TABLE m_creditbureau_configuration MODIFY COLUMN value longtext;
 
 -- Integrated credit bureau added
 
@@ -60,11 +71,7 @@ INSERT INTO `m_creditbureau_configuration` (`id`, `configkey`, `value`, `organis
 INSERT INTO `m_creditbureau_configuration` (`id`, `configkey`, `value`, `organisation_creditbureau_id`, `description`) VALUES ('2', 'SubscriptionId', '', '1', '');
 INSERT INTO `m_creditbureau_configuration` (`id`, `configkey`, `value`, `organisation_creditbureau_id`, `description`) VALUES ('3', 'SubscriptionKey', '', '1', '');
 INSERT INTO `m_creditbureau_configuration` (`id`, `configkey`, `value`, `organisation_creditbureau_id`, `description`) VALUES ('4', 'Username', '', '1', '');
-INSERT INTO `m_creditbureau_configuration` (`id`, `configkey`, `value`, `organisation_creditbureau_id`, `description`) VALUES ('5', 'tokenurl', 'https://mmcix.azure-api.net/qa/20200324/Token', '1', '');
-INSERT INTO `m_creditbureau_configuration` (`id`, `configkey`, `value`, `organisation_creditbureau_id`, `description`) VALUES ('6', 'searchurl', 'https://mmcix.azure-api.net/qa/20200324/api/Search/SimpleSearch?nrc=', '1', '');
-INSERT INTO `m_creditbureau_configuration` (`id`, `configkey`, `value`, `organisation_creditbureau_id`, `description`) VALUES ('7', 'creditreporturl', 'https://mmcix.azure-api.net/qa/20200324/api/Dashboard/GetCreditReport?', '1', '');
-INSERT INTO `m_creditbureau_configuration` (`id`, `configkey`, `value`, `organisation_creditbureau_id`, `description`) VALUES ('8', 'AddCreditReport', 'https://mmcix.azure-api.net/qa/20200324/api/File/Upload', '1', '');
-
-
-
-
+INSERT INTO `m_creditbureau_configuration` (`id`, `configkey`, `value`, `organisation_creditbureau_id`, `description`) VALUES ('5', 'tokenurl', '', '1', '');
+INSERT INTO `m_creditbureau_configuration` (`id`, `configkey`, `value`, `organisation_creditbureau_id`, `description`) VALUES ('6', 'searchurl', '', '1', '');
+INSERT INTO `m_creditbureau_configuration` (`id`, `configkey`, `value`, `organisation_creditbureau_id`, `description`) VALUES ('7', 'creditReporturl', '', '1', '');
+INSERT INTO `m_creditbureau_configuration` (`id`, `configkey`, `value`, `organisation_creditbureau_id`, `description`) VALUES ('8', 'addCreditReporturl', '', '1', '');

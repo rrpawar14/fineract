@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name = "m_creditreport")
-public class CreditReport extends AbstractPersistableCustom {
+public final class CreditReport extends AbstractPersistableCustom {
 
     @Column(name = "creditBureauId")
     private Long creditBureauId;

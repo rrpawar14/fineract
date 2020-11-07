@@ -40,6 +40,6 @@ public class SaveCreditReportCommandHandler implements NewCommandSourceHandler {
     @Override
     public CommandProcessingResult processCommand(JsonCommand command) {
 
-        return this.writePlatformService.saveCreditReport(command.getOrganisationCreditBureauId(), command);
+        return this.writePlatformService.saveCreditReport(command.entityId(), command);
     }
 }

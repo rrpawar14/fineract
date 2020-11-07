@@ -46,7 +46,7 @@ CREATE TABLE `m_organisation_creditbureau` (
 CREATE TABLE `m_creditbureau_configuration` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `configkey` varchar(50) DEFAULT NULL,
-  `value` varchar(50) DEFAULT NULL,
+  `value` MEDIUMTEXT DEFAULT NULL,
   `organisation_creditbureau_id` BIGINT DEFAULT NULL,
   `description` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),

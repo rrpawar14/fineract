@@ -26,7 +26,7 @@ public interface CreditReportWritePlatformService {
 
     CommandProcessingResult getCreditReport(JsonCommand command);
 
-    String addCreditReport(File creditreport, String creditBureauId);
+    String addCreditReport(File creditreport, Long creditBureauId);
 
     CommandProcessingResult saveCreditReport(Long organisationCreditBureauId, JsonCommand command);
 
