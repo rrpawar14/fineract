@@ -174,6 +174,7 @@ public class BulkImportWorkbookPopulatorServiceImpl implements BulkImportWorkboo
 
     @Override
     public Response getTemplate(String entityType, Long officeId, Long staffId, final String dateFormat) {
+        LOG.info("entityType: {} officeId: {} staffId: {} dateFormat:{}", entityType, officeId, staffId, dateFormat);
         WorkbookPopulator populator = null;
         final Workbook workbook = new HSSFWorkbook();
         if (entityType != null) {

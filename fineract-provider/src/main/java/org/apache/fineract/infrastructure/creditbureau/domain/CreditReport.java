@@ -18,8 +18,10 @@
  */
 package org.apache.fineract.infrastructure.creditbureau.domain;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.slf4j.Logger;
@@ -35,22 +37,27 @@ public final class CreditReport extends AbstractPersistableCustom {
     @Column(name = "nrc")
     private String nrc;
 
-    @Column(name = "creditReport")
-    private byte[] creditReport;
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "creditReports")
+    private byte[] creditReports;
 
     private static final Logger LOG = LoggerFactory.getLogger(CreditReport.class);
 
-    public static CreditReport instance(final Long creditBureauId, final String nrc, final byte[] creditReport) {
-        LOG.info("blob instance {}", creditReport);
-        return new CreditReport(creditBureauId, nrc, creditReport);
+    public static CreditReport instance(final Long creditBureauId, final String nrc, final byte[] creditReports) {
+        LOG.info("blob instance {}", creditReports);
+        return new CreditReport(creditBureauId, nrc, creditReports);
     }
 
-    private CreditReport(final Long creditBureauId, final String nrc, final byte[] creditReport) {
-        LOG.info("blob constructor {}", creditReport);
+    private CreditReport(final Long creditBureauId, final String nrc, final byte[] creditReports) {
+        LOG.info("blob constructor {}", creditReports);
         this.creditBureauId = creditBureauId;
         this.nrc = nrc;
-        this.creditReport = creditReport;
+        this.creditReports = creditReports;
 
+    }
+
+    public byte[] getCreditReport() {
+        return this.creditReports;
     }
 
 }

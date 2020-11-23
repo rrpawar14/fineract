@@ -19,15 +19,25 @@
 package org.apache.fineract.infrastructure.creditbureau.service;
 
 import java.io.File;
+import javax.ws.rs.core.Response;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
 public interface CreditReportWritePlatformService {
 
+    // gets CreditReport from CreditBureau
     CommandProcessingResult getCreditReport(JsonCommand command);
 
+    // upload CreditReport to CreditBureau
     String addCreditReport(File creditreport, Long creditBureauId);
 
-    CommandProcessingResult saveCreditReport(Long organisationCreditBureauId, JsonCommand command);
+    // saves fetched-CreditReport to database
+    CommandProcessingResult saveCreditReport(Long organisationCreditBureauId, String creditReportNumber, JsonCommand command);
+
+    // downloads saved-creditReport from database
+    Response downloadCreditReport(Long creditBureauId, String creditReportNumber);
+
+    // deletes creditReports which are saved in database
+    CommandProcessingResult deleteCreditReport(Long creditBureauId, JsonCommand command);
 
 }

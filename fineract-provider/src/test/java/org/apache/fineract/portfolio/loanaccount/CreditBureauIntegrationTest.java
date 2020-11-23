@@ -16,32 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.integrationtests.common;
+package org.apache.fineract.portfolio.loanaccount;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-import io.restassured.specification.RequestSpecification;
-import io.restassured.specification.ResponseSpecification;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.io.File;
-import org.apache.fineract.infrastructure.creditbureau.service.ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl;
-import org.mockito.Mockito;
+import org.apache.fineract.infrastructure.creditbureau.service.ThitsaWorksCreditBureauIntegrationWritePlatformService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CreditBureauHelper {
+@ExtendWith(MockitoExtension.class)
+public class CreditBureauIntegrationTest {
 
-    private final RequestSpecification requestSpec;
-    private final ResponseSpecification responseSpec;
+    @Mock
+    private ThitsaWorksCreditBureauIntegrationWritePlatformService thitsaWorksCreditBureauIntegrationWritePlatformService;
 
-    public CreditBureauHelper(final RequestSpecification requestSpec, final ResponseSpecification responseSpec) {
-        this.requestSpec = requestSpec;
-        this.responseSpec = responseSpec;
-    }
-
-    private static final Logger LOG = LoggerFactory.getLogger(CreditBureauHelper.class);
-
-    private static final ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl creditBureauWritePlatformServiceImpl = Mockito
-            .mock(ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreditBureauIntegrationTest.class);
 
     static String process = "process";
     static String nrcID = "13/MiFoS(N)163525";
@@ -54,6 +51,7 @@ public class CreditBureauHelper {
     static String url = "url";
     static String token = "token";
     static Long uniqueID = 1L;
+
     static File file;
 
     static String testresult = "{   'Data': {'BorrowerInfo': {'MainIdentifier': '2113439293', 'Name': 'Aung Khant Min',"
@@ -75,14 +73,31 @@ public class CreditBureauHelper {
             + "    'URI': 'https://qa-mmcix-api.azurewebsites.net/20200324/api/Dashboard/GetCreditReport?uniqueId=2113439292',"
             + "    'ResponseMessage': 'Record found'}";
 
-    public static String getCreditReport() {
+    @Test
+    public void getCreditreport() {
 
-        when(creditBureauWritePlatformServiceImpl.httpConnectionMethod(process, nrcID, userName, password, subscriptionKey, subscriptionId,
-                url, token, uniqueID, file)).thenReturn(testresult);
+        String curentNrc = "13/MiFoS(N)163525";
 
-        String test = creditBureauWritePlatformServiceImpl.httpConnectionMethod(process, nrcID, userName, password, subscriptionKey,
-                subscriptionId, url, token, uniqueID, file);
-        return test;
+        when(this.thitsaWorksCreditBureauIntegrationWritePlatformService.okHttpConnectionMethod(userName, password, subscriptionKey,
+                subscriptionId, url, token, file, uniqueID, nrcID, process)).thenReturn(testresult);
+
+        String creditReport = thitsaWorksCreditBureauIntegrationWritePlatformService.okHttpConnectionMethod(userName, password,
+                subscriptionKey, subscriptionId, url, token, file, uniqueID, nrcID, process);
+
+        LOG.info("creditReport : {} ", creditReport);
+
+        JsonObject resultObject = JsonParser.parseString(creditReport).getAsJsonObject();
+        String data = resultObject.get("Data").toString();
+
+        JsonObject dataObject = JsonParser.parseString(data).getAsJsonObject();
+        String borrowerInfo = dataObject.get("BorrowerInfo").toString();
+
+        JsonObject borrowerObject = JsonParser.parseString(borrowerInfo).getAsJsonObject();
+        String nrc = borrowerObject.get("NRC").toString();
+
+        nrc = nrc.substring(1, nrc.length() - 1);
+        LOG.info("nrc : {} ", nrc);
+        assertEquals(nrc, curentNrc);
 
     }
 

@@ -18,21 +18,8 @@
  */
 package org.apache.fineract.infrastructure.creditbureau.data;
 
-public final class CreditBureauToken {
+public enum CreditBureauConfigurations {
 
-    // private final String userName;
-
-    private final String tokens;
-
-    private CreditBureauToken(final String tokens) {
-        // this.userName = userName;
-        this.tokens = tokens;
-
-    }
-
-    public static CreditBureauToken instance(final String tokens) {
-
-        return new CreditBureauToken(tokens);
-    }
+    THITSAWORKS, subscriptionId, subscriptionKey, userName, password;
 
 }

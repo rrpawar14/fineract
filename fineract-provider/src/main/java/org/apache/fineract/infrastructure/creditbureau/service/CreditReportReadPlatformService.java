@@ -16,26 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.infrastructure.creditbureau.data;
+package org.apache.fineract.infrastructure.creditbureau.service;
 
-import java.io.Serializable;
+import java.util.Collection;
+import org.apache.fineract.infrastructure.creditbureau.data.CreditReportData;
 
-public final class CreditReportData implements Serializable {
+public interface CreditReportReadPlatformService {
 
-    private final Long id;
-    @SuppressWarnings("unused")
-    private final Long creditBureauId;
-    @SuppressWarnings("unused")
-    private final String nrc;
+    Collection<CreditReportData> retrieveCreditReport(Long creditBureauId);
 
-    public static CreditReportData instance(final Long id, final Long creditBureauId, final String nrc) {
-        return new CreditReportData(id, creditBureauId, nrc);
-    }
-
-    private CreditReportData(final Long id, final Long creditBureauId, final String nrc) {
-        this.id = id;
-        this.creditBureauId = creditBureauId;
-        this.nrc = nrc;
-
-    }
 }

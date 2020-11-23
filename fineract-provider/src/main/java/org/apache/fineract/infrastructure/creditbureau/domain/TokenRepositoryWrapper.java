@@ -40,6 +40,7 @@ public class TokenRepositoryWrapper {
     }
 
     public void save(final CreditBureauToken token) {
+        LOG.info("save token");
         this.repository.save(token);
     }
 
@@ -48,6 +49,7 @@ public class TokenRepositoryWrapper {
     }
 
     public CreditBureauToken getToken() {
+        LOG.info("retreiving token");
         return this.repository.getToken();
     }
 

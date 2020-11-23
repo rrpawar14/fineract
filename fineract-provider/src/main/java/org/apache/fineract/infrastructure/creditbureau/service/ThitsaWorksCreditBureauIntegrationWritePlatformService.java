@@ -20,15 +20,18 @@ package org.apache.fineract.infrastructure.creditbureau.service;
 
 import java.io.File;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.creditbureau.data.CreditReportData;
+import org.apache.fineract.infrastructure.creditbureau.data.CreditBureauReportData;
+import org.apache.fineract.infrastructure.creditbureau.domain.CreditBureauToken;
 
 public interface ThitsaWorksCreditBureauIntegrationWritePlatformService {
 
-    String createToken(String userName, String password, String subscriptionId, String subscriptionKey, Integer creditBureauId);
+    CreditBureauToken createToken(Long creditBureauID);
 
-    String httpConnectionMethod(String process, String nrcID, String userName, String password, String subscriptionKey,
-            String subscriptionId, String url, String token, Long uniqueID, File report);
+    String okHttpConnectionMethod(String userName, String password, String subscriptionKey, String subscriptionId, String url, String token,
+            File report, Long uniqueId, String nrcId, String process);
 
-    CreditReportData getCreditReportFromThitsaWorks(JsonCommand command);
+    CreditBureauReportData getCreditReportFromThitsaWorks(JsonCommand command);
+
+    String addCreditReport(File report, Long bureauId);
 
 }

@@ -1,5 +1,3 @@
-package org.apache.fineract.infrastructure.creditbureau.domain;
-
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -19,6 +17,8 @@ package org.apache.fineract.infrastructure.creditbureau.domain;
  * under the License.
  */
 
+package org.apache.fineract.infrastructure.creditbureau.domain;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,9 +30,7 @@ import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-@Component
 @Entity
 @Table(name = "m_creditbureau_token")
 public class CreditBureauToken extends AbstractPersistableCustom {
@@ -45,35 +43,17 @@ public class CreditBureauToken extends AbstractPersistableCustom {
     @Column(name = "token")
     private String accessToken;
 
-    @Column(name = "token_type")
+    @Column(name = "tokenType")
     private String tokenType;
 
-    @Column(name = "expires_in")
+    @Column(name = "expiresIn")
     private String expiresIn;
 
     @Column(name = "issued")
     private String issued;
 
-    @Column(name = "expires")
+    @Column(name = "expiryDate")
     private Date expires;
-
-    public CreditBureauToken(String userName, String accessToken, String tokenType, String expiresIn, String issued, Date expires) {
-        this.userName = userName;
-        this.accessToken = accessToken;
-        this.tokenType = tokenType;
-        this.expiresIn = expiresIn;
-        this.issued = issued;
-        this.expires = expires;
-    }
-
-    public CreditBureauToken() {
-        this.userName = null;
-        this.accessToken = null;
-        this.tokenType = null;
-        this.expiresIn = null;
-        this.issued = null;
-        this.expires = null;
-    }
 
     public static CreditBureauToken fromJson(final JsonCommand command) {
         final String userName = command.stringValueOfParameterNamed("userName");
@@ -93,6 +73,28 @@ public class CreditBureauToken extends AbstractPersistableCustom {
         }
 
         return new CreditBureauToken(userName, accessToken, tokenType, expiresIn, issued, expires);
+    }
+
+    public CreditBureauToken(String userName, String accessToken, String tokenType, String expiresIn, String issued, Date expires) {
+        this.userName = userName;
+        this.accessToken = accessToken;
+        this.tokenType = tokenType;
+        this.expiresIn = expiresIn;
+        this.issued = issued;
+        this.expires = expires;
+        LOG.error("userName: {} accessToken: {} tokenType: {} expireIn: {} issued: {} expiry: {}", userName, accessToken, tokenType,
+                expiresIn, issued, expires);
+    }
+
+    public CreditBureauToken() {
+        this.userName = null;
+        this.accessToken = null;
+        this.tokenType = null;
+        this.expiresIn = null;
+        this.issued = null;
+        this.expires = null;
+        LOG.error("userName: {} accessToken: {} tokenType: {} expireIn: {} issued: {} expiry: {}", userName, accessToken, tokenType,
+                expiresIn, issued, expires);
     }
 
     public String getUserName() {

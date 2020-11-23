@@ -30,4 +30,10 @@ public interface CreditBureauConfigurationRepository
     CreditBureauConfiguration getCreditBureauConfigData(@Param("creditBureauID") Integer creditBureauID,
             @Param("configurationKey") String parameterName);
 
+    @Query("SELECT creditBureauConfig from CreditBureauConfiguration creditBureauConfig where creditBureauConfig.organisationCreditbureau.id = :creditBureauID")
+    CreditBureauConfiguration getCreditBureauConfigurationData(@Param("creditBureauID") Integer creditBureauID);
+
+    @Query("SELECT creditBureauConfig from CreditBureauConfiguration creditBureauConfig where creditBureauConfig.configurationKey = :configurationKey")
+    CreditBureauConfiguration getCreditBureauConfigurationValueData(@Param("configurationKey") String parameterName);
+
 }

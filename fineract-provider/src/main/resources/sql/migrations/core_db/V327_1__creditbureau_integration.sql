@@ -25,7 +25,7 @@ CREATE TABLE `m_creditbureau_token` (
   `token_type` varchar(128) DEFAULT NULL,
   `expires_in` varchar(128) DEFAULT NULL,
   `issued` varchar(128) DEFAULT NULL,
-  `expires` varchar(128) DEFAULT NULL,
+  `expires` DATE DEFAULT NULL,
    PRIMARY KEY (`id`)
 )
 COLLATE='utf8mb4_general_ci'
@@ -33,9 +33,9 @@ ENGINE=InnoDB;
 
 CREATE TABLE `m_creditreport` (
   `id` INT(128) NOT NULL AUTO_INCREMENT,
-  `creditBureauId` varchar(128) DEFAULT NULL,
+  `creditBureauId` INT(128) DEFAULT NULL,
   `nrc` varchar(128) DEFAULT NULL,
-  `creditReport` BLOB DEFAULT NULL,
+  `creditReports` BLOB DEFAULT NULL,
    PRIMARY KEY (`id`)
 )
 COLLATE='utf8mb4_general_ci'
@@ -64,6 +64,7 @@ INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `c
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('configuration', 'CREATE_CREDITBUREAU_CONFIGURATION', 'CREDITBUREAU_CONFIGURATION', 'CREATE', 0);
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('configuration', 'UPDATE_CREDITBUREAU_CONFIGURATION', 'CREDITBUREAU_CONFIGURATION', 'UPDATE', 0);
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('configuration', 'SAVE_CREDITREPORT', 'CREDITREPORT', 'SAVE', 0);
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('configuration', 'DELETE_CREDITREPORT', 'CREDITREPORT', 'DELETE', 0);
 
 -- configkeys added
 

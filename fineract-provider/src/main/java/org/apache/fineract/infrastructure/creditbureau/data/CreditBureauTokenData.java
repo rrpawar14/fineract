@@ -18,7 +18,21 @@
  */
 package org.apache.fineract.infrastructure.creditbureau.data;
 
-public enum CreditBureaNames {
+public final class CreditBureauTokenData {
 
-    THITSAWORKS;
+    // private final String userName;
+
+    private final String tokens;
+
+    private CreditBureauTokenData(final String tokens) {
+        // this.userName = userName;
+        this.tokens = tokens;
+
+    }
+
+    public static CreditBureauTokenData instance(final String tokens) {
+
+        return new CreditBureauTokenData(tokens);
+    }
+
 }

@@ -19,7 +19,8 @@
 package org.apache.fineract.infrastructure.core.data;
 
 import java.util.Map;
-import org.apache.fineract.infrastructure.creditbureau.data.CreditReportData;
+import org.apache.fineract.infrastructure.creditbureau.data.CreditBureauReportData;
+import org.apache.fineract.infrastructure.creditbureau.domain.CreditBureauToken;
 import org.apache.fineract.infrastructure.creditbureau.domain.CreditReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,16 +43,17 @@ public class CommandProcessingResultBuilder {
     private Long glimId;
     private String transactionId;
     private Map<String, Object> changes;
-    private CreditReportData creditReportData;
+    private CreditBureauReportData creditBureauReportData;
     private CreditReport saveCreditReport;
+    private CreditBureauToken creditBureauToken;
     private Long productId;
     private boolean rollbackTransaction = false;
     private static final Logger LOG = LoggerFactory.getLogger(CommandProcessingResultBuilder.class);
 
     public CommandProcessingResult build() {
         return CommandProcessingResult.fromDetails(this.commandId, this.officeId, this.groupId, this.clientId, this.loanId, this.savingsId,
-                this.resourceIdentifier, this.entityId, this.gsimId, this.glimId, this.creditReportData, this.transactionId, this.changes,
-                this.productId, this.rollbackTransaction, this.subEntityId);
+                this.resourceIdentifier, this.entityId, this.gsimId, this.glimId, this.creditBureauReportData, this.transactionId,
+                this.changes, this.productId, this.rollbackTransaction, this.subEntityId);
     }
 
     public CommandProcessingResultBuilder withCommandId(final Long withCommandId) {
@@ -124,8 +126,8 @@ public class CommandProcessingResultBuilder {
         return this;
     }
 
-    public CommandProcessingResultBuilder withCreditReport(final CreditReportData withCreditReport) {
-        this.creditReportData = withCreditReport;
+    public CommandProcessingResultBuilder withCreditReport(final CreditBureauReportData withCreditReport) {
+        this.creditBureauReportData = withCreditReport;
         LOG.info("withCreditReport :{}", withCreditReport);
         return this;
     }
@@ -133,6 +135,12 @@ public class CommandProcessingResultBuilder {
     public CommandProcessingResultBuilder withCreditReport(final CreditReport saveCreditReport) {
         this.saveCreditReport = saveCreditReport;
         LOG.info("saveCreditReport :{}", saveCreditReport);
+        return this;
+    }
+
+    public CommandProcessingResultBuilder withCreditBureauToken(final CreditBureauToken creditBureauToken) {
+        this.creditBureauToken = creditBureauToken;
+        LOG.info("creditBureauToken command :{}", creditBureauToken);
         return this;
     }
 

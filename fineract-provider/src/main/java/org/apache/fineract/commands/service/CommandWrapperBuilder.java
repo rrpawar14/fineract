@@ -100,8 +100,17 @@ public class CommandWrapperBuilder {
         return this;
     }
 
-    public CommandWrapperBuilder saveCreditReport(final long creditBureauId) {
+    public CommandWrapperBuilder saveCreditReport(final long creditBureauId, final String creditReportNumber) {
         this.actionName = "SAVE";
+        this.entityName = "CREDITREPORT";
+        this.entityId = creditBureauId;
+        this.transactionId = creditReportNumber;
+        this.href = "/saveCreditReport/";
+        return this;
+    }
+
+    public CommandWrapperBuilder deleteCreditReport(final Long creditBureauId) {
+        this.actionName = "DELETE";
         this.entityName = "CREDITREPORT";
         this.entityId = creditBureauId;
         this.href = "/saveCreditReport/";
