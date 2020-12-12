@@ -22,10 +22,10 @@ CREATE TABLE `m_creditbureau_token` (
   `id` INT(128) NOT NULL AUTO_INCREMENT,
   `username` varchar(128) DEFAULT NULL,
   `token` MEDIUMTEXT DEFAULT NULL,
-  `token_type` varchar(128) DEFAULT NULL,
-  `expires_in` varchar(128) DEFAULT NULL,
+  `tokenType` varchar(128) DEFAULT NULL,
+  `expiresIn` varchar(128) DEFAULT NULL,
   `issued` varchar(128) DEFAULT NULL,
-  `expires` DATE DEFAULT NULL,
+  `expiryDate` DATE DEFAULT NULL,
    PRIMARY KEY (`id`)
 )
 COLLATE='utf8mb4_general_ci'
@@ -50,6 +50,9 @@ ADD CONSTRAINT cbConfigfk1
 FOREIGN KEY (organisation_creditbureau_id) REFERENCES `m_creditbureau` (`id`);
 
 ALTER TABLE m_creditbureau_configuration MODIFY COLUMN value longtext;
+
+ALTER TABLE m_organisation_creditbureau CHANGE is_active isActive TINYINT(4) NOT NULL;
+ALTER TABLE m_creditbureau_loanproduct_mapping CHANGE is_active isActive TINYINT(4) NULL;
 
 -- Integrated credit bureau added
 

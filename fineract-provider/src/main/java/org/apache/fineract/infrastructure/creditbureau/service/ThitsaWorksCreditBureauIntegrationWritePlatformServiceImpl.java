@@ -39,6 +39,9 @@ import okhttp3.Response;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.data.ApiParameterError;
+import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
+import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.creditbureau.data.CreditBureauConfigurations;
@@ -67,6 +70,9 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
     private final TokenRepositoryWrapper tokenRepositoryWrapper;
     private final CreditBureauConfigurationRepositoryWrapper configDataRepository;
     private final CreditBureauTokenCommandFromApiJsonDeserializer fromApiJsonDeserializer;
+    private final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+    private final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+            .resource("ThitsaWorksCreditBureauIntegration");
 
     @Autowired
     public ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl(final PlatformSecurityContext context,
@@ -486,12 +492,16 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
 
             creditBureauConfigurationValue = configurationParameterValue.getValue();
             if (creditBureauConfigurationValue.isEmpty()) {
-                throw new PlatformDataIntegrityException("Credit Bureau Configuration is not available",
-                        "Credit Bureau Configuration is not available");
+                baseDataValidator.reset().failWithCode("creditBureau.configuration.is.not.available");
+                throw new PlatformApiDataValidationException("creditBureau.Configuration.is.not.available",
+                        "creditBureau.Configuration.is.not.available", dataValidationErrors);
+
             }
         } catch (NullPointerException ex) {
-            throw new PlatformDataIntegrityException("Credit Bureau Configuration is not available",
-                    "Credit Bureau Configuration is not available" + ex);
+            baseDataValidator.reset().failWithCode("creditBureau.configuration.is.not.available");
+            throw new PlatformApiDataValidationException("creditBureau.Configuration.is.not.available",
+                    "creditBureau.Configuration.is.not.available", dataValidationErrors);
+
         }
 
         return creditBureauConfigurationValue;

@@ -140,8 +140,7 @@ public class CreditBureauIntegrationAPI {
 
     }
 
-    // fetch saved creditReports(NRC) from database by creditBureauId, to select for downloading and deleting the
-    // reports
+    // fetch saved creditReports(NRC) from DB by creditBureauId, to select for downloading and deleting the reports
     @GET
     @Path("creditReport/{creditBureauId}")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -161,8 +160,7 @@ public class CreditBureauIntegrationAPI {
     // download saved creditReports from database
     @GET
     @Path("downloadCreditReport")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces("application/vnd.ms-excel")
     public Response downloadCreditReport(@QueryParam("creditBureauId") @Parameter(description = "creditBureauId") final Long creditBureauId,
             @QueryParam("creditReportNumber") @Parameter(description = "creditReportNumber") final String creditReportNumber) {
         return creditReportWritePlatformService.downloadCreditReport(creditBureauId, creditReportNumber);

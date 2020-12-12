@@ -21,6 +21,8 @@ package org.apache.fineract.infrastructure.creditbureau.service;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.persistence.PersistenceException;
@@ -28,8 +30,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
+import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
+import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
@@ -63,6 +68,9 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
     private final CreditReportRepository creditReportRepository;
     private final ThitsaWorksCreditBureauIntegrationWritePlatformService thitsaWorksCreditBureauIntegrationWritePlatformService;
     private final ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl;
+    private final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+    private final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+            .resource("creditBureauIntegration");
 
     @Autowired
     public CreditReportWritePlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource,
@@ -97,7 +105,9 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
             LOG.info("creditBureauName: {}", creditBureauName);
 
             if (creditBureauName.isEmpty()) {
-                throw new PlatformDataIntegrityException("Credit Bureau has not been Integrated", "Credit Bureau has not been Integrated");
+                baseDataValidator.reset().failWithCode("creditBureau.has.not.been.Integrated");
+                throw new PlatformApiDataValidationException("creditBureau.has.not.been.Integrated", "creditBureau.has.not.been.Integrated",
+                        dataValidationErrors);
             }
 
             if (Objects.equals(creditBureauName.get(), CreditBureauConfigurations.THITSAWORKS.toString())) {
@@ -111,7 +121,9 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
                 return new CommandProcessingResultBuilder().withCreditReport(reportobj).withCreditBureauToken(creditBureauToken).build();
             }
 
-            throw new PlatformDataIntegrityException("Credit Bureau has not been Integrated", "Credit Bureau has not been Integrated");
+            baseDataValidator.reset().failWithCode("creditBureau.has.not.been.Integrated");
+            throw new PlatformApiDataValidationException("creditBureau.has.not.been.Integrated", "creditBureau.has.not.been.Integrated",
+                    dataValidationErrors);
 
         } catch (final DataIntegrityViolationException dve) {
             handleTokenDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
@@ -152,7 +164,10 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
             responseMessage = this.thitsaWorksCreditBureauIntegrationWritePlatformService.addCreditReport(report, bureauId);
         } else {
 
-            throw new PlatformDataIntegrityException("Credit Bureau has not been Integrated", "Credit Bureau has not been Integrated");
+            baseDataValidator.reset().failWithCode("creditBureau.has.not.been.Integrated");
+            throw new PlatformApiDataValidationException("creditBureau.has.not.been.Integrated", "creditBureau.has.not.been.Integrated",
+                    dataValidationErrors);
+
         }
 
         return responseMessage;
@@ -220,7 +235,7 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
             LOG.info("creditreport {}", creditReport);
         }
 
-        String filename = creditReportNumber + DateUtils.getLocalDateOfTenant().toString() + ".xls";
+        final String filename = creditReportNumber + DateUtils.getLocalDateOfTenant().toString() + ".xls";
         LOG.info("filename {}", filename);
         ByteArrayOutputStream baos = new ByteArrayOutputStream(creditReportByte.length);
 
