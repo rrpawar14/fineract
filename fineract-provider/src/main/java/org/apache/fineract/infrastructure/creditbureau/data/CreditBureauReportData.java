@@ -48,7 +48,7 @@ public final class CreditBureauReportData implements Serializable {
         return new CreditBureauReportData(name, gender, address, creditScore, borrowerInfo, activeLoans, paidLoans);
     }
 
-    private CreditBureauReportData(final String name, final String gender, final String address, final String creditScore,
+    public CreditBureauReportData(final String name, final String gender, final String address, final String creditScore,
             final String borrowerInfo, final String activeLoans, final String paidLoans) {
         this.name = name;
         this.gender = gender;

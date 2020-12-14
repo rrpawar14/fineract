@@ -25,6 +25,6 @@ public interface CreditBureauConfigurationWritePlatformService {
 
     CommandProcessingResult addCreditBureauConfiguration(Long creditBureauId, JsonCommand command);
 
-    CommandProcessingResult updateCreditBureauConfiguration(Long creditBureauId, JsonCommand command);
+    CommandProcessingResult updateCreditBureauConfiguration(Long configurationId, JsonCommand command);
 
 }

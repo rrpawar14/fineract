@@ -131,16 +131,14 @@ public class CommandWrapperBuilder {
         this.entityName = "CREDITBUREAU_CONFIGURATION";
         this.entityId = creditBureauId;
         this.href = "/creditBureauConfigurationData/";
-        this.creditBureauId = creditBureauId;
         return this;
     }
 
-    public CommandWrapperBuilder updateCreditBureauConfiguration(final long creditBureauId) {
+    public CommandWrapperBuilder updateCreditBureauConfiguration(final long configurationId) {
         this.actionName = "UPDATE";
         this.entityName = "CREDITBUREAU_CONFIGURATION";
-        this.entityId = creditBureauId;
+        this.entityId = configurationId;
         this.href = "/creditBureauConfigurationData/";
-        this.creditBureauId = creditBureauId;
         return this;
     }
 

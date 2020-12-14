@@ -42,7 +42,7 @@ public class AddCreditBureauConfigurationDataCommandHandler implements NewComman
     @Transactional
     @Override
     public CommandProcessingResult processCommand(final JsonCommand command) {
-        return this.writePlatformService.addCreditBureauConfiguration(command.getCreditBureauId(), command);
+        return this.writePlatformService.addCreditBureauConfiguration(command.entityId(), command);
     }
 
 }

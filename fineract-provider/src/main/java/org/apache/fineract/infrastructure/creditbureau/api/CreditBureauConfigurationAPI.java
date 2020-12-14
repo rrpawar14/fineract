@@ -246,13 +246,13 @@ public class CreditBureauConfigurationAPI {
     }
 
     @POST
-    @Path("/configuration/{CreditBureauId}")
+    @Path("/configuration/{creditBureauId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String createCreditBureauConfiguration(@PathParam("CreditBureauId") final Long CreditBureauId,
+    public String createCreditBureauConfiguration(@PathParam("creditBureauId") final Long creditBureauId,
             final String apiRequestBodyAsJson) {
 
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().addCreditBureauConfiguration(CreditBureauId)
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().addCreditBureauConfiguration(creditBureauId)
                 .withJson(apiRequestBodyAsJson).build();
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
@@ -261,13 +261,13 @@ public class CreditBureauConfigurationAPI {
     }
 
     @PUT
-    @Path("/configuration/{CreditBureauId}")
+    @Path("/configuration/{configurationId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String updateCreditBureauConfiguration(@PathParam("CreditBureauId") final Long CreditBureauId,
+    public String updateCreditBureauConfiguration(@PathParam("configurationId") final Long configurationId,
             final String apiRequestBodyAsJson) {
 
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateCreditBureauConfiguration(CreditBureauId)
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateCreditBureauConfiguration(configurationId)
                 .withJson(apiRequestBodyAsJson).build();
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);

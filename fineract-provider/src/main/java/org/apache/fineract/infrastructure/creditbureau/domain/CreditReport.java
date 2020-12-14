@@ -43,6 +43,8 @@ public final class CreditReport extends AbstractPersistableCustom {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreditReport.class);
 
+    // private CreditReport() {}
+
     public static CreditReport instance(final Long creditBureauId, final String nrc, final byte[] creditReports) {
         LOG.info("blob instance {}", creditReports);
         return new CreditReport(creditBureauId, nrc, creditReports);

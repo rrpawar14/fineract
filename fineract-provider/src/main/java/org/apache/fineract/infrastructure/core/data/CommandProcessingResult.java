@@ -200,6 +200,10 @@ public class CommandProcessingResult implements Serializable {
         return this.transactionId;
     }
 
+    public CreditBureauReportData getCreditReport() {
+        return this.creditBureauReportData;
+    }
+
     public Map<String, Object> getChanges() {
         Map<String, Object> checkIfEmpty = null;
         if (this.changes != null && !this.changes.isEmpty()) {

@@ -51,8 +51,6 @@ import org.apache.fineract.infrastructure.creditbureau.domain.CreditReportReposi
 import org.apache.fineract.infrastructure.creditbureau.domain.TokenRepositoryWrapper;
 import org.apache.fineract.infrastructure.creditbureau.serialization.CreditBureauTokenCommandFromApiJsonDeserializer;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -89,20 +87,14 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
         this.thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl = thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl;
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreditReportWritePlatformServiceImpl.class);
-
     @Override
     @Transactional
     public CommandProcessingResult getCreditReport(JsonCommand command) {
 
         try {
-            this.context.authenticatedUser();
-
             Long creditBureauID = command.longValueOfParameterNamed("creditBureauID");
-            LOG.info("Credit Bureau Id: {}", creditBureauID);
 
             Optional<String> creditBureauName = getCreditBureau(creditBureauID);
-            LOG.info("creditBureauName: {}", creditBureauName);
 
             if (creditBureauName.isEmpty()) {
                 baseDataValidator.reset().failWithCode("creditBureau.has.not.been.Integrated");
@@ -111,14 +103,16 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
             }
 
             if (Objects.equals(creditBureauName.get(), CreditBureauConfigurations.THITSAWORKS.toString())) {
-                LOG.info("ThitsaWork:");
+
                 CreditBureauToken creditBureauToken = this.thitsaWorksCreditBureauIntegrationWritePlatformService
                         .createToken(creditBureauID);
-                LOG.info("creditbureautoken {}", creditBureauToken);
+
                 CreditBureauReportData reportobj = this.thitsaWorksCreditBureauIntegrationWritePlatformService
                         .getCreditReportFromThitsaWorks(command);
-                LOG.info("reportobj: {}", reportobj);
-                return new CommandProcessingResultBuilder().withCreditReport(reportobj).withCreditBureauToken(creditBureauToken).build();
+
+                // return new
+                // CommandProcessingResultBuilder().withCreditReport(reportobj).withCreditBureauToken(creditBureauToken).build();
+                return new CommandProcessingResultBuilder().withCreditReport(reportobj).build();
             }
 
             baseDataValidator.reset().failWithCode("creditBureau.has.not.been.Integrated");
@@ -142,7 +136,6 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
             Optional<CreditBureau> creditBureau = this.creditBureauRepository.findById(creditBureauID);
 
             if (creditBureau.isEmpty()) {
-                LOG.info("Credit Bureau Id {} not found", creditBureauID);
                 return Optional.empty();
             }
 
@@ -199,7 +192,7 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
                 if (creditReport == null) {
 
                     String reportData = command.stringValueOfParameterNamed("apiRequestBodyAsJson");
-                    LOG.info("reportData {}", reportData);
+
                     String nrc = creditReportNumber; // for thitsaworks CreditReportNumber is a NRC number
                     byte[] creditReportArray = reportData.getBytes(StandardCharsets.UTF_8);
                     creditReport = CreditReport.instance(creditBureauId, nrc, creditReportArray);
@@ -226,27 +219,26 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
     public Response downloadCreditReport(Long creditBureauId, String creditReportNumber) {
 
         Optional<String> creditBureauName = getCreditBureau(creditBureauId);
-        CreditReport creditReport = null;
+
         byte[] creditReportByte = null;
 
         if (Objects.equals(creditBureauName.get(), CreditBureauConfigurations.THITSAWORKS.toString())) {
-            creditReport = creditReportRepository.getThitsaWorksCreditReport(creditBureauId, creditReportNumber);
+
+            CreditReport creditReport = creditReportRepository.getThitsaWorksCreditReport(creditBureauId, creditReportNumber);
+
             creditReportByte = creditReport.getCreditReport();
-            LOG.info("creditreport {}", creditReport);
         }
 
-        final String filename = creditReportNumber + DateUtils.getLocalDateOfTenant().toString() + ".xls";
-        LOG.info("filename {}", filename);
+        final String filename = creditReportNumber + "_" + DateUtils.getLocalDateOfTenant().toString() + ".xls";
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream(creditReportByte.length);
 
         baos.write(creditReportByte, 0, creditReportByte.length);
 
-        LOG.info("baos {}", baos);
-
         final ResponseBuilder response = Response.ok(baos.toByteArray());
         response.header("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         response.header("Content-Type", "application/vnd.ms-excel");
-        LOG.info("response {}", response);
+
         return response.build();
 
     }
@@ -263,7 +255,7 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
         if (Objects.equals(creditBureauName.get(), CreditBureauConfigurations.THITSAWORKS.toString())) {
 
             String creditReportNumber = command.stringValueOfParameterNamed("creditReportNumber");
-            LOG.info("delete cbid{} nrc {}", creditBureauId, creditReportNumber);
+
             creditReport = creditReportRepository.getThitsaWorksCreditReport(creditBureauId, creditReportNumber);
             try {
                 this.creditReportRepository.delete(creditReport);

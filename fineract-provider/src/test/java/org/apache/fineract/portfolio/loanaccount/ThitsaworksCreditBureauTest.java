@@ -24,21 +24,34 @@ import static org.mockito.Mockito.when;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.File;
-import org.apache.fineract.infrastructure.creditbureau.service.ThitsaWorksCreditBureauIntegrationWritePlatformService;
+import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+import org.apache.fineract.infrastructure.creditbureau.service.CreditReportWritePlatformServiceImpl;
+import org.apache.fineract.infrastructure.creditbureau.service.ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ExtendWith(MockitoExtension.class)
-public class CreditBureauIntegrationTest {
+public class ThitsaworksCreditBureauTest {
+
+    private FromJsonHelper fromApiJsonHelper = new FromJsonHelper();
 
     @Mock
-    private ThitsaWorksCreditBureauIntegrationWritePlatformService thitsaWorksCreditBureauIntegrationWritePlatformService;
+    private ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl;
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreditBureauIntegrationTest.class);
+    @InjectMocks
+    private final CreditReportWritePlatformServiceImpl creditReportWritePlatformServiceImpl = null;
+
+    /*
+     * @Autowired CreditBureauIntegrationTest(final FromJsonHelper fromApiJsonHelper) { this.fromApiJsonHelper =
+     * fromApiJsonHelper; }
+     */
+
+    private static final Logger LOG = LoggerFactory.getLogger(ThitsaworksCreditBureauTest.class);
 
     static String process = "process";
     static String nrcID = "13/MiFoS(N)163525";
@@ -50,8 +63,7 @@ public class CreditBureauIntegrationTest {
     static String subscriptionId = "4A7C-317A41BA-1FF8-8A64-F8EDBE0F625D";
     static String url = "url";
     static String token = "token";
-    static Long uniqueID = 1L;
-
+    static Long uniqueId = 8113399260L;
     static File file;
 
     static String testresult = "{   'Data': {'BorrowerInfo': {'MainIdentifier': '2113439293', 'Name': 'Aung Khant Min',"
@@ -74,15 +86,34 @@ public class CreditBureauIntegrationTest {
             + "    'ResponseMessage': 'Record found'}";
 
     @Test
-    public void getCreditreport() {
+    public void getUniqueIdFromSearchMethodTest() {
+        String searchResult = "{\"Data\":[{\"UniqueID\":\"8113399260\",\"NRC\":\"12/KaMaRa(N)253426\",\"FullName\":\"Aye Aye\",\"DOB\":\"1990-05-22,1991-05-22\",\"FatherFullName\":\"U Aye Myint Maung\",\"Location\":\"Yangon-Thongwa,Twantay,Yankin\",\"Flag\":\"[{\\\"WriteOff\\\":1}]\",\"Active\":\"Y\"}],\"MessageDtm\":\"8/1/2020 6:39:00 PM UTC\",\"SubscriptionID\":\"317A1FF8-625D-41BA-BE0F-F8ED8A644A7C\",\"CallerIP\":\"207.46.228.155\",\"URI\":\"https://qa-mmcix-api.azurewebsites.net/20200324/api/Search/SimpleSearch?nrc=253426\",\"ResponseMessage\":\"Record found\"}";
 
+        when(this.thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl.okHttpConnectionMethod(userName, password, subscriptionKey,
+                subscriptionId, url, token, file, uniqueId, nrcID, process)).thenReturn(searchResult);
+
+        final String search = thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl.okHttpConnectionMethod(userName, password,
+                subscriptionKey, subscriptionId, url, token, file, uniqueId, nrcID, process);
+        LOG.info("creditReport : {} ", search);
+
+        when(thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl.extractUniqueId(search)).thenCallRealMethod();
+
+        Long uniqueId = thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl.extractUniqueId(searchResult);
+        LOG.info("uniqueId : {} ", uniqueId);
+        Long expectedUniqueId = 8113399260L;
+        assertEquals(expectedUniqueId, uniqueId);
+
+    }
+
+    @Test
+    public void getCreditReportTest() {
         String curentNrc = "13/MiFoS(N)163525";
 
-        when(this.thitsaWorksCreditBureauIntegrationWritePlatformService.okHttpConnectionMethod(userName, password, subscriptionKey,
-                subscriptionId, url, token, file, uniqueID, nrcID, process)).thenReturn(testresult);
+        when(this.thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl.okHttpConnectionMethod(userName, password, subscriptionKey,
+                subscriptionId, url, token, file, uniqueId, nrcID, process)).thenReturn(testresult);
 
-        String creditReport = thitsaWorksCreditBureauIntegrationWritePlatformService.okHttpConnectionMethod(userName, password,
-                subscriptionKey, subscriptionId, url, token, file, uniqueID, nrcID, process);
+        String creditReport = thitsaWorksCreditBureauIntegrationWritePlatformServiceImpl.okHttpConnectionMethod(userName, password,
+                subscriptionKey, subscriptionId, url, token, file, uniqueId, nrcID, process);
 
         LOG.info("creditReport : {} ", creditReport);
 
@@ -96,7 +127,7 @@ public class CreditBureauIntegrationTest {
         String nrc = borrowerObject.get("NRC").toString();
 
         nrc = nrc.substring(1, nrc.length() - 1);
-        LOG.info("nrc : {} ", nrc);
+
         assertEquals(nrc, curentNrc);
 
     }

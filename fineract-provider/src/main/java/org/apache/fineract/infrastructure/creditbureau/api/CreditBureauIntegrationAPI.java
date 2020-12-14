@@ -51,8 +51,6 @@ import org.apache.fineract.infrastructure.creditbureau.data.CreditReportData;
 import org.apache.fineract.infrastructure.creditbureau.service.CreditReportReadPlatformService;
 import org.apache.fineract.infrastructure.creditbureau.service.CreditReportWritePlatformService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -72,7 +70,6 @@ public class CreditBureauIntegrationAPI {
     private final CreditReportWritePlatformService creditReportWritePlatformService;
     private final CreditReportReadPlatformService creditReportReadPlatformService;
     private final DefaultToApiJsonSerializer<CreditReportData> toApiJsonSerializer;
-    private static final Logger LOG = LoggerFactory.getLogger(CreditBureauIntegrationAPI.class);
 
     @Autowired
     public CreditBureauIntegrationAPI(final PlatformSecurityContext context,
@@ -126,8 +123,6 @@ public class CreditBureauIntegrationAPI {
     public String saveCreditReport(@Parameter(hidden = true) final String apiRequestBodyAsJson,
             @QueryParam("creditBureauId") @Parameter(description = "creditBureauId") final Long creditBureauId,
             @QueryParam("creditReportNumber") @Parameter(description = "creditReportNumber") final String creditReportNumber) {
-
-        LOG.info("apiRequestBodyAsJson {}", apiRequestBodyAsJson);
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .saveCreditReport(creditBureauId, creditReportNumber) // creditReportNumber is a NRC number for

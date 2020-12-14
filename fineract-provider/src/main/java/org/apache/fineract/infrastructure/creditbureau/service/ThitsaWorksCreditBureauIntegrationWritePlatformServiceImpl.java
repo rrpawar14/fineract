@@ -96,9 +96,7 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
     public String okHttpConnectionMethod(String userName, String password, String subscriptionKey, String subscriptionId, String url,
             String token, File report, Long uniqueId, String nrcId, String process) {
 
-        LOG.info("okHttpConnectionMethod");
-        //
-        String result = null;
+        String reponseMessage = null;
         RequestBody body = null;
         OkHttpClient client = new OkHttpClient();
 
@@ -151,7 +149,8 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
         try {
             response = client.newCall(request).execute();
             responseCode = response.code();
-            result = response.body().string();
+            reponseMessage = response.body().string();
+            LOG.info("----- result : {}-----", reponseMessage);
         } catch (IOException e) {
 
             LOG.error("error.", e);
@@ -159,15 +158,15 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
 
         if (responseCode != HttpURLConnection.HTTP_OK) {
             LOG.info("----- RESPONSE NOT OK-----");
-            this.httpResponse(responseCode);
+            this.httpResponse(responseCode, reponseMessage);
         }
-        LOG.error("Result.{}", result);
+        LOG.error("reponseMessage.{}", reponseMessage);
 
-        return result;
+        return reponseMessage;
 
     }
 
-    public void httpResponse(Integer responseCode) {
+    private void httpResponse(Integer responseCode, String responseMessage) {
         LOG.error("httpResponse.");
         if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
             LOG.info("-----IP FORBIDDEN-----");
@@ -179,14 +178,9 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
             String httpResponse = "HTTP_FORBIDDEN";
             this.handleAPIIntegrityIssues(httpResponse);
 
-        }
-        if (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-            LOG.info("-----HTTP_INTERNAL_ERROR-----");
-            String httpResponse = "HTTP_INTERNAL_ERROR";
-            this.handleAPIIntegrityIssues(httpResponse);
-
         } else {
-            LOG.info("Request is Invalid");
+            String responseResult = "HTTP Response Code: " + responseCode + "/" + "Response Message: " + responseMessage;
+            this.handleAPIIntegrityIssues(responseResult);
         }
 
     }
@@ -199,7 +193,6 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
         String nrcId = command.stringValueOfParameterNamed("NRC");
         String bureauID = command.stringValueOfParameterNamed("creditBureauID");
         Integer creditBureauId = Integer.parseInt(bureauID);
-        LOG.info("nrcId: {} creditBureauId: {} ", nrcId, creditBureauId);
 
         String token = null;
 
@@ -211,20 +204,18 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
         CreditBureauToken creditbureautoken = createToken(creditBureauId.longValue());
         token = creditbureautoken.getCurrentToken();
 
-        LOG.info("token processed done {}", token);
         // will use only "NRC" part of code from common http method to get data based on nrc
         String process = "NRC";
         CreditBureauConfiguration searchURL = this.configDataRepository.getCreditBureauConfigData(creditBureauId, "searchurl");
         String url = searchURL.getValue();
         String nrcUrl = url + nrcId;
-        LOG.info("searchURL: {} ", nrcUrl);
 
         String searchResult = this.okHttpConnectionMethod(userName, password, subscriptionKey, subscriptionId, nrcUrl, token, null, 0L,
                 nrcId, process);
 
         if (process.equals("NRC")) {
             Long uniqueID = this.extractUniqueId(searchResult);
-            LOG.info("uniqueID : {} ", uniqueID);
+
             process = "CreditReport";
             CreditBureauConfiguration creditReportURL = this.configDataRepository.getCreditBureauConfigData(creditBureauId,
                     "creditReporturl");
@@ -241,7 +232,6 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
         // creditreportdata object
 
         JsonObject reportObject = JsonParser.parseString(searchResult).getAsJsonObject();
-        LOG.info("CreditReport reportObject : {} ", reportObject);
 
         // Credit Reports Stored into Generic CreditReportData
         JsonObject jsonData = null;
@@ -251,37 +241,32 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
         if (!(element instanceof JsonNull)) { // NOTE : "element instanceof JsonNull" is for handling empty values (and
                                               // assigning null) while fetching data from results
             jsonData = (JsonObject) element;
-            LOG.info("CreditReport jsonData : {} ", jsonData);
+
         }
 
         JsonObject borrowerInfos = null;
         String borrowerInfo = null;
 
         element = jsonData.get("BorrowerInfo");
-        LOG.info("CreditReport BorrowerInfo : {} ", element);
+
         if (!(element instanceof JsonNull)) {
             borrowerInfos = (JsonObject) element;
             Gson gson = new Gson();
             borrowerInfo = gson.toJson(borrowerInfos);
         }
-        LOG.info("borrowerInfo : {} ", borrowerInfo);
 
         String Name = borrowerInfos.get("Name").toString();
         String Gender = borrowerInfos.get("Gender").toString();
         String Address = borrowerInfos.get("Address").toString();
-        LOG.info("Name : {} Gender: {} Address: {}", Name, Gender, Address);
 
         String creditScore = "CreditScore";
         creditScore = getJsonObjectToString(creditScore, element, jsonData);
-        LOG.info("creditScore : {}", creditScore);
 
         String activeLoans = "ActiveLoans";
         activeLoans = getJsonArrayToString(activeLoans, element, jsonData);
-        LOG.info("activeLoans : {}", activeLoans);
 
         String writeOffLoans = "WriteOffLoans";
         writeOffLoans = getJsonArrayToString(writeOffLoans, element, jsonData);
-        LOG.info("writeOffLoans : {}", writeOffLoans);
 
         return CreditBureauReportData.instance(Name, Gender, Address, creditScore, borrowerInfo, activeLoans, writeOffLoans);
     }
@@ -297,12 +282,8 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
         String subscriptionId = this.getCreditBureauConfiguration(creditBureauId, CreditBureauConfigurations.subscriptionId.toString());
         String subscriptionKey = this.getCreditBureauConfiguration(creditBureauId, CreditBureauConfigurations.subscriptionKey.toString());
 
-        LOG.info("Credentials are not empty {} {} {} {}", subscriptionId, subscriptionKey, userName, password);
-
         CreditBureauToken creditbureautoken = this.createToken(creditBureauId.longValue());
         String token = creditbureautoken.getCurrentToken();
-
-        LOG.info("token: {}", token);
 
         CreditBureauConfiguration addReportURL = this.configDataRepository.getCreditBureauConfigData(creditBureauId, "addCreditReporturl");
         String url = addReportURL.getValue();
@@ -315,52 +296,43 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
         JsonObject reportObject = JsonParser.parseString(result).getAsJsonObject();
         String responseMessage = reportObject.get("ResponseMessage").getAsString();
 
-        LOG.info("responseMessage: {}", responseMessage);
         return responseMessage;
     }
 
-    private Long extractUniqueId(String jsonResult) {
-        LOG.info("extractUniqueId method");
+    @Override
+    @Transactional
+    public Long extractUniqueId(String jsonResult) {
 
         JsonObject reportObject = JsonParser.parseString(jsonResult).getAsJsonObject();
 
         JsonElement element = reportObject.get("Data");
-        LOG.info("extractUniqueId element {}", element);
+
         if (element.isJsonNull()) {
-            LOG.info("checking jsonnull");
             String ResponseMessage = reportObject.get("ResponseMessage").getAsString();
-            LOG.info("ResponseMessage {}", ResponseMessage);
             handleAPIIntegrityIssues(ResponseMessage);
         }
 
         // to fetch the Unique ID from Result
         JsonObject jsonObject = JsonParser.parseString(jsonResult).getAsJsonObject();
-        LOG.info("jsonObject: {}", jsonObject);
 
         Long uniqueID = 0L;
         try {
             JsonArray dataArray = jsonObject.getAsJsonArray("Data");
-            LOG.info("Data: {}", dataArray);
 
-            LOG.info("Dataarray size: {}", dataArray.size());
             if (dataArray.size() == 1) {
-                LOG.info("data size = 1 ");
+
                 JsonObject jobject = dataArray.get(0).getAsJsonObject();
-                LOG.info("jobject {}", jobject);
+
                 String uniqueIdString = jobject.get("UniqueID").toString();
                 String TrimUniqueId = uniqueIdString.substring(1, uniqueIdString.length() - 1);
 
                 uniqueID = Long.parseLong(TrimUniqueId);
-                LOG.info("uniqueID : {}", uniqueID);
+
             } else if (dataArray.size() == 0) {
-                LOG.info("data size = 0");
                 String ResponseMessage = reportObject.get("ResponseMessage").getAsString();
-                LOG.info("ResponseMessage {}", ResponseMessage);
                 handleAPIIntegrityIssues(ResponseMessage);
             } else {
-                LOG.info("data size > 1 ");
                 String nrc = null;
-
                 List<String> arrlist = new ArrayList<String>();
 
                 for (int i = 0; i < dataArray.size(); ++i) {
@@ -368,13 +340,9 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
                     nrc = data.get("NRC").toString();
                     // str = new String[] { nrc };
                     arrlist.add(nrc);
-                    LOG.info("i : {} ", i);
                 }
-                LOG.info("arrlist : {} ", arrlist);
 
                 String listString = String.join(", ", arrlist);
-
-                LOG.info("listString : {} ", listString);
 
                 this.handleMultipleNRC(listString);
             }
@@ -387,7 +355,7 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
     }
 
     private String getJsonObjectToString(String fetchData, JsonElement element, JsonObject jsonData) {
-        LOG.info("getJsonToString method");
+
         String jsonString = null;
         element = jsonData.get(fetchData);
         if (!(element instanceof JsonNull)) {
@@ -399,7 +367,7 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
     }
 
     private String getJsonArrayToString(String fetchData, JsonElement element, JsonObject jsonData) {
-        LOG.info("getJsonToString method");
+
         String jsonString = null;
         element = jsonData.get(fetchData);
         if (!(element instanceof JsonNull)) {
@@ -413,8 +381,6 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
     @Transactional
     @Override
     public CreditBureauToken createToken(Long bureauID) {
-
-        LOG.info("token creation");
 
         CreditBureauToken creditBureauToken = this.tokenRepositoryWrapper.getToken();
 
@@ -438,8 +404,6 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
         String password = getCreditBureauConfiguration(bureauID.intValue(), CreditBureauConfigurations.password.toString());
         String subscriptionId = getCreditBureauConfiguration(bureauID.intValue(), CreditBureauConfigurations.subscriptionId.toString());
         String subscriptionKey = getCreditBureauConfiguration(bureauID.intValue(), CreditBureauConfigurations.subscriptionKey.toString());
-
-        LOG.info("token Credentials are not empty {} {} {} {}", subscriptionId, subscriptionKey, userName, password);
 
         if (creditBureauToken == null) {
             CreditBureauConfiguration tokenURL = this.configDataRepository.getCreditBureauConfigData(bureauID.intValue(), "tokenurl");
@@ -499,7 +463,7 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
             }
         } catch (NullPointerException ex) {
             baseDataValidator.reset().failWithCode("creditBureau.configuration.is.not.available");
-            throw new PlatformApiDataValidationException("creditBureau.Configuration.is.not.available",
+            throw new PlatformApiDataValidationException("creditBureau.Configuration.is.not.available" + ex,
                     "creditBureau.Configuration.is.not.available", dataValidationErrors);
 
         }

@@ -42,7 +42,7 @@ public class UpdateCreditBureauConfigurationDataCommandHandler implements NewCom
     @Transactional
     @Override
     public CommandProcessingResult processCommand(final JsonCommand command) {
-        return this.writePlatformService.updateCreditBureauConfiguration(command.getCreditBureauId(), command);
+        return this.writePlatformService.updateCreditBureauConfiguration(command.entityId(), command);
     }
 
 }

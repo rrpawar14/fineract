@@ -77,13 +77,13 @@ public class CreditBureauConfigurationWritePlatformServiceImpl implements Credit
 
     @Transactional
     @Override
-    public CommandProcessingResult updateCreditBureauConfiguration(Long creditBureauId, JsonCommand command) {
+    public CommandProcessingResult updateCreditBureauConfiguration(Long configurationId, JsonCommand command) {
         try {
             this.context.authenticatedUser();
 
             this.fromApiJsonDeserializer.validateForUpdate(command.json());
 
-            final CreditBureauConfiguration config = retrieveConfigBy(creditBureauId);
+            final CreditBureauConfiguration config = retrieveConfigBy(configurationId);
             final Map<String, Object> changes = config.update(command);
 
             if (!changes.isEmpty()) {
@@ -92,7 +92,7 @@ public class CreditBureauConfigurationWritePlatformServiceImpl implements Credit
 
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
-                    .withEntityId(creditBureauId) //
+                    .withEntityId(configurationId) //
                     .with(changes) //
                     .build();
 

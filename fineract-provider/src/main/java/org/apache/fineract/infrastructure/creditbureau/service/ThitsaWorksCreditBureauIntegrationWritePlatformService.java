@@ -27,6 +27,8 @@ public interface ThitsaWorksCreditBureauIntegrationWritePlatformService {
 
     CreditBureauToken createToken(Long creditBureauID);
 
+    Long extractUniqueId(String jsonResult);
+
     String okHttpConnectionMethod(String userName, String password, String subscriptionKey, String subscriptionId, String url, String token,
             File report, Long uniqueId, String nrcId, String process);
 

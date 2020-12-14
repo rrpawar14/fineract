@@ -128,19 +128,16 @@ public class CommandProcessingResultBuilder {
 
     public CommandProcessingResultBuilder withCreditReport(final CreditBureauReportData withCreditReport) {
         this.creditBureauReportData = withCreditReport;
-        LOG.info("withCreditReport :{}", withCreditReport);
         return this;
     }
 
     public CommandProcessingResultBuilder withCreditReport(final CreditReport saveCreditReport) {
         this.saveCreditReport = saveCreditReport;
-        LOG.info("saveCreditReport :{}", saveCreditReport);
         return this;
     }
 
     public CommandProcessingResultBuilder withCreditBureauToken(final CreditBureauToken creditBureauToken) {
         this.creditBureauToken = creditBureauToken;
-        LOG.info("creditBureauToken command :{}", creditBureauToken);
         return this;
     }
 

@@ -33,10 +33,11 @@ ENGINE=InnoDB;
 
 CREATE TABLE `m_creditreport` (
   `id` INT(128) NOT NULL AUTO_INCREMENT,
-  `creditBureauId` INT(128) DEFAULT NULL,
+  `creditBureauId` BIGINT(128) DEFAULT NULL,
   `nrc` varchar(128) DEFAULT NULL,
   `creditReports` BLOB DEFAULT NULL,
-   PRIMARY KEY (`id`)
+   PRIMARY KEY (`id`),
+   CONSTRAINT `cbId` FOREIGN KEY (`creditBureauId`) REFERENCES `m_creditbureau` (`id`)
 )
 COLLATE='utf8mb4_general_ci'
 ENGINE=InnoDB;
