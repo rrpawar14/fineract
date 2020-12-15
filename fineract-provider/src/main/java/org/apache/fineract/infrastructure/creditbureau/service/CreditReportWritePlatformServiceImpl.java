@@ -20,6 +20,7 @@ package org.apache.fineract.infrastructure.creditbureau.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,8 @@ import javax.persistence.PersistenceException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.fineract.infrastructure.bulkimport.data.GlobalEntityType;
+import org.apache.fineract.infrastructure.bulkimport.populator.WorkbookPopulator;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
@@ -51,6 +54,8 @@ import org.apache.fineract.infrastructure.creditbureau.domain.CreditReportReposi
 import org.apache.fineract.infrastructure.creditbureau.domain.TokenRepositoryWrapper;
 import org.apache.fineract.infrastructure.creditbureau.serialization.CreditBureauTokenCommandFromApiJsonDeserializer;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -229,18 +234,45 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
             creditReportByte = creditReport.getCreditReport();
         }
 
+        
+      return this.getTemplate(creditReportByte, creditReportNumber);
+    }
+    
+    
+    private Response getTemplate(byte[] creditReportByte,  String creditReportNumber) {
+    	WorkbookPopulator populator = null;
+        final Workbook workbook = new HSSFWorkbook();
+        
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        
+        
+        if () {
+            populator = populateCreditReportWorkbook(creditReportByte);
+        }
+        
         final String filename = creditReportNumber + "_" + DateUtils.getLocalDateOfTenant().toString() + ".xls";
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(creditReportByte.length);
+        baos = new ByteArrayOutputStream(creditReportByte.length);
 
         baos.write(creditReportByte, 0, creditReportByte.length);
-
+        
+        try {
+            workbook.write(baos);
+        } catch (IOException e) {
+            LOG.error("Problem occurred in buildResponse function", e);
+        }
+        
+      
         final ResponseBuilder response = Response.ok(baos.toByteArray());
         response.header("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         response.header("Content-Type", "application/vnd.ms-excel");
 
         return response.build();
-
+    }
+    
+    private WorkbookPopulator populateCreditReportWorkbook(byte[] creditReportByte){
+    	
+    	
     }
 
     @Transactional
