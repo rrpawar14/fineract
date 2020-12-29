@@ -20,9 +20,11 @@
 package org.apache.fineract.infrastructure.creditbureau.api;
 
 import com.google.gson.Gson;
+import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 import io.swagger.v3.oas.annotations.Parameter;
 import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -107,10 +109,11 @@ public class CreditBureauIntegrationAPI {
     @POST
     @Path("addCreditReport")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public String addCreditReport(@FormDataParam("file") final File creditReport,
+    public String addCreditReport(@FormDataParam("file") final File creditReport, @FormDataParam("file") InputStream uploadedInputStream,
+            @FormDataParam("file") final UriInfo uriInfo, @FormDataParam("file") FormDataContentDisposition fileDetail,
             @QueryParam("creditBureauId") @Parameter(description = "creditBureauId") final Long creditBureauId) {
 
-        final String responseMessage = this.creditReportWritePlatformService.addCreditReport(creditReport, creditBureauId);
+        final String responseMessage = this.creditReportWritePlatformService.addCreditReport(creditBureauId, creditReport, fileDetail);
         return this.toCreditReportApiJsonSerializer.serialize(responseMessage);
     }
 

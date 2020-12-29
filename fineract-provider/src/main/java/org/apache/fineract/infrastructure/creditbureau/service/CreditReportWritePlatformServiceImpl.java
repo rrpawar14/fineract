@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.infrastructure.creditbureau.service;
 
+import com.sun.jersey.core.header.FormDataContentDisposition;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -143,13 +144,14 @@ public class CreditReportWritePlatformServiceImpl implements CreditReportWritePl
 
     @Override
     @Transactional
-    public String addCreditReport(File report, Long bureauId) {
+    public String addCreditReport(Long bureauId, File creditReport, FormDataContentDisposition fileDetail) {
 
         Optional<String> creditBureauName = getCreditBureau(bureauId);
         String responseMessage = null;
 
         if (Objects.equals(creditBureauName.get(), CreditBureauConfigurations.THITSAWORKS.toString())) {
-            responseMessage = this.thitsaWorksCreditBureauIntegrationWritePlatformService.addCreditReport(report, bureauId);
+            responseMessage = this.thitsaWorksCreditBureauIntegrationWritePlatformService.addCreditReport(bureauId, creditReport,
+                    fileDetail);
         } else {
 
             baseDataValidator.reset().failWithCode("creditBureau.has.not.been.Integrated");

@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.infrastructure.creditbureau.service;
 
+import com.sun.jersey.core.header.FormDataContentDisposition;
 import java.io.File;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
@@ -28,7 +29,7 @@ public interface CreditReportWritePlatformService {
     CommandProcessingResult getCreditReport(JsonCommand command);
 
     // upload CreditReport to CreditBureau
-    String addCreditReport(File creditreport, Long creditBureauId);
+    String addCreditReport(Long creditBureauId, File creditReport, FormDataContentDisposition fileDetail);
 
     // saves fetched-CreditReport to database
     CommandProcessingResult saveCreditReport(Long organisationCreditBureauId, String creditReportNumber, JsonCommand command);

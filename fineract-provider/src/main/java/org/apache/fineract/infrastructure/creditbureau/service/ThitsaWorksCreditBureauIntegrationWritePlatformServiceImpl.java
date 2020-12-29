@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.sun.jersey.core.header.FormDataContentDisposition;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -95,16 +96,18 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
     @Override
     @SuppressWarnings("deprecation")
     public String okHttpConnectionMethod(String userName, String password, String subscriptionKey, String subscriptionId, String url,
-            String token, File file, Long uniqueId, String nrcId, String process) {
+            String token, File file, FormDataContentDisposition fileData, Long uniqueId, String nrcId, String process) {
 
         String reponseMessage = null;
         RequestBody requestBody = null;
         OkHttpClient client = new OkHttpClient();
 
+        String fileName = fileData.getFileName();
+
         if (process.equals("UploadCreditReport")) {
-            LOG.info("file: {}", file.getName());
-            requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                    .addFormDataPart("file", file.getName(), RequestBody.create(file, MediaType.parse("")))
+            requestBody = RequestBody.create(file, MediaType.parse("multipart/form-data"));
+
+            requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart("file", fileName, requestBody)
                     .addFormDataPart("BODY", "formdata").addFormDataPart("userName", userName).build();
 
         } else if (process.equals("token")) {
@@ -140,8 +143,8 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
             } else if (process.equals("UploadCreditReport")) { // POST for uploading Credit-Report(multipart/form-data)
                                                                // To ThitsaWork
                 request = new Request.Builder().header("mcix-subscription-key", subscriptionKey)
-                        .header("mcix-subscription-id", subscriptionId).header("Authorization", "Bearer " + token).url(urlokhttp)
-                        .post(requestBody).build();
+                        .header("mcix-subscription-id", subscriptionId).header("Content-Type", "multipart/form-data")
+                        .header("Authorization", "Bearer " + token).url(urlokhttp).post(requestBody).build();
 
             } else { // POST method for application/x-www-form-urlencoded
 
@@ -213,8 +216,8 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
         String url = searchURL.getValue();
         String nrcUrl = url + nrcId;
 
-        String searchResult = this.okHttpConnectionMethod(userName, password, subscriptionKey, subscriptionId, nrcUrl, token, null, 0L,
-                nrcId, process);
+        String searchResult = this.okHttpConnectionMethod(userName, password, subscriptionKey, subscriptionId, nrcUrl, token, null, null,
+                0L, nrcId, process);
 
         if (process.equals("NRC")) {
             Long uniqueID = this.extractUniqueId(searchResult);
@@ -226,7 +229,7 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
             String creditReportUrl = url + uniqueID;
 
             searchResult = this.okHttpConnectionMethod(userName, password, subscriptionKey, subscriptionId, creditReportUrl, token, null,
-                    uniqueID, null, process);
+                    null, uniqueID, null, process);
 
         }
 
@@ -275,7 +278,7 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
 
     @Override
     @Transactional
-    public String addCreditReport(File report, Long bureauId) {
+    public String addCreditReport(Long bureauId, File creditReport, FormDataContentDisposition fileDetail) {
 
         Integer creditBureauId = bureauId.intValue();
 
@@ -292,8 +295,9 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
 
         String process = "UploadCreditReport";
 
-        String responseMessage = this.okHttpConnectionMethod(userName, password, subscriptionKey, subscriptionId, url, token, report, 0L,
-                null, process);
+        String responseMessage = this.okHttpConnectionMethod(userName, password, subscriptionKey, subscriptionId, url, token, creditReport,
+                fileDetail, 0L, null, process);
+        LOG.info("responseMessage: " + responseMessage);
 
         return responseMessage;
     }
@@ -410,8 +414,8 @@ public class ThitsaWorksCreditBureauIntegrationWritePlatformServiceImpl implemen
             String process = "token";
             String nrcId = null;
             Long uniqueID = 0L;
-            String result = this.okHttpConnectionMethod(userName, password, subscriptionKey, subscriptionId, url, null, null, uniqueID,
-                    nrcId, process);
+            String result = this.okHttpConnectionMethod(userName, password, subscriptionKey, subscriptionId, url, null, null, null,
+                    uniqueID, nrcId, process);
 
             // created token will be storing it into database
             final CommandWrapper wrapper = new CommandWrapperBuilder().withJson(result).build();
