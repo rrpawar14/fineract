@@ -76,6 +76,7 @@ public class LoanDeclineOnLoanOverPaymentTest {
         final String disbursementDate = "01 March 2015";
         final String adjustRepaymentDate = "16 March 2015";
         List<HashMap> approveTranches = null;
+        Integer configId = 0;
 
         final Integer clientID = ClientHelper.createClient(this.requestSpec, this.responseSpec, "01 January 2012");
         final Integer loanProductID = this.loanTransactionHelper.getLoanProductId(new LoanProductTestBuilder().build(null));
@@ -102,7 +103,13 @@ public class LoanDeclineOnLoanOverPaymentTest {
 
         // Updating Value for reschedule-repayments-on-holidays Global
         // Configuration
-        Integer configId = (Integer) globalConfig.get(30).get("id");
+
+        String configName = (String) globalConfig.get(30).get("name");
+
+        if ("block-loan-overpayment".equals(configName)) {
+            configId = (Integer) globalConfig.get(30).get("id");
+        }
+
         Assertions.assertNotNull(configId);
 
         HashMap configData = GlobalConfigurationHelper.getGlobalConfigurationById(requestSpec, responseSpec, configId.toString());
