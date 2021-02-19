@@ -1142,7 +1142,11 @@ public class SavingsAccount extends AbstractPersistableCustom {
         // and should be checked after processing all transactions
         if (isOverdraft()) {
             if (runningBalance.minus(minRequiredBalance).isLessThanZero()) {
-                throw new InsufficientAccountBalanceException("transactionAmount", getAccountBalance(), withdrawalFee, transactionAmount);
+                OverdraftLimitExceededException("transactionAmount", getAccountBalance(), withdrawalFee, transactionAmount);
+            }
+        } else {
+            if (runningBalance.minus(minRequiredBalance).isLessThanZero()) {
+                throw new InsufficientAccountBalanceException("chargeAmount", getAccountBalance(), null, transactionAmount);
             }
         }
 
