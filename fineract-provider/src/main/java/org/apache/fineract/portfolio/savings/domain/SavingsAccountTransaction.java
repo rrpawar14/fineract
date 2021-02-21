@@ -331,6 +331,10 @@ public final class SavingsAccountTransaction extends AbstractPersistableCustom {
         return Money.of(currency, this.runningBalance);
     }
 
+    public BigDecimal getRunningBalance() {
+        return this.runningBalance;
+    }
+
     public boolean isDeposit() {
         return SavingsAccountTransactionType.fromInt(this.typeOf).isDeposit();
     }

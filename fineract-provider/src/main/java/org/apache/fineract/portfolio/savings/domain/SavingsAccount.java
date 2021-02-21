@@ -1222,6 +1222,31 @@ public class SavingsAccount extends AbstractPersistableCustom {
         }
     }
 
+    public void validateAccountBalanceByDateDoesNotBecomeNegative(final String transactionAction,
+            final BigDecimal savingsAccountTransactionData, final BigDecimal amountPaid) {
+
+        // SavingsAccountTransaction savingsAccountTransaction = SavingsAccountTransactionRepository
+        // .findOneBySavingsAccountIdAndDate(accountNumber, transactionDate);
+
+        final Money runningBalanceTransaction = Money.of(this.currency, savingsAccountTransactionData);
+
+        Money minRequiredBalance = minRequiredBalanceDerived(getCurrency());
+
+        BigDecimal withdrawalFee = null;
+        BigDecimal transactionAmount = null;
+
+        if (isOverdraft()) {
+            if (runningBalanceTransaction.plus(overdraftLimit).minus(amountPaid).isLessThanZero()) {
+                OverdraftLimitExceededException("transactionAmount", getAccountBalance(), withdrawalFee, transactionAmount);
+            }
+        } else {
+            if (runningBalanceTransaction.minus(amountPaid).isLessThanZero()) {
+                throw new InsufficientAccountBalanceException("chargeAmount", getAccountBalance(), null, transactionAmount);
+            }
+        }
+
+    }
+
     private void OverdraftLimitExceededException(final String paramName, final BigDecimal accountBalance, final BigDecimal withdrawalFee,
             final BigDecimal transactionAmount) {
         String showMessageForLimitExaustion = "Overdraft Limit is Exceeded";
