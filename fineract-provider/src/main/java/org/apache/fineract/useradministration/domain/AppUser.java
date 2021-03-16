@@ -47,7 +47,6 @@ import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.security.domain.PlatformUser;
 import org.apache.fineract.infrastructure.security.exception.NoAuthorizationException;
 import org.apache.fineract.infrastructure.security.service.PlatformPasswordEncoder;
-import org.apache.fineract.infrastructure.security.service.RandomPasswordGenerator;
 import org.apache.fineract.organisation.office.domain.Office;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.portfolio.client.domain.Client;
@@ -66,6 +65,9 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     @Column(name = "email", nullable = false, length = 100)
     private String email;
+
+    @Column(name = "mobileNo", nullable = false, length = 100)
+    private String mobileNo;
 
     @Column(name = "username", nullable = false, length = 100)
     private String username;
@@ -123,23 +125,34 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     @JoinColumn(name = "appuser_id", referencedColumnName = "id", nullable = false)
     private Set<AppUserClientMapping> appUserClientMappings = new HashSet<>();
 
+    public static AppUser fromJson(final JsonCommand command) {
+
+        final String name = command.stringValueOfParameterNamed("name");
+        final String mobileNo = command.stringValueOfParameterNamed("mobileNo");
+        final String password = command.stringValueOfParameterNamed("password");
+
+        return new AppUser(name, mobileNo, password);
+
+    }
+
     public static AppUser fromJson(final Office userOffice, final Staff linkedStaff, final Set<Role> allRoles,
             final Collection<Client> clients, final JsonCommand command) {
 
         final String username = command.stringValueOfParameterNamed("username");
         String password = command.stringValueOfParameterNamed("password");
-        final Boolean sendPasswordToEmail = command.booleanObjectValueOfParameterNamed("sendPasswordToEmail");
+        // final Boolean sendPasswordToEmail = command.booleanObjectValueOfParameterNamed("sendPasswordToEmail");
 
-        if (sendPasswordToEmail) {
-            password = new RandomPasswordGenerator(13).generate();
-        }
+        /*
+         * if (sendPasswordToEmail) { password = new RandomPasswordGenerator(13).generate(); }
+         */
 
+        /*
+         *
+         *
+         * if (command.parameterExists(AppUserConstants.PASSWORD_NEVER_EXPIRES)) { passwordNeverExpire =
+         * command.booleanPrimitiveValueOfParameterNamed(AppUserConstants.PASSWORD_NEVER_EXPIRES); }
+         */
         boolean passwordNeverExpire = false;
-
-        if (command.parameterExists(AppUserConstants.PASSWORD_NEVER_EXPIRES)) {
-            passwordNeverExpire = command.booleanPrimitiveValueOfParameterNamed(AppUserConstants.PASSWORD_NEVER_EXPIRES);
-        }
-
         final boolean userEnabled = true;
         final boolean userAccountNonExpired = true;
         final boolean userCredentialsNonExpired = true;
@@ -159,6 +172,12 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
         return new AppUser(userOffice, user, allRoles, email, firstname, lastname, linkedStaff, passwordNeverExpire, isSelfServiceUser,
                 clients);
+    }
+
+    public AppUser(final String name, final String mobileNo, final String password) {
+        this.username = name;
+        this.mobileNo = mobileNo;
+        this.password = password;
     }
 
     protected AppUser() {

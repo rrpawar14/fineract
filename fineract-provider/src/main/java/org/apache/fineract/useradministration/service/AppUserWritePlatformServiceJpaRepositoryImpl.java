@@ -29,12 +29,9 @@ import javax.persistence.PersistenceException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
-import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
-import org.apache.fineract.infrastructure.core.service.PlatformEmailSendException;
 import org.apache.fineract.infrastructure.security.service.PlatformPasswordEncoder;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.notification.service.TopicDomainService;
@@ -113,51 +110,51 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
         try {
             this.context.authenticatedUser();
 
-            this.fromApiJsonDeserializer.validateForCreate(command.json());
+            // this.fromApiJsonDeserializer.validateForCreate(command.json());
 
-            final String officeIdParamName = "officeId";
-            final Long officeId = command.longValueOfParameterNamed(officeIdParamName);
+            final String nameParamName = "name";
+            final String name = command.stringValueOfParameterNamed(nameParamName);
 
-            final Office userOffice = this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
+            final String mobileNoParamName = "mobileNo";
+            final String mobileNo = command.stringValueOfParameterNamed(mobileNoParamName);
 
-            final String[] roles = command.arrayValueOfParameterNamed("roles");
-            final Set<Role> allRoles = assembleSetOfRoles(roles);
+            final String passwordParamName = "password";
+            final String password = command.stringValueOfParameterNamed(passwordParamName);
 
-            final String staffIdParamName = "staffId";
-            final Long staffId = command.longValueOfParameterNamed(staffIdParamName);
+            System.out.println("name: " + name + "mobileNo" + mobileNo + "password" + password);
 
-            Staff linkedStaff;
-            if (staffId != null) {
-                linkedStaff = this.staffRepositoryWrapper.findByOfficeWithNotFoundDetection(staffId, userOffice.getId());
-            } else {
-                linkedStaff = null;
-            }
+            // final Office userOffice = this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
 
-            Collection<Client> clients;
-            if (command.hasParameter(AppUserConstants.IS_SELF_SERVICE_USER)
-                    && command.booleanPrimitiveValueOfParameterNamed(AppUserConstants.IS_SELF_SERVICE_USER)
-                    && command.hasParameter(AppUserConstants.CLIENTS)) {
-                JsonArray clientsArray = command.arrayOfParameterNamed(AppUserConstants.CLIENTS);
-                Collection<Long> clientIds = new HashSet<>();
-                for (JsonElement clientElement : clientsArray) {
-                    clientIds.add(clientElement.getAsLong());
-                }
-                clients = this.clientRepositoryWrapper.findAll(clientIds);
-            } else {
-                clients = null;
-            }
+            /*
+             * final String[] roles = command.arrayValueOfParameterNamed("roles"); final Set<Role> allRoles =
+             * assembleSetOfRoles(roles);
+             *
+             * final String staffIdParamName = "staffId"; final Long staffId =
+             * command.longValueOfParameterNamed(staffIdParamName);
+             *
+             * Staff linkedStaff; if (staffId != null) { linkedStaff =
+             * this.staffRepositoryWrapper.findByOfficeWithNotFoundDetection(staffId, userOffice.getId()); } else {
+             * linkedStaff = null; }
+             *
+             * Collection<Client> clients; if (command.hasParameter(AppUserConstants.IS_SELF_SERVICE_USER) &&
+             * command.booleanPrimitiveValueOfParameterNamed(AppUserConstants.IS_SELF_SERVICE_USER) &&
+             * command.hasParameter(AppUserConstants.CLIENTS)) { JsonArray clientsArray =
+             * command.arrayOfParameterNamed(AppUserConstants.CLIENTS); Collection<Long> clientIds = new HashSet<>();
+             * for (JsonElement clientElement : clientsArray) { clientIds.add(clientElement.getAsLong()); } clients =
+             * this.clientRepositoryWrapper.findAll(clientIds); } else { clients = null; }
+             *
+             */
 
-            AppUser appUser = AppUser.fromJson(userOffice, linkedStaff, allRoles, clients, command);
-
-            final Boolean sendPasswordToEmail = command.booleanObjectValueOfParameterNamed("sendPasswordToEmail");
+            final Boolean sendPasswordToEmail = command.booleanObjectValueOfParameterNamed("");
+            AppUser appUser = AppUser.fromJson(command);
             this.userDomainService.create(appUser, sendPasswordToEmail);
 
-            this.topicDomainService.subscribeUserToTopic(appUser);
+            // this.topicDomainService.subscribeUserToTopic(appUser);
 
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withEntityId(appUser.getId()) //
-                    .withOfficeId(userOffice.getId()) //
+                    // .withOfficeId(userOffice.getId()) //
                     .build();
         } catch (final DataIntegrityViolationException dve) {
             throw handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
@@ -165,17 +162,24 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
             LOG.error("createUser: JpaSystemException | PersistenceException | AuthenticationServiceException", dve);
             Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
             throw handleDataIntegrityIssues(command, throwable, dve);
-        } catch (final PlatformEmailSendException e) {
-            LOG.error("createUser: PlatformEmailSendException", e);
+        } /*
+           * (final PlatformEmailSendException e) { LOG.error("createUser: PlatformEmailSendException", e);
+           *
+           * /* final String email = command.stringValueOfParameterNamed("email"); final ApiParameterError error =
+           * ApiParameterError.parameterError("error.msg.user.email.invalid",
+           * "Sending email failed; is parameter email is invalid? More details available in server log: " +
+           * e.getMessage(), "email", email);
+           */
+        /*
+         * final ApiParameterError error = ApiParameterError.parameterError("error.msg.user.email.invalid",
+         * "Sending email failed; is parameter email is invalid? More details available in server log: " +
+         * e.getMessage(), "email", name);
+         */
+        // throw new handleDataIntegrityIssues("validation.msg.validation.errors.exist", "Validation errors exist.");//
+        // ,
+        // List.of(error),
+        // e);
 
-            final String email = command.stringValueOfParameterNamed("email");
-            final ApiParameterError error = ApiParameterError.parameterError("error.msg.user.email.invalid",
-                    "Sending email failed; is parameter email is invalid? More details available in server log: " + e.getMessage(), "email",
-                    email);
-
-            throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",
-                    List.of(error), e);
-        }
     }
 
     @Override
