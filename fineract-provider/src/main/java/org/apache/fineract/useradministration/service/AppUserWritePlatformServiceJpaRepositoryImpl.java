@@ -113,51 +113,45 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
         try {
             this.context.authenticatedUser();
 
-            this.fromApiJsonDeserializer.validateForCreate(command.json());
+            // this.fromApiJsonDeserializer.validateForCreate(command.json());
 
-            final String officeIdParamName = "officeId";
-            final Long officeId = command.longValueOfParameterNamed(officeIdParamName);
-
-            final Office userOffice = this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
-
-            final String[] roles = command.arrayValueOfParameterNamed("roles");
-            final Set<Role> allRoles = assembleSetOfRoles(roles);
-
-            final String staffIdParamName = "staffId";
-            final Long staffId = command.longValueOfParameterNamed(staffIdParamName);
-
-            Staff linkedStaff;
-            if (staffId != null) {
-                linkedStaff = this.staffRepositoryWrapper.findByOfficeWithNotFoundDetection(staffId, userOffice.getId());
-            } else {
-                linkedStaff = null;
-            }
-
-            Collection<Client> clients;
-            if (command.hasParameter(AppUserConstants.IS_SELF_SERVICE_USER)
-                    && command.booleanPrimitiveValueOfParameterNamed(AppUserConstants.IS_SELF_SERVICE_USER)
-                    && command.hasParameter(AppUserConstants.CLIENTS)) {
-                JsonArray clientsArray = command.arrayOfParameterNamed(AppUserConstants.CLIENTS);
-                Collection<Long> clientIds = new HashSet<>();
-                for (JsonElement clientElement : clientsArray) {
-                    clientIds.add(clientElement.getAsLong());
-                }
-                clients = this.clientRepositoryWrapper.findAll(clientIds);
-            } else {
-                clients = null;
-            }
-
-            AppUser appUser = AppUser.fromJson(userOffice, linkedStaff, allRoles, clients, command);
-
-            final Boolean sendPasswordToEmail = command.booleanObjectValueOfParameterNamed("sendPasswordToEmail");
+            /*
+             * final String officeIdParamName = "officeId"; final Long officeId =
+             * command.longValueOfParameterNamed(officeIdParamName);
+             *
+             * final Office userOffice = this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
+             *
+             * final String[] roles = command.arrayValueOfParameterNamed("roles"); final Set<Role> allRoles =
+             * assembleSetOfRoles(roles);
+             *
+             * final String staffIdParamName = "staffId"; final Long staffId =
+             * command.longValueOfParameterNamed(staffIdParamName);
+             *
+             * Staff linkedStaff; if (staffId != null) { linkedStaff =
+             * this.staffRepositoryWrapper.findByOfficeWithNotFoundDetection(staffId, userOffice.getId()); } else {
+             * linkedStaff = null; }
+             *
+             * Collection<Client> clients; if (command.hasParameter(AppUserConstants.IS_SELF_SERVICE_USER) &&
+             * command.booleanPrimitiveValueOfParameterNamed(AppUserConstants.IS_SELF_SERVICE_USER) &&
+             * command.hasParameter(AppUserConstants.CLIENTS)) { JsonArray clientsArray =
+             * command.arrayOfParameterNamed(AppUserConstants.CLIENTS); Collection<Long> clientIds = new HashSet<>();
+             * for (JsonElement clientElement : clientsArray) { clientIds.add(clientElement.getAsLong()); } clients =
+             * this.clientRepositoryWrapper.findAll(clientIds); } else { clients = null; }
+             *
+             * AppUser appUser = AppUser.fromJson(userOffice, linkedStaff, allRoles, clients, command);
+             *
+             * final Boolean sendPasswordToEmail = command.booleanObjectValueOfParameterNamed("sendPasswordToEmail");
+             */
+            final Boolean sendPasswordToEmail = false;
+            AppUser appUser = AppUser.fromJson(command);
             this.userDomainService.create(appUser, sendPasswordToEmail);
 
-            this.topicDomainService.subscribeUserToTopic(appUser);
+            // this.topicDomainService.subscribeUserToTopic(appUser);
 
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withEntityId(appUser.getId()) //
-                    .withOfficeId(userOffice.getId()) //
+                    // .withOfficeId(userOffice.getId()) //
                     .build();
         } catch (final DataIntegrityViolationException dve) {
             throw handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);

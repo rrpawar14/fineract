@@ -161,6 +161,17 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
                 clients);
     }
 
+    public static AppUser fromJson(final JsonCommand command) {
+        final String mobileNo = command.stringValueOfParameterNamed("mobileNo");
+        String password = command.stringValueOfParameterNamed("password");
+        return new AppUser(mobileNo, password);
+    }
+
+    public AppUser(final String mobileNo, final String password) {
+        this.username = mobileNo;
+        this.password = password;
+    }
+
     protected AppUser() {
         this.accountNonLocked = false;
         this.credentialsNonExpired = false;
