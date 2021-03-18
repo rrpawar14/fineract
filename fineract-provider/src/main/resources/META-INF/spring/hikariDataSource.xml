@@ -38,7 +38,7 @@
         <property name="driverClassName" value="${fineract_tenants_driver}" />
         <property name="jdbcUrl" value="${fineract_tenants_url}" />
         <property name="username" value="${fineract_tenants_uid}" />
-        <property name="password" value="${fineract_tenants_pwd}" />
+        <property name="password" value="F!NER@ct" />
         <property name="minimumIdle" value="3" />
         <property name="maximumPoolSize" value="10" />
         <property name="idleTimeout" value="60000" />

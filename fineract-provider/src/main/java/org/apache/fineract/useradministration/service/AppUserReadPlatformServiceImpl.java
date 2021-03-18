@@ -138,8 +138,15 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
             linkedStaff = null;
         }
 
-        AppUserData retUser = AppUserData.instance(user.getId(), user.getUsername(), user.getEmail(), user.getOffice().getId(),
-                user.getOffice().getName(), user.getFirstname(), user.getLastname(), availableRoles, null, selectedUserRoles, linkedStaff,
+        Long officeId = 0L;
+        if (user.getOffice().getId() == null) {
+            officeId = 1L;
+        } else {
+            officeId = user.getOffice().getId();
+        }
+
+        AppUserData retUser = AppUserData.instance(user.getId(), user.getUsername(), user.getEmail(), officeId, user.getOffice().getName(),
+                user.getFirstname(), user.getLastname(), availableRoles, null, selectedUserRoles, linkedStaff,
                 user.getPasswordNeverExpires(), user.isSelfServiceUser());
 
         if (retUser.isSelfServiceUser()) {
