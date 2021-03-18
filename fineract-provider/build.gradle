@@ -201,7 +201,7 @@ if (!(project.hasProperty('env') && project.getProperty('env') == 'dev')) {
 import groovy.sql.Sql
 
 project.ext.mysqlUser='root'
-project.ext.mysqlPassword='mysql'
+project.ext.mysqlPassword='F!NER@ct'
 
 configurations {
     driver
