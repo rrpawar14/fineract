@@ -34,4 +34,6 @@ public interface RoleWritePlatformService {
     CommandProcessingResult disableRole(Long roleId);
 
     CommandProcessingResult enableRole(Long roleId);
+
+    CommandProcessingResult createEnquiry(JsonCommand command);
 }

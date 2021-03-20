@@ -16,18 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.useradministration.service;
 
-import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+package org.apache.fineract.useradministration.domain;
 
-public interface AppUserWritePlatformService {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-    CommandProcessingResult createUser(JsonCommand command);
+public interface CustomerLoanEnquiryRepository
+        extends JpaRepository<CustomerLoanEnquiry, Long>, JpaSpecificationExecutor<CustomerLoanEnquiry> {
 
-    CommandProcessingResult updateUser(Long userId, JsonCommand command);
-
-    CommandProcessingResult updateCustomer(JsonCommand command);
-
-    CommandProcessingResult deleteUser(Long userId);
 }

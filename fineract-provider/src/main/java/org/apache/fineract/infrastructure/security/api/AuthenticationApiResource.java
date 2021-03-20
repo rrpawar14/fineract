@@ -124,18 +124,17 @@ public class AuthenticationApiResource {
              *
              * final EnumOptionData organisationalRole = principal.organisationalRoleData();
              */
-             // boolean isTwoFactorRequired = twoFactorUtils.isTwoFactorAuthEnabled() &&
-             // !principal.hasSpecificPermissionTo(TwoFactorConstants.BYPASS_TWO_FACTOR_PERMISSION); 
-              if
-              (this.springSecurityPlatformSecurityContext.doesPasswordHasToBeRenewed(principal)) {
-              authenticatedUserData = new AuthenticatedUserData(request.username, principal.getId(), new
-              String(base64EncodedAuthenticationKey, StandardCharsets.UTF_8), isTwoFactorRequired); } else {
-             
-              authenticatedUserData = new AuthenticatedUserData(request.username, officeId, officeName, staffId,
-              staffDisplayName, organisationalRole, roles, permissions, principal.getId(), new
-              String(base64EncodedAuthenticationKey, StandardCharsets.UTF_8), isTwoFactorRequired); }
-             
-
+            // boolean isTwoFactorRequired = twoFactorUtils.isTwoFactorAuthEnabled() &&
+            // !principal.hasSpecificPermissionTo(TwoFactorConstants.BYPASS_TWO_FACTOR_PERMISSION);
+            /*
+             * if (this.springSecurityPlatformSecurityContext.doesPasswordHasToBeRenewed(principal)) {
+             * authenticatedUserData = new AuthenticatedUserData(request.username, principal.getId(), new
+             * String(base64EncodedAuthenticationKey, StandardCharsets.UTF_8), isTwoFactorRequired); } else {
+             *
+             * authenticatedUserData = new AuthenticatedUserData(request.username, officeId, officeName, staffId,
+             * staffDisplayName, organisationalRole, roles, permissions, principal.getId(), new
+             * String(base64EncodedAuthenticationKey, StandardCharsets.UTF_8), isTwoFactorRequired); }
+             */
         }
 
         return this.apiJsonSerializerService.serialize(authenticatedUserData);

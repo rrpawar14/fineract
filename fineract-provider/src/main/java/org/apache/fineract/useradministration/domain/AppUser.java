@@ -255,59 +255,42 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
             }
         }
 
-        final String officeIdParamName = "officeId";
-        if (command.isChangeInLongParameterNamed(officeIdParamName, this.office.getId())) {
-            final Long newValue = command.longValueOfParameterNamed(officeIdParamName);
-            actualChanges.put(officeIdParamName, newValue);
-        }
+        /*
+         * final String officeIdParamName = "officeId"; if (command.isChangeInLongParameterNamed(officeIdParamName,
+         * this.office.getId())) { final Long newValue = command.longValueOfParameterNamed(officeIdParamName);
+         * actualChanges.put(officeIdParamName, newValue); }
+         *
+         * final String staffIdParamName = "staffId"; if (command.hasParameter(staffIdParamName) && (this.staff == null
+         * || command.isChangeInLongParameterNamed(staffIdParamName, this.staff.getId()))) { final Long newValue =
+         * command.longValueOfParameterNamed(staffIdParamName); actualChanges.put(staffIdParamName, newValue); }
+         *
+         * final String rolesParamName = "roles"; if (command.isChangeInArrayParameterNamed(rolesParamName,
+         * getRolesAsIdStringArray())) { final String[] newValue = command.arrayValueOfParameterNamed(rolesParamName);
+         * actualChanges.put(rolesParamName, newValue); }
+         */
 
-        final String staffIdParamName = "staffId";
-        if (command.hasParameter(staffIdParamName)
-                && (this.staff == null || command.isChangeInLongParameterNamed(staffIdParamName, this.staff.getId()))) {
-            final Long newValue = command.longValueOfParameterNamed(staffIdParamName);
-            actualChanges.put(staffIdParamName, newValue);
-        }
-
-        final String rolesParamName = "roles";
-        if (command.isChangeInArrayParameterNamed(rolesParamName, getRolesAsIdStringArray())) {
-            final String[] newValue = command.arrayValueOfParameterNamed(rolesParamName);
-            actualChanges.put(rolesParamName, newValue);
-        }
-
-        final String usernameParamName = "username";
-        if (command.isChangeInStringParameterNamed(usernameParamName, this.username)) {
-
-            // TODO Remove this check once we are identifying system user based on user ID
-            if (isSystemUser()) {
-                throw new NoAuthorizationException("User name of current system user may not be modified");
-            }
-
-            final String newValue = command.stringValueOfParameterNamed(usernameParamName);
-            actualChanges.put(usernameParamName, newValue);
-            this.username = newValue;
-        }
-
-        final String firstnameParamName = "firstname";
-        if (command.isChangeInStringParameterNamed(firstnameParamName, this.firstname)) {
-            final String newValue = command.stringValueOfParameterNamed(firstnameParamName);
-            actualChanges.put(firstnameParamName, newValue);
-            this.firstname = newValue;
-        }
-
-        final String lastnameParamName = "lastname";
-        if (command.isChangeInStringParameterNamed(lastnameParamName, this.lastname)) {
-            final String newValue = command.stringValueOfParameterNamed(lastnameParamName);
-            actualChanges.put(lastnameParamName, newValue);
-            this.lastname = newValue;
-        }
-
-        final String emailParamName = "email";
-        if (command.isChangeInStringParameterNamed(emailParamName, this.email)) {
-            final String newValue = command.stringValueOfParameterNamed(emailParamName);
-            actualChanges.put(emailParamName, newValue);
-            this.email = newValue;
-        }
-
+        /*
+         * final String usernameParamName = "username"; if (command.isChangeInStringParameterNamed(usernameParamName,
+         * this.username)) {
+         *
+         * // TODO Remove this check once we are identifying system user based on user ID if (isSystemUser()) { throw
+         * new NoAuthorizationException("User name of current system user may not be modified"); }
+         *
+         * final String newValue = command.stringValueOfParameterNamed(usernameParamName);
+         * actualChanges.put(usernameParamName, newValue); this.username = newValue; }
+         *
+         * final String firstnameParamName = "firstname"; if (command.isChangeInStringParameterNamed(firstnameParamName,
+         * this.firstname)) { final String newValue = command.stringValueOfParameterNamed(firstnameParamName);
+         * actualChanges.put(firstnameParamName, newValue); this.firstname = newValue; }
+         *
+         * final String lastnameParamName = "lastname"; if (command.isChangeInStringParameterNamed(lastnameParamName,
+         * this.lastname)) { final String newValue = command.stringValueOfParameterNamed(lastnameParamName);
+         * actualChanges.put(lastnameParamName, newValue); this.lastname = newValue; }
+         *
+         * final String emailParamName = "email"; if (command.isChangeInStringParameterNamed(emailParamName,
+         * this.email)) { final String newValue = command.stringValueOfParameterNamed(emailParamName);
+         * actualChanges.put(emailParamName, newValue); this.email = newValue; }
+         */
         final String passwordNeverExpire = "passwordNeverExpires";
 
         if (command.hasParameter(passwordNeverExpire)) {
@@ -345,15 +328,13 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
         return actualChanges;
     }
 
-    private String[] getRolesAsIdStringArray() {
-        final List<String> roleIds = new ArrayList<>();
-
-        for (final Role role : this.roles) {
-            roleIds.add(role.getId().toString());
-        }
-
-        return roleIds.toArray(new String[roleIds.size()]);
-    }
+    /*
+     * private String[] getRolesAsIdStringArray() { final List<String> roleIds = new ArrayList<>();
+     *
+     * for (final Role role : this.roles) { roleIds.add(role.getId().toString()); }
+     *
+     * return roleIds.toArray(new String[roleIds.size()]); }
+     */
 
     /**
      * Delete is a <i>soft delete</i>. Updates flag so it wont appear in query/report results.

@@ -78,7 +78,9 @@ public class SelfUserApiResource {
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, apiRequestBodyAsJson, this.supportedParameters);
 
         final AppUser appUser = this.context.authenticatedUser();
-        return this.usersApiResource.update(appUser.getId(), apiRequestBodyAsJson);
+        String user = "user";
+        return user;
+        // return this.usersApiResource.update(appUser.getId(), apiRequestBodyAsJson);
     }
 
 }

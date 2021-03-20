@@ -175,6 +175,98 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
     @Override
     @Transactional
     @Caching(evict = { @CacheEvict(value = "users", allEntries = true), @CacheEvict(value = "usersByUsername", allEntries = true) })
+    public CommandProcessingResult updateCustomer(final JsonCommand command) {
+        try {
+            // this.context.authenticatedUser(new CommandWrapperBuilder().updateUser(null).build());
+
+            // this.fromApiJsonDeserializer.validateForUpdate(command.json());
+
+            // final AppUser userToUpdate = this.appUserRepository.findById(userId).orElseThrow(() -> new
+            // UserNotFoundException(userId));
+
+            final String mobileNo = command.stringValueOfParameterNamed("mobileNo");
+            final AppUser userToUpdate = this.appUserRepository.findAppUserByName(mobileNo);
+
+            final AppUserPreviousPassword currentPasswordToSaveAsPreview = getCurrentPasswordToSaveAsPreview(userToUpdate, command);
+
+            Collection<Client> clients = null;
+            boolean isSelfServiceUser = userToUpdate.isSelfServiceUser();
+            if (command.hasParameter(AppUserConstants.IS_SELF_SERVICE_USER)) {
+                isSelfServiceUser = command.booleanPrimitiveValueOfParameterNamed(AppUserConstants.IS_SELF_SERVICE_USER);
+            }
+
+            if (isSelfServiceUser && command.hasParameter(AppUserConstants.CLIENTS)) {
+                JsonArray clientsArray = command.arrayOfParameterNamed(AppUserConstants.CLIENTS);
+                Collection<Long> clientIds = new HashSet<>();
+                for (JsonElement clientElement : clientsArray) {
+                    clientIds.add(clientElement.getAsLong());
+                }
+                clients = this.clientRepositoryWrapper.findAll(clientIds);
+            }
+
+            final Map<String, Object> changes = userToUpdate.update(command, this.platformPasswordEncoder, clients);
+
+            this.topicDomainService.updateUserSubscription(userToUpdate, changes);
+            if (changes.containsKey("officeId")) {
+                final Long officeId = (Long) changes.get("officeId");
+                final Office office = this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
+                userToUpdate.changeOffice(office);
+            }
+
+            if (changes.containsKey("staffId")) {
+                final Long staffId = (Long) changes.get("staffId");
+                Staff linkedStaff = null;
+                if (staffId != null) {
+                    linkedStaff = this.staffRepositoryWrapper.findByOfficeWithNotFoundDetection(staffId, userToUpdate.getOffice().getId());
+                }
+                userToUpdate.changeStaff(linkedStaff);
+            }
+
+            if (changes.containsKey("roles")) {
+                final String[] roleIds = (String[]) changes.get("roles");
+                final Set<Role> allRoles = assembleSetOfRoles(roleIds);
+
+                userToUpdate.updateRoles(allRoles);
+            }
+
+            if (!changes.isEmpty()) {
+                this.appUserRepository.saveAndFlush(userToUpdate);
+
+                if (currentPasswordToSaveAsPreview != null) {
+                    this.appUserPreviewPasswordRepository.save(currentPasswordToSaveAsPreview);
+                }
+
+            }
+
+            return new CommandProcessingResultBuilder() //
+                    .withEntityId(userToUpdate.getId()) //
+                    // .withOfficeId(userToUpdate.getId()) //
+                    .with(changes) //
+                    .build();
+
+        } catch (final DataIntegrityViolationException dve) {
+            throw handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+        } catch (final JpaSystemException | PersistenceException | AuthenticationServiceException dve) {
+            LOG.error("createUser: JpaSystemException | PersistenceException | AuthenticationServiceException", dve);
+            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+            throw handleDataIntegrityIssues(command, throwable, dve);
+        } catch (final PlatformEmailSendException e) {
+            LOG.error("createUser: PlatformEmailSendException", e);
+
+            final String email = command.stringValueOfParameterNamed("email");
+            final ApiParameterError error = ApiParameterError.parameterError("error.msg.user.email.invalid",
+                    "Sending email failed; is parameter email is invalid? More details available in server log: " + e.getMessage(), "email",
+                    email);
+
+            throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",
+                    List.of(error), e);
+        }
+
+    }
+
+    @Override
+    @Transactional
+    @Caching(evict = { @CacheEvict(value = "users", allEntries = true), @CacheEvict(value = "usersByUsername", allEntries = true) })
     public CommandProcessingResult updateUser(final Long userId, final JsonCommand command) {
         try {
             this.context.authenticatedUser(new CommandWrapperBuilder().updateUser(null).build());

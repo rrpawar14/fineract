@@ -188,18 +188,16 @@ public class UsersApiResource {
     }
 
     @PUT
-    @Path("{userId}")
     @Operation(summary = "Update a User", description = "When updating a password you must provide the repeatPassword parameter also.")
     @RequestBody(required = true, content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdRequest.class)))
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))) })
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String update(@PathParam("userId") @Parameter(description = "userId") final Long userId,
-            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+    public String updateCustomer(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
-                .updateUser(userId) //
+                .updateCustomer() //
                 .withJson(apiRequestBodyAsJson) //
                 .build();
 
@@ -219,6 +217,24 @@ public class UsersApiResource {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .deleteUser(userId) //
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @POST
+    @Path("enquiry")
+    @Operation(summary = "Create a User Loan Enquiry", description = "Removes the user and the associated roles and permissions.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.DeleteUsersUserIdResponse.class))) })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String customerEnquiry(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .createEnquiry().withJson(apiRequestBodyAsJson) //
                 .build();
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);

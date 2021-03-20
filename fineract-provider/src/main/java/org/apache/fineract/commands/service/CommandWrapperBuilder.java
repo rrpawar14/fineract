@@ -263,11 +263,27 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder updateCustomer() {
+        this.actionName = "UPDATE";
+        this.entityName = "CUSTOMER";
+        this.entityId = null;
+        this.href = "/users/";
+        return this;
+    }
+
     public CommandWrapperBuilder deleteUser(final Long userId) {
         this.actionName = "DELETE";
         this.entityName = "USER";
         this.entityId = userId;
         this.href = "/users/" + userId;
+        return this;
+    }
+
+    public CommandWrapperBuilder createEnquiry() {
+        this.actionName = "CREATE";
+        this.entityName = "ENQUIRY";
+        this.entityId = null;
+        this.href = "/enquiry/";
         return this;
     }
 

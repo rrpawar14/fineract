@@ -30,6 +30,8 @@ import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityEx
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.notification.service.TopicDomainService;
 import org.apache.fineract.useradministration.command.PermissionsCommand;
+import org.apache.fineract.useradministration.domain.CustomerLoanEnquiry;
+import org.apache.fineract.useradministration.domain.CustomerLoanEnquiryRepository;
 import org.apache.fineract.useradministration.domain.Permission;
 import org.apache.fineract.useradministration.domain.PermissionRepository;
 import org.apache.fineract.useradministration.domain.Role;
@@ -54,6 +56,7 @@ public class RoleWritePlatformServiceJpaRepositoryImpl implements RoleWritePlatf
     private static final Logger LOG = LoggerFactory.getLogger(RoleWritePlatformServiceJpaRepositoryImpl.class);
     private final PlatformSecurityContext context;
     private final RoleRepository roleRepository;
+    private final CustomerLoanEnquiryRepository customerLoanEnquiryRepository;
     private final PermissionRepository permissionRepository;
     private final RoleDataValidator roleCommandFromApiJsonDeserializer;
     private final PermissionsCommandFromApiJsonDeserializer permissionsFromApiJsonDeserializer;
@@ -61,10 +64,12 @@ public class RoleWritePlatformServiceJpaRepositoryImpl implements RoleWritePlatf
 
     @Autowired
     public RoleWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context, final RoleRepository roleRepository,
-            final PermissionRepository permissionRepository, final RoleDataValidator roleCommandFromApiJsonDeserializer,
+            final CustomerLoanEnquiryRepository customerLoanEnquiryRepository, final PermissionRepository permissionRepository,
+            final RoleDataValidator roleCommandFromApiJsonDeserializer,
             final PermissionsCommandFromApiJsonDeserializer fromApiJsonDeserializer, final TopicDomainService topicDomainService) {
         this.context = context;
         this.roleRepository = roleRepository;
+        this.customerLoanEnquiryRepository = customerLoanEnquiryRepository;
         this.permissionRepository = permissionRepository;
         this.roleCommandFromApiJsonDeserializer = roleCommandFromApiJsonDeserializer;
         this.permissionsFromApiJsonDeserializer = fromApiJsonDeserializer;
@@ -146,6 +151,37 @@ public class RoleWritePlatformServiceJpaRepositoryImpl implements RoleWritePlatf
                     .withEntityId(roleId) //
                     .with(changes) //
                     .build();
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .build();
+        } catch (final PersistenceException dve) {
+            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+            handleDataIntegrityIssues(command, throwable, dve);
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .build();
+        }
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult createEnquiry(final JsonCommand command) {
+
+        try {
+            this.context.authenticatedUser();
+
+            // this.roleCommandFromApiJsonDeserializer.validateForCreate(command.json());
+
+            final CustomerLoanEnquiry customerLoanEnquiry = CustomerLoanEnquiry.fromJson(command);
+            System.out.println("customerLoanEnquiry: " + customerLoanEnquiry);
+            this.customerLoanEnquiryRepository.save(customerLoanEnquiry);
+
+            // this.topicDomainService.createTopic(entity);
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(customerLoanEnquiry.getId())
+                    .build();
+
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
             return new CommandProcessingResultBuilder() //
