@@ -165,13 +165,22 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
         final String name = command.stringValueOfParameterNamed("name");
         final String mobileNo = command.stringValueOfParameterNamed("mobileNo");
         String password = command.stringValueOfParameterNamed("password");
-        return new AppUser(name, mobileNo, password);
+        boolean accountNonExpired = true;
+        boolean accountNonLocked = true;
+        boolean credentialsNonExpired = true;
+        boolean enabled = true;
+        return new AppUser(name, mobileNo, password, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled);
     }
 
-    public AppUser(final String name, final String mobileNo, final String password) {
+    public AppUser(final String name, final String mobileNo, final String password, final boolean accountNonExpired,
+            final boolean accountNonLocked, final boolean credentialsNonExpired, final boolean enabled) {
         this.firstname = name;
         this.username = mobileNo;
         this.password = password;
+        this.accountNonExpired = accountNonExpired;
+        this.accountNonLocked = accountNonLocked;
+        this.credentialsNonExpired = credentialsNonExpired;
+        this.enabled = enabled;
     }
 
     protected AppUser() {
