@@ -162,12 +162,14 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     }
 
     public static AppUser fromJson(final JsonCommand command) {
+        final String name = command.stringValueOfParameterNamed("name");
         final String mobileNo = command.stringValueOfParameterNamed("mobileNo");
         String password = command.stringValueOfParameterNamed("password");
-        return new AppUser(mobileNo, password);
+        return new AppUser(name, mobileNo, password);
     }
 
-    public AppUser(final String mobileNo, final String password) {
+    public AppUser(final String name, final String mobileNo, final String password) {
+        this.firstname = name;
         this.username = mobileNo;
         this.password = password;
     }
