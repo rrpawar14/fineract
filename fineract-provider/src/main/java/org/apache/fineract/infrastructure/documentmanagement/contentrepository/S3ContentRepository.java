@@ -138,7 +138,7 @@ public class S3ContentRepository implements ContentRepository {
     }
 
     private String generateClientImageParentDirectory(final Long resourceId) {
-        return "images" + File.separator + "clients" + File.separator + resourceId;
+        return "images" + File.separator + "appUser" + File.separator + resourceId;
     }
 
     private void deleteObject(final String location) {

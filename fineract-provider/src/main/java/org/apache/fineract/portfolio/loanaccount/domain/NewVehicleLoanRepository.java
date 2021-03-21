@@ -16,17 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanaccount.exception;
+package org.apache.fineract.portfolio.loanaccount.domain;
 
-import org.apache.fineract.infrastructure.core.exception.AbstractPlatformResourceNotFoundException;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-/**
- * A {@link RuntimeException} thrown when loan transactions processing strategy resources are not found.
- */
-public class LoanTransactionProcessingStrategyNotFoundException extends AbstractPlatformResourceNotFoundException {
+public interface NewVehicleLoanRepository extends JpaRepository<NewVehicleLoan, Long>, JpaSpecificationExecutor<NewVehicleLoan> {
 
-    public LoanTransactionProcessingStrategyNotFoundException(final Long id) {
-        super("error.msg.transactions.processing.strategy.id.invalid", "Loan Application with identifier " + id + " does not exist", id);
-    }
-
+    @Query("select newVehicleLoan from NewVehicleLoan newVehicleLoan where newVehicleLoan.userid = :userid")
+    NewVehicleLoan getLoanApplicationByuserId(@Param("userid") String userid);
 }

@@ -895,6 +895,15 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createNewVehicleLoanApplication() {
+        this.actionName = "CREATE";
+        this.entityName = "NEWVEHICLELOAN";
+        this.entityId = null;
+        this.loanId = null;
+        this.href = "/loans";
+        return this;
+    }
+
     public CommandWrapperBuilder updateLoanApplication(final Long loanId) {
         this.actionName = "UPDATE";
         this.entityName = "LOAN";

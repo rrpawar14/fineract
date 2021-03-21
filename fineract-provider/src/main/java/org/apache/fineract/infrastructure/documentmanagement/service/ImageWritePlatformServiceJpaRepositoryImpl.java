@@ -31,6 +31,8 @@ import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
+import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoan;
+import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoanRepositoryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,25 +44,28 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
     private final ClientRepositoryWrapper clientRepositoryWrapper;
     private final ImageRepository imageRepository;
     private final StaffRepositoryWrapper staffRepositoryWrapper;
+    private final NewVehicleLoanRepositoryWrapper newVehicleLoanRepositoryWrapper;
 
     @Autowired
     public ImageWritePlatformServiceJpaRepositoryImpl(final ContentRepositoryFactory documentStoreFactory,
             final ClientRepositoryWrapper clientRepositoryWrapper, final ImageRepository imageRepository,
-            StaffRepositoryWrapper staffRepositoryWrapper) {
+            StaffRepositoryWrapper staffRepositoryWrapper, final NewVehicleLoanRepositoryWrapper newVehicleLoanRepositoryWrapper) {
         this.contentRepositoryFactory = documentStoreFactory;
         this.clientRepositoryWrapper = clientRepositoryWrapper;
         this.imageRepository = imageRepository;
         this.staffRepositoryWrapper = staffRepositoryWrapper;
+        this.newVehicleLoanRepositoryWrapper = newVehicleLoanRepositoryWrapper;
     }
 
     @Transactional
     @Override
-    public CommandProcessingResult saveOrUpdateImage(String entityName, final Long clientId, final String imageName,
+    public CommandProcessingResult saveOrUpdateImage(String entityName, final Long LoanApplicationId, final String imageName,
             final InputStream inputStream, final Long fileSize) {
-        Object owner = deletePreviousImage(entityName, clientId);
+        Object owner = deletePreviousImage(entityName, LoanApplicationId);
 
+        System.out.println("--image testing 1 --");
         final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository();
-        final String imageLocation = contentRepository.saveImage(inputStream, clientId, imageName, fileSize);
+        final String imageLocation = contentRepository.saveImage(inputStream, LoanApplicationId, imageName, fileSize);
         return updateImage(owner, imageLocation, contentRepository.getStorageType());
     }
 
@@ -69,10 +74,11 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
     public CommandProcessingResult saveOrUpdateImage(String entityName, final Long clientId, final Base64EncodedImage encodedImage) {
         Object owner = deletePreviousImage(entityName, clientId);
 
-        final ContentRepository contenRepository = this.contentRepositoryFactory.getRepository();
-        final String imageLocation = contenRepository.saveImage(encodedImage, clientId, "image");
+        System.out.println("--image testing 2 --");
+        final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository();
+        final String imageLocation = contentRepository.saveImage(encodedImage, clientId, "image");
 
-        return updateImage(owner, imageLocation, contenRepository.getStorageType());
+        return updateImage(owner, imageLocation, contentRepository.getStorageType());
     }
 
     @Transactional
@@ -86,6 +92,14 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             image = client.getImage();
             client.setImage(null);
             this.clientRepositoryWrapper.save(client);
+
+        } else if (EntityTypeForImages.LoanApplication.toString().equals(entityName)) {
+            System.out.println("--deleteImage--");
+            owner = this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(clientId);
+            NewVehicleLoan newVehicleLoan = (NewVehicleLoan) owner;
+            image = newVehicleLoan.getImage();
+            newVehicleLoan.setImage(null);
+            this.newVehicleLoanRepositoryWrapper.save(newVehicleLoan);
 
         } else if (EntityTypeForImages.STAFF.toString().equals(entityName)) {
             owner = this.staffRepositoryWrapper.findOneWithNotFoundDetection(clientId);
@@ -118,6 +132,11 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             Client client = this.clientRepositoryWrapper.findOneWithNotFoundDetection(entityId);
             image = client.getImage();
             owner = client;
+        } else if (EntityTypeForImages.LoanApplication.toString().equals(entityName)) {
+            System.out.println("--deletePreviousImage--");
+            NewVehicleLoan newVehicleLoan = this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+            image = newVehicleLoan.getImage();
+            owner = newVehicleLoan;
         } else if (EntityTypeForImages.STAFF.toString().equals(entityName)) {
             Staff staff = this.staffRepositoryWrapper.findOneWithNotFoundDetection(entityId);
             image = staff.getImage();
@@ -141,6 +160,14 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             image = createImage(image, imageLocation, storageType);
             client.setImage(image);
             this.clientRepositoryWrapper.save(client);
+        } else if (owner instanceof NewVehicleLoan) {
+            System.out.println("--updateImage--");
+            NewVehicleLoan newVehicleLoan = (NewVehicleLoan) owner;
+            image = newVehicleLoan.getImage();
+            clientId = newVehicleLoan.getId();
+            image = createImage(image, imageLocation, storageType);
+            newVehicleLoan.setImage(image);
+            this.newVehicleLoanRepositoryWrapper.save(newVehicleLoan);
         } else if (owner instanceof Staff) {
             Staff staff = (Staff) owner;
             image = staff.getImage();

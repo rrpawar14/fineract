@@ -101,6 +101,27 @@ public class ImagesApiResource {
         return this.toApiJsonSerializer.serialize(result);
     }
 
+    @POST
+    @Path("documents")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String addNewLoanApplicationImage(@PathParam("entity") final String entityName, @PathParam("entityId") final Long entityId,
+            @HeaderParam("Content-Length") final Long fileSize, @FormDataParam("file") final InputStream inputStream,
+            @FormDataParam("file") final FormDataContentDisposition fileDetails, @FormDataParam("file") final FormDataBodyPart bodyPart) {
+        validateEntityTypeforImage(entityName);
+        fileUploadValidator.validate(fileSize, inputStream, fileDetails, bodyPart);
+        // TODO: vishwas might need more advances validation (like reading magic
+        // number) for handling malicious clients
+        // and clients not setting mime type
+        ContentRepositoryUtils.validateClientImageNotEmpty(fileDetails.getFileName());
+        ContentRepositoryUtils.validateImageMimeType(bodyPart.getMediaType().toString());
+
+        final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityName, entityId,
+                fileDetails.getFileName(), inputStream, fileSize);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
     /**
      * Upload image as a Data URL (essentially a base64 encoded stream)
      */
@@ -204,7 +225,7 @@ public class ImagesApiResource {
     /*** Entities for document Management **/
     public enum EntityTypeForImages {
 
-        STAFF, CLIENTS;
+        STAFF, CLIENTS, LoanApplication;
 
         @Override
         public String toString() {

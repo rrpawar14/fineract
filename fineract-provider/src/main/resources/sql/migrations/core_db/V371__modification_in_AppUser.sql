@@ -22,3 +22,34 @@
 ALTER TABLE m_appuser MODIFY COLUMN email VARCHAR(100) NULL;
 ALTER TABLE m_appuser MODIFY COLUMN firstname VARCHAR(100) NULL;
 ALTER TABLE m_appuser MODIFY COLUMN lastname VARCHAR(100) NULL;
+
+
+-- create Loan Enquiry Table
+
+CREATE TABLE `m_customerloanenquiry` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `user_id` VARCHAR(50) NOT NULL DEFAULT '0',
+    `customer_name` VARCHAR(50) NOT NULL DEFAULT '0',
+    `vehicle_number` VARCHAR(50) NULL DEFAULT '0',
+    `email` VARCHAR(50) NULL DEFAULT '0',
+    `pincode` VARCHAR(50) NULL DEFAULT '0',
+    `enquiry_id` VARCHAR(50) NULL DEFAULT '0',
+    `notes` VARCHAR(100) NULL DEFAULT '0',
+    INDEX `id` (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;
+
+CREATE TABLE `m_apply_new_vehicle_loan` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `customer_name` VARCHAR(50) NULL DEFAULT NULL,
+    `vehicle_type` INT(11) NULL DEFAULT NULL,
+    `dealer` VARCHAR(50) NULL DEFAULT NULL,
+    `invoice_number` VARCHAR(50) NULL DEFAULT NULL,
+    `invoice_image` INT(11) NULL DEFAULT NULL,
+    INDEX `id` (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;

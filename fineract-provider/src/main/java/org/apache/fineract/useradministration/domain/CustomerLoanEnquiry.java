@@ -42,6 +42,9 @@ public class CustomerLoanEnquiry extends AbstractPersistableCustom {
     @Column(name = "pincode", nullable = false, length = 100)
     private String pincode;
 
+    @Column(name = "enquiry_id", nullable = false, length = 100)
+    private String enquiryId;
+
     @Column(name = "notes", nullable = false, length = 100)
     private String notes;
 
@@ -51,19 +54,21 @@ public class CustomerLoanEnquiry extends AbstractPersistableCustom {
         final String vehiclenumber = command.stringValueOfParameterNamed("vehiclenumber");
         final String email = command.stringValueOfParameterNamed("email");
         final String pincode = command.stringValueOfParameterNamed("pincode");
+        final String enquiryId = command.stringValueOfParameterNamed("enquiryId");
         final String notes = command.stringValueOfParameterNamed("notes");
         System.out.println("loanenquirydetails: " + customername + vehiclenumber + email + pincode + notes);
 
-        return new CustomerLoanEnquiry(customername, vehiclenumber, email, pincode, notes);
+        return new CustomerLoanEnquiry(customername, vehiclenumber, email, pincode, enquiryId, notes);
 
     }
 
     private CustomerLoanEnquiry(final String customername, final String vehiclenumber, final String email, final String pincode,
-            final String notes) {
+            final String enquiryId, final String notes) {
         this.customername = customername; // MobileNo is stored in username column for authentication
         this.vehiclenumber = vehiclenumber;
         this.email = email;
         this.pincode = pincode;
+        this.enquiryId = enquiryId;
         this.notes = notes;
     }
 
