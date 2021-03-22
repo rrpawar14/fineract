@@ -21,17 +21,15 @@ package org.apache.fineract.portfolio.loanaccount.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
-import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
 import org.apache.fineract.portfolio.address.domain.Address;
 
 @Entity
-@Table(name = "m_apply_new_vehicle_loan")
-public class NewVehicleLoan extends AbstractPersistableCustom {
+@Table(name = "m_apply_used_vehicle_loan")
+public class UsedVehicleLoan extends AbstractPersistableCustom {
 
     @Column(name = "customer_name", nullable = false, length = 100)
     private String customerName;
@@ -39,66 +37,61 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
     @Column(name = "vehicle_type", nullable = false, length = 100)
     private String vehicleType;
 
-    @Column(name = "dealer", nullable = false, length = 100)
-    private String dealer;
-
-    @Column(name = "invoice_number", nullable = false, length = 100)
-    private String invoiceNumber;
+    @Column(name = "loan_type", nullable = false, length = 100)
+    private String loanType;
 
     @OneToOne(optional = true)
-    @JoinColumn(name = "invoice_image_id", nullable = true)
-    private Image image;
-
-    @ManyToOne
+    @JoinColumn(name = "customer_details_id", nullable = true)
     private Address address;
 
-    @ManyToOne
+    @OneToOne(optional = true)
+    @JoinColumn(name = "customer_details_id", nullable = true)
     private CustomerDetails customerDetails;
 
-    @ManyToOne
+    @OneToOne(optional = true)
+    @JoinColumn(name = "vehicle_details_id", nullable = true)
     private VehicleDetails vehicleDetails;
 
-    @ManyToOne
+    @OneToOne(optional = true)
+    @JoinColumn(name = "guarantor_details_id", nullable = true)
     private CustomerGuarantor customerGuarantor;
 
-    @ManyToOne
-    private BankDetails bankDetailsObj;
+    @OneToOne(optional = true)
+    @JoinColumn(name = "bank_details_id", nullable = true)
+    private BankDetails bankDetails;
 
-    public static NewVehicleLoan fromJson(final JsonCommand command, final Address address, final CustomerDetails customerDetails,
-            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final BankDetails bankDetailsObj) {
+    public static UsedVehicleLoan fromJson(final JsonCommand command, final Address address, final CustomerDetails customerDetails,
+            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final BankDetails bankDetails) {
 
         final String customerName = command.stringValueOfParameterNamed("customerName");
         final String vehicleType = command.stringValueOfParameterNamed("vehicleType");
-        final String dealer = command.stringValueOfParameterNamed("dealer");
-        final String invoiceNumber = command.stringValueOfParameterNamed("invoiceNumber");
+        final String loanType = command.stringValueOfParameterNamed("loanType");
+        // final String invoiceNumber = command.stringValueOfParameterNamed("invoiceNumber");
         // final Integer image = command.stringValueOfParameterNamed("invoiceImageId");
 
-        return new NewVehicleLoan(customerName, vehicleType, dealer, invoiceNumber, address, customerDetails, vehicleDetails,
-                customerGuarantor, bankDetailsObj);
+        return new UsedVehicleLoan(customerName, vehicleType, loanType, address, customerDetails, vehicleDetails, customerGuarantor,
+                bankDetails);
 
     }
 
-    private NewVehicleLoan(final String customerName, final String vehicleType, final String dealer, final String invoiceNumber,
-            final Address address, final CustomerDetails customerDetails, final VehicleDetails vehicleDetails,
-            final CustomerGuarantor customerGuarantor, final BankDetails bankDetailsObj) {
+    private UsedVehicleLoan(final String customerName, final String vehicleType, final String loanType, final Address address,
+            final CustomerDetails customerDetails, final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor,
+            final BankDetails bankDetailsObj) {
         this.customerName = customerName;
         this.vehicleType = vehicleType;
-        this.dealer = dealer;
-        this.invoiceNumber = invoiceNumber;
-
+        this.loanType = loanType;
         this.address = address;
         this.customerDetails = customerDetails;
         this.vehicleDetails = vehicleDetails;
         this.customerGuarantor = customerGuarantor;
-        this.bankDetailsObj = bankDetailsObj;
+        this.bankDetails = bankDetailsObj;
     }
 
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
-    public Image getImage() {
-        return this.image;
-    }
+    /*
+     * public void setImage(Image image) { this.image = image; }
+     *
+     * public Image getImage() { return this.image; }
+     *
+     */
 
 }

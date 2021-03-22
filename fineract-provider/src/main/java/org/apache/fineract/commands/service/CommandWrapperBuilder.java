@@ -900,7 +900,16 @@ public class CommandWrapperBuilder {
         this.entityName = "NEWVEHICLELOAN";
         this.entityId = null;
         this.loanId = null;
-        this.href = "/loans";
+        this.href = "/loans/newvehicle";
+        return this;
+    }
+
+    public CommandWrapperBuilder createUsedVehicleLoanApplication() {
+        this.actionName = "CREATE";
+        this.entityName = "USEDVEHICLELOAN";
+        this.entityId = null;
+        this.loanId = null;
+        this.href = "/loans/usedvehicle";
         return this;
     }
 

@@ -75,6 +75,15 @@ public class Address extends AbstractPersistableCustom {
     @JoinColumn(name = "state_province_id")
     private CodeValue stateProvince;
 
+    @Column(name = "state")
+    private String state;
+
+    @Column(name = "landmark")
+    private String landmark;
+
+    @Column(name = "area")
+    private String area;
+
     @ManyToOne
     @JoinColumn(name = "country_id")
     private CodeValue country;
@@ -138,13 +147,13 @@ public class Address extends AbstractPersistableCustom {
 
     public static Address fromJson(final JsonCommand command, final CodeValue stateProvince, final CodeValue country) {
 
-        final String street = command.stringValueOfParameterNamed("street");
-
         final String addressLine1 = command.stringValueOfParameterNamed("addressLine1");
 
         final String addressLine2 = command.stringValueOfParameterNamed("addressLine2");
 
         final String addressLine3 = command.stringValueOfParameterNamed("addressLine3");
+
+        final String street = command.stringValueOfParameterNamed("street");
 
         final String townVillage = command.stringValueOfParameterNamed("townVillage");
 
@@ -168,6 +177,37 @@ public class Address extends AbstractPersistableCustom {
 
         return new Address(street, addressLine1, addressLine2, addressLine3, townVillage, city, countyDistrict, stateProvince, country,
                 postalCode, latitude, longitude, createdBy, createdOn, updatedBy, updatedOn);
+    }
+
+    public static Address fromJson(final JsonCommand command) {
+
+        final String addressLine1 = command.stringValueOfParameterNamed("addressLine1");
+
+        final String addressLine2 = command.stringValueOfParameterNamed("addressLine2");
+
+        final String landmark = command.stringValueOfParameterNamed("landmark");
+
+        final String postalCode = command.stringValueOfParameterNamed("pincode");
+
+        final String area = command.stringValueOfParameterNamed("area");
+
+        final String city = command.stringValueOfParameterNamed("city");
+
+        final String state = command.stringValueOfParameterNamed("state");
+
+        return new Address(addressLine1, addressLine2, landmark, postalCode, area, city, state);
+    }
+
+    private Address(final String addressLine1, final String addressLine2, final String landmark, final String postalCode, final String area,
+            final String city, final String state) {
+
+        this.addressLine1 = addressLine1;
+        this.addressLine2 = addressLine2;
+        this.landmark = landmark;
+        this.postalCode = postalCode;
+        this.area = area;
+        this.city = city;
+        this.state = state;
     }
 
     public static Address fromJsonObject(final JsonObject jsonObject, final CodeValue state_province, final CodeValue country) {

@@ -53,3 +53,63 @@ CREATE TABLE `m_apply_new_vehicle_loan` (
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 ;
+
+
+ALTER table m_address
+ADD landmark varchar(100),
+ADD area varchar(100),
+ADD state varchar(100);
+
+
+CREATE TABLE `m_customer_details` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(100) NULL DEFAULT '0',
+    `gender` SMALLINT(6) NULL DEFAULT '0',
+    `dob` DATE NULL DEFAULT NULL,
+    `maritalstatus` SMALLINT(6) NULL DEFAULT NULL,
+    `spousename` VARCHAR(100) NULL DEFAULT NULL,
+    `profession` VARCHAR(100) NULL DEFAULT NULL,
+    `proof_image_id` INT(11) NULL DEFAULT NULL,
+    INDEX `id` (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;
+
+
+CREATE TABLE `m_vehicle_details` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `vehicle_number` VARCHAR(50) NULL DEFAULT '0',
+    `maker` VARCHAR(50) NULL DEFAULT '0',
+    `model` VARCHAR(50) NULL DEFAULT '0',
+    `color` VARCHAR(50) NULL DEFAULT '0',
+    `mfg_year` VARCHAR(50) NULL DEFAULT '0',
+    `engine_number` VARCHAR(50) NULL DEFAULT '0',
+    `chassis_number` VARCHAR(50) NULL DEFAULT '0',
+    `insurance_company` VARCHAR(50) NULL DEFAULT '0',
+    `insurance_policy` VARCHAR(50) NULL DEFAULT '0',
+    `insurance_expiry` DATE NULL DEFAULT NULL,
+    `pollution_cert_expiry` DATE NULL DEFAULT NULL,
+    `registration` DATE NULL DEFAULT NULL,
+    `live_km_reading` BIGINT(20) NULL DEFAULT NULL,
+    INDEX `id` (`id`)
+)
+ENGINE=InnoDB
+;
+
+
+CREATE TABLE `m_customer_bank_details` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `loan_eligible_amount` BIGINT(20) NOT NULL DEFAULT '0',
+    `account_type` VARCHAR(50) NOT NULL DEFAULT '0',
+    `disbursal_type` VARCHAR(50) NOT NULL DEFAULT '0',
+    `account_number` VARCHAR(50) NOT NULL DEFAULT '0',
+    `account_holder_name` VARCHAR(50) NOT NULL DEFAULT '0',
+    `bank_name` VARCHAR(50) NOT NULL DEFAULT '0',
+    `branch_name` VARCHAR(50) NOT NULL DEFAULT '0',
+    `IFSC` VARCHAR(50) NOT NULL DEFAULT '0',
+    `passbook_image_id` INT(11) NOT NULL DEFAULT '0',
+    INDEX `id` (`id`)
+)
+ENGINE=InnoDB
+;
