@@ -41,7 +41,7 @@ public class UsedVehicleLoan extends AbstractPersistableCustom {
     private String loanType;
 
     @OneToOne(optional = true)
-    @JoinColumn(name = "customer_details_id", nullable = true)
+    @JoinColumn(name = "address_id", nullable = true)
     private Address address;
 
     @OneToOne(optional = true)

@@ -48,11 +48,49 @@ CREATE TABLE `m_apply_new_vehicle_loan` (
     `dealer` VARCHAR(50) NULL DEFAULT NULL,
     `invoice_number` VARCHAR(50) NULL DEFAULT NULL,
     `invoice_image` INT(11) NULL DEFAULT NULL,
+    `address_id` VARCHAR(50) NULL DEFAULT NULL,
+    `customer_details_id` VARCHAR(50) NULL DEFAULT NULL,
+    `vehicle_details_id` VARCHAR(50) NULL DEFAULT NULL,
+    `guarantor_details_id` VARCHAR(50) NULL DEFAULT NULL,
+    `bank_details_id` VARCHAR(50) NULL DEFAULT NULL,
     INDEX `id` (`id`)
-)
-COLLATE='latin1_swedish_ci'
-ENGINE=InnoDB
-;
+/*    INDEX `FK_address_id` (`address_id`),
+    INDEX `FK_customer_details_id` (`customer_details_id`),
+    INDEX `FK_vehicle_details_id` (`vehicle_details_id`),
+    INDEX `FK_guarantor_details_id` (`guarantor_details_id`),
+    INDEX `FK_bank_details_id` (`bank_details_id`),
+
+CONSTRAINT `FK_address_id` FOREIGN KEY (`address_id`) REFERENCES `m_address` (`id`),
+CONSTRAINT `FK_customer_details_id` FOREIGN KEY (`customer_details_id`) REFERENCES `m_customer_details` (`id`),
+CONSTRAINT `FK_vehicle_details_id` FOREIGN KEY (`vehicle_details_id`) REFERENCES `m_vehicle_details` (`id`),
+CONSTRAINT `FK_guarantor_details_id` FOREIGN KEY (`guarantor_details_id`) REFERENCES `m_customer_guarantor` (`id`),
+CONSTRAINT `FK_bank_details_id` FOREIGN KEY (`bank_details_id`) REFERENCES `m_customer_bank_details` (`id`)*/
+);
+
+CREATE TABLE `m_apply_used_vehicle_loan` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `customer_name` VARCHAR(50) NULL DEFAULT NULL,
+    `vehicle_type` VARCHAR(50) NULL DEFAULT NULL,
+    `loan_type` VARCHAR(50) NULL DEFAULT NULL,
+    `address_id` VARCHAR(50) NULL DEFAULT NULL,
+    `customer_details_id` VARCHAR(50) NULL DEFAULT NULL,
+    `vehicle_details_id` VARCHAR(50) NULL DEFAULT NULL,
+    `guarantor_details_id` VARCHAR(50) NULL DEFAULT NULL,
+    `bank_details_id` VARCHAR(50) NULL DEFAULT NULL,
+    INDEX `id` (`id`)
+/*    INDEX `FK_address_id` (`address_id`),
+    INDEX `FK_customer_details_id` (`customer_details_id`),
+    INDEX `FK_vehicle_details_id` (`vehicle_details_id`),
+    INDEX `FK_guarantor_details_id` (`guarantor_details_id`),
+    INDEX `FK_bank_details_id` (`bank_details_id`),
+
+CONSTRAINT `FK_address_id` FOREIGN KEY (`address_id`) REFERENCES `m_address` (`id`),
+CONSTRAINT `FK_customer_details_id` FOREIGN KEY (`customer_details_id`) REFERENCES `m_customer_details` (`id`),
+CONSTRAINT `FK_vehicle_details_id` FOREIGN KEY (`vehicle_details_id`) REFERENCES `m_vehicle_details` (`id`),
+CONSTRAINT `FK_guarantor_details_id` FOREIGN KEY (`guarantor_details_id`) REFERENCES `m_customer_guarantor` (`id`),
+CONSTRAINT `FK_bank_details_id` FOREIGN KEY (`bank_details_id`) REFERENCES `m_customer_bank_details` (`id`)*/
+);
+
 
 
 ALTER table m_address

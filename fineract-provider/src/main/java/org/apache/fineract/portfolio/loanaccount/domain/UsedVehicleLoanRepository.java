@@ -25,6 +25,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface UsedVehicleLoanRepository extends JpaRepository<UsedVehicleLoan, Long>, JpaSpecificationExecutor<UsedVehicleLoan> {
 
-    @Query("select usedVehicleLoan from UsedVehicleLoan usedVehicleLoan where usedVehicleLoan.userid = :userid")
+    @Query("select usedVehicleLoan from UsedVehicleLoan usedVehicleLoan where usedVehicleLoan.id = :userid")
     UsedVehicleLoan getLoanApplicationByuserId(@Param("userid") String userid);
 }
