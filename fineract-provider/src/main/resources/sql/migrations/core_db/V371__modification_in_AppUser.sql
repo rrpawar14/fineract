@@ -19,7 +19,7 @@
 
 
 -- ALTER TABLE `m_appuser`
-ALTER TABLE m_appuser MODIFY COLUMN email VARCHAR(100) NULL;
+/*ALTER TABLE m_appuser MODIFY COLUMN email VARCHAR(100) NULL;
 ALTER TABLE m_appuser MODIFY COLUMN firstname VARCHAR(100) NULL;
 ALTER TABLE m_appuser MODIFY COLUMN lastname VARCHAR(100) NULL;
 
@@ -150,4 +150,4 @@ CREATE TABLE `m_customer_bank_details` (
     INDEX `id` (`id`)
 )
 ENGINE=InnoDB
-;
+;*/

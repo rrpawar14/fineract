@@ -255,6 +255,14 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder updateUser() {
+        this.actionName = "UPDATE";
+        this.entityName = "USER";
+        this.entityId = null;
+        this.href = "/users/";
+        return this;
+    }
+
     public CommandWrapperBuilder updateUser(final Long userId) {
         this.actionName = "UPDATE";
         this.entityName = "USER";

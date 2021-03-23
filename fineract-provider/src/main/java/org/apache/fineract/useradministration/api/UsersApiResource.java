@@ -198,6 +198,7 @@ public class UsersApiResource {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .updateCustomer() //
+                // .updateUser()
                 .withJson(apiRequestBodyAsJson) //
                 .build();
 
