@@ -29,46 +29,46 @@ import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
 
 @Entity
-@Table(name = "m_apply_new_vehicle_loan")
+@Table(name = "m_vehicle_details")
 public class VehicleDetails extends AbstractPersistableCustom {
 
-    @Column(name = "vehicle_number", nullable = false, length = 100)
+    @Column(name = "vehicle_number")
     private String vehicleNumber;
 
-    @Column(name = "maker", nullable = false, length = 100)
+    @Column(name = "maker")
     private String maker;
 
-    @Column(name = "model", nullable = false, length = 100)
+    @Column(name = "model")
     private String model;
 
-    @Column(name = "color", nullable = false, length = 100)
+    @Column(name = "color")
     private String color;
 
-    @Column(name = "mfg_year", nullable = false, length = 100)
+    @Column(name = "mfg_year")
     private String mfgYear;
 
-    @Column(name = "engine_number", nullable = false, length = 100)
+    @Column(name = "engine_number")
     private String engineNumber;
 
-    @Column(name = "chassis_number", nullable = false, length = 100)
+    @Column(name = "chassis_number")
     private String chassisNumber;
 
-    @Column(name = "insurance_company", nullable = false, length = 100)
+    @Column(name = "insurance_company")
     private String insuranceCompany;
 
-    @Column(name = "insurance_policy", nullable = false, length = 100)
+    @Column(name = "insurance_policy")
     private String insurancePolicy;
 
-    @Column(name = "insurance_expiry", nullable = false, length = 100)
+    @Column(name = "insurance_expiry")
     private Date insuranceExpiry;
 
-    @Column(name = "pollution_cert_expiry", nullable = false, length = 100)
+    @Column(name = "pollution_cert_expiry")
     private Date pollutionCertExpiry;
 
-    @Column(name = "registration", nullable = false, length = 100)
+    @Column(name = "registration")
     private Date registration;
 
-    @Column(name = "live_km_reading", nullable = false, length = 100)
+    @Column(name = "live_km_reading")
     private String kmReading;
 
     @OneToOne(optional = true)

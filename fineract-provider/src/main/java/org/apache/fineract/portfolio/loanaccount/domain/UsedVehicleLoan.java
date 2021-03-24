@@ -45,19 +45,19 @@ public class UsedVehicleLoan extends AbstractPersistableCustom {
     private Address address;
 
     @OneToOne(optional = true)
-    @JoinColumn(name = "customer_details_id", nullable = true)
+    @JoinColumn(name = "customerdetails_id", nullable = true)
     private CustomerDetails customerDetails;
 
     @OneToOne(optional = true)
-    @JoinColumn(name = "vehicle_details_id", nullable = true)
+    @JoinColumn(name = "vehicledetails_id", nullable = true)
     private VehicleDetails vehicleDetails;
 
     @OneToOne(optional = true)
-    @JoinColumn(name = "guarantor_details_id", nullable = true)
+    @JoinColumn(name = "guarantordetails_id", nullable = true)
     private CustomerGuarantor customerGuarantor;
 
     @OneToOne(optional = true)
-    @JoinColumn(name = "bank_details_id", nullable = true)
+    @JoinColumn(name = "bankdetails_id", nullable = true)
     private BankDetails bankDetails;
 
     public static UsedVehicleLoan fromJson(final JsonCommand command, final Address address, final CustomerDetails customerDetails,

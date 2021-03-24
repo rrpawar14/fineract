@@ -31,28 +31,28 @@ import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
 @Table(name = "m_customer_bank_details")
 public class BankDetails extends AbstractPersistableCustom {
 
-    @Column(name = "loan_eligible_amount", nullable = false, length = 100)
+    @Column(name = "loan_eligible_amount")
     private Integer loanEligibleAmount;
 
-    @Column(name = "account_type", nullable = false, length = 100)
+    @Column(name = "account_type")
     private String accountType;
 
-    @Column(name = "disbursal_type", nullable = false, length = 100)
+    @Column(name = "disbursal_type")
     private String disbursalType;
 
-    @Column(name = "account_number", nullable = false, length = 100)
+    @Column(name = "account_number")
     private String accountNumber;
 
-    @Column(name = "account_holder_name", nullable = false, length = 100)
+    @Column(name = "account_holder_name")
     private String accountHolderName;
 
-    @Column(name = "bank_name", nullable = false, length = 100)
+    @Column(name = "bank_name")
     private String bankName;
 
-    @Column(name = "branch_name", nullable = false, length = 100)
+    @Column(name = "branch_name")
     private String branchName;
 
-    @Column(name = "IFSC", nullable = false, length = 100)
+    @Column(name = "IFSC")
     private String IFSC;
 
     @OneToOne(optional = true)

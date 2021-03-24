@@ -32,32 +32,32 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
     // @Column(name = "g", nullable = false, length = 100)
     // private BigDecimal loanEligibleAmount;
 
-    @Column(name = "mobile_number", nullable = false, length = 100)
+    @Column(name = "mobile_number")
     private Integer mobileNumber;
 
-    @Column(name = "gender", nullable = false, length = 100)
+    @Column(name = "gender")
     private String gender;
 
-    @Column(name = "dob", nullable = false, length = 100)
+    @Column(name = "dob")
     private Date dob;
 
-    @Column(name = "marital_status", nullable = false, length = 100)
+    @Column(name = "marital_status")
     private String maritalStatus;
 
-    @Column(name = "spouse_name", nullable = false, length = 100)
+    @Column(name = "spouse_name")
     private String spouseName;
 
-    @Column(name = "profession", nullable = false, length = 100)
+    @Column(name = "profession")
     private String profession;
 
     public static CustomerGuarantor fromJson(final JsonCommand command) {
 
-        final Integer mobileNumber = command.integerValueOfParameterNamed("mobile_number");
-        final String gender = command.stringValueOfParameterNamed("gender");
-        final Date dob = command.dateValueOfParameterNamed("dob");
-        final String maritalStatus = command.stringValueOfParameterNamed("maritalStatus");
-        final String spouseName = command.stringValueOfParameterNamed("spouseName");
-        final String profession = command.stringValueOfParameterNamed("profession");
+        final Integer mobileNumber = command.integerValueOfParameterNamed("guarantor_mobile_number");
+        final String gender = command.stringValueOfParameterNamed("guarantor_gender");
+        final Date dob = command.dateValueOfParameterNamed("guarantor_dob");
+        final String maritalStatus = command.stringValueOfParameterNamed("guarantor_maritalStatus");
+        final String spouseName = command.stringValueOfParameterNamed("guarantor_spouseName");
+        final String profession = command.stringValueOfParameterNamed("guarantor_profession");
 
         return new CustomerGuarantor(mobileNumber, gender, dob, maritalStatus, spouseName, profession);
     }

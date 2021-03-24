@@ -22,18 +22,17 @@ package org.apache.fineract.useradministration.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
 @Entity
-@Table(name = "m_customerloanenquiry", uniqueConstraints = @UniqueConstraint(columnNames = { "vehiclenumber" }, name = "vehiclenumber_UK"))
+@Table(name = "m_customerloanenquiry")
 public class CustomerLoanEnquiry extends AbstractPersistableCustom {
 
-    @Column(name = "customername", nullable = false, length = 100)
+    @Column(name = "customer_name", nullable = false, length = 100)
     private String customername; // MobileNo is stored in username column for authentication
 
-    @Column(name = "vehiclenumber", nullable = false, length = 100)
+    @Column(name = "vehicle_number", nullable = false, length = 100)
     private String vehiclenumber;
 
     @Column(name = "email", nullable = false, length = 100)

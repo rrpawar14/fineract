@@ -33,16 +33,16 @@ import org.apache.fineract.portfolio.address.domain.Address;
 @Table(name = "m_apply_new_vehicle_loan")
 public class NewVehicleLoan extends AbstractPersistableCustom {
 
-    @Column(name = "customer_name", nullable = false, length = 100)
+    @Column(name = "customer_name", nullable = true, length = 100)
     private String customerName;
 
-    @Column(name = "vehicle_type", nullable = false, length = 100)
+    @Column(name = "vehicle_type", nullable = true, length = 100)
     private String vehicleType;
 
-    @Column(name = "dealer", nullable = false, length = 100)
+    @Column(name = "dealer", nullable = true, length = 100)
     private String dealer;
 
-    @Column(name = "invoice_number", nullable = false, length = 100)
+    @Column(name = "invoice_number", nullable = true, length = 100)
     private String invoiceNumber;
 
     @OneToOne(optional = true)
@@ -62,10 +62,10 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
     private CustomerGuarantor customerGuarantor;
 
     @ManyToOne
-    private BankDetails bankDetailsObj;
+    private BankDetails bankDetails;
 
     public static NewVehicleLoan fromJson(final JsonCommand command, final Address address, final CustomerDetails customerDetails,
-            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final BankDetails bankDetailsObj) {
+            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final BankDetails bankDetails) {
 
         final String customerName = command.stringValueOfParameterNamed("customerName");
         final String vehicleType = command.stringValueOfParameterNamed("vehicleType");
@@ -74,23 +74,22 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
         // final Integer image = command.stringValueOfParameterNamed("invoiceImageId");
 
         return new NewVehicleLoan(customerName, vehicleType, dealer, invoiceNumber, address, customerDetails, vehicleDetails,
-                customerGuarantor, bankDetailsObj);
+                customerGuarantor, bankDetails);
 
     }
 
     private NewVehicleLoan(final String customerName, final String vehicleType, final String dealer, final String invoiceNumber,
             final Address address, final CustomerDetails customerDetails, final VehicleDetails vehicleDetails,
-            final CustomerGuarantor customerGuarantor, final BankDetails bankDetailsObj) {
+            final CustomerGuarantor customerGuarantor, final BankDetails bankDetails) {
         this.customerName = customerName;
         this.vehicleType = vehicleType;
         this.dealer = dealer;
         this.invoiceNumber = invoiceNumber;
-
         this.address = address;
         this.customerDetails = customerDetails;
         this.vehicleDetails = vehicleDetails;
         this.customerGuarantor = customerGuarantor;
-        this.bankDetailsObj = bankDetailsObj;
+        this.bankDetails = bankDetails;
     }
 
     public void setImage(Image image) {

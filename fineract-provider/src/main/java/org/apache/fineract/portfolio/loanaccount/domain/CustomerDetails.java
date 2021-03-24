@@ -34,7 +34,7 @@ public class CustomerDetails extends AbstractPersistableCustom {
     private String name;
 
     @Column(name = "gender")
-    private Integer gender;
+    private String gender;
 
     @Column(name = "dob")
     private Date dob;
@@ -53,18 +53,18 @@ public class CustomerDetails extends AbstractPersistableCustom {
 
     public static CustomerDetails fromJson(final JsonCommand command) {
 
-        final String name = command.stringValueOfParameterNamed("name");
-        final Integer gender = command.integerValueOfParameterNamed("gender");
+        final String name = command.stringValueOfParameterNamed("customerName");
+        final String gender = command.stringValueOfParameterNamed("gender");
         final Date dob = command.dateValueOfParameterNamed("dob");
         final String maritalStatus = command.stringValueOfParameterNamed("maritalStatus");
-        final String spousename = command.stringValueOfParameterNamed("spousename");
+        final String spousename = command.stringValueOfParameterNamed("spouseName");
         final String profession = command.stringValueOfParameterNamed("profession");
 
         return new CustomerDetails(name, gender, dob, maritalStatus, spousename, profession);
 
     }
 
-    private CustomerDetails(final String name, final Integer gender, final Date dob, final String maritalStatus, final String spousename,
+    private CustomerDetails(final String name, final String gender, final Date dob, final String maritalStatus, final String spousename,
             final String profession) {
         this.name = name;
         this.gender = gender;
