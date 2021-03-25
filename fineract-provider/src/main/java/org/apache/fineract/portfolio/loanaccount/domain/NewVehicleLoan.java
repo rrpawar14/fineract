@@ -26,7 +26,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
-import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
+import org.apache.fineract.infrastructure.documentmanagement.domain.DocumentImages;
 import org.apache.fineract.portfolio.address.domain.Address;
 
 @Entity
@@ -47,7 +47,7 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
 
     @OneToOne(optional = true)
     @JoinColumn(name = "invoice_image_id", nullable = true)
-    private Image image;
+    private DocumentImages image;
 
     @ManyToOne
     private Address address;
@@ -92,12 +92,18 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
         this.bankDetails = bankDetails;
     }
 
-    public void setImage(Image image) {
-        this.image = image;
+    public void setInvoiceImage(final DocumentImages invoiceImage) {
+        this.image = invoiceImage;
     }
 
-    public Image getImage() {
+    public DocumentImages getInvoiceImage() {
         return this.image;
     }
+
+    /*
+     * public void setImage(Image image) { this.image = image; }
+     *
+     * public Image getImage() { return this.image; }
+     */
 
 }

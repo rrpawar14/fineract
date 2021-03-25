@@ -26,7 +26,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
-import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
+import org.apache.fineract.infrastructure.documentmanagement.domain.VehicleImages;
 
 @Entity
 @Table(name = "m_vehicle_details")
@@ -73,7 +73,7 @@ public class VehicleDetails extends AbstractPersistableCustom {
 
     @OneToOne(optional = true)
     @JoinColumn(name = "rc_book_image_id", nullable = true)
-    private Image image;
+    private VehicleImages vehicleImage;
 
     public static VehicleDetails fromJson(final JsonCommand command) {
 
@@ -114,12 +114,16 @@ public class VehicleDetails extends AbstractPersistableCustom {
         this.kmReading = kmReading;
     }
 
-    public void setImage(Image image) {
-        this.image = image;
+    public void setVehicleDetails(final VehicleImages vehicleImage) {
+        this.vehicleImage = vehicleImage;
     }
 
-    public Image getImage() {
-        return this.image;
+    public void setImage(VehicleImages vehicleImage) {
+        this.vehicleImage = vehicleImage;
+    }
+
+    public VehicleImages getImage() {
+        return this.vehicleImage;
     }
 
 }

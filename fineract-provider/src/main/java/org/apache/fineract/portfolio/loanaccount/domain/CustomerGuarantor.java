@@ -21,9 +21,13 @@ package org.apache.fineract.portfolio.loanaccount.domain;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
+import org.apache.fineract.infrastructure.documentmanagement.domain.DocumentImages;
+import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
 
 @Entity
 @Table(name = "m_customer_guarantor")
@@ -50,6 +54,14 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
     @Column(name = "profession")
     private String profession;
 
+    @OneToOne(optional = true)
+    @JoinColumn(name = "guarantor_image_id", nullable = true)
+    private Image guarantorImage;
+
+    @OneToOne(optional = true)
+    @JoinColumn(name = "document_image_id", nullable = true)
+    private DocumentImages documentImage;
+
     public static CustomerGuarantor fromJson(final JsonCommand command) {
 
         final Integer mobileNumber = command.integerValueOfParameterNamed("guarantor_mobile_number");
@@ -70,5 +82,21 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
         this.maritalStatus = maritalStatus;
         this.spouseName = spouseName;
         this.profession = profession;
+    }
+
+    public void setDocumentImage(final DocumentImages documentImages) {
+        this.documentImage = documentImages;
+    }
+
+    public void setGuarantorImage(final Image image) {
+        this.guarantorImage = image;
+    }
+
+    public DocumentImages getDocumentImage() {
+        return this.documentImage;
+    }
+
+    public Image getGuarantorImage() {
+        return this.guarantorImage;
     }
 }

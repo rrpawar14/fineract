@@ -185,3 +185,23 @@ INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `c
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'CREATE_NEWVEHICLELOAN', 'NEWVEHICLELOAN', 'CREATE', 0);
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'CREATE_USEDVEHICLELOAN', 'USEDVEHICLELOAN', 'CREATE', 0);
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'CREATE_ENQUIRY', 'ENQUIRY', 'CREATE', 0);
+
+CREATE TABLE `m_documents_images` (
+    `id` INT(11) NOT NULL,
+    `location` VARCHAR(500) NULL DEFAULT NULL,
+    `storage_type_enum` SMALLINT(6) NULL DEFAULT NULL,
+    PRIMARY KEY (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;
+
+CREATE TABLE `m_vehicle_images` (
+    `id` INT(11) NOT NULL,
+    `location` VARCHAR(500) NULL DEFAULT NULL,
+    `storage_type_enum` SMALLINT(6) NULL DEFAULT NULL,
+    PRIMARY KEY (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;

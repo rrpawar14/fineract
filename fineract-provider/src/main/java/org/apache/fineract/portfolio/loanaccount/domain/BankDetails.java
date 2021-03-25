@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.loanaccount.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -25,7 +26,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
-import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
+import org.apache.fineract.infrastructure.documentmanagement.domain.DocumentImages;
 
 @Entity
 @Table(name = "m_customer_bank_details")
@@ -55,9 +56,9 @@ public class BankDetails extends AbstractPersistableCustom {
     @Column(name = "IFSC")
     private String IFSC;
 
-    @OneToOne(optional = true)
+    @OneToOne(optional = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "passbook_image_id", nullable = true)
-    private Image image;
+    private DocumentImages image;
 
     public static BankDetails fromJson(final JsonCommand command) {
 
@@ -87,11 +88,11 @@ public class BankDetails extends AbstractPersistableCustom {
         this.IFSC = IFSC;
     }
 
-    public void setImage(Image image) {
+    public void setImage(DocumentImages image) {
         this.image = image;
     }
 
-    public Image getImage() {
+    public DocumentImages getImage() {
         return this.image;
     }
 

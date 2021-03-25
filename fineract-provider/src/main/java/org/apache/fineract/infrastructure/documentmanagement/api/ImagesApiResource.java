@@ -92,6 +92,8 @@ public class ImagesApiResource {
         // TODO: vishwas might need more advances validation (like reading magic
         // number) for handling malicious clients
         // and clients not setting mime type
+        System.out.println("entity: " + entityName + "entityId:" + entityId);
+        System.out.println("Content-Length: " + fileSize + "filedet:" + fileDetails);
         ContentRepositoryUtils.validateClientImageNotEmpty(fileDetails.getFileName());
         ContentRepositoryUtils.validateImageMimeType(bodyPart.getMediaType().toString());
 
@@ -225,7 +227,7 @@ public class ImagesApiResource {
     /*** Entities for document Management **/
     public enum EntityTypeForImages {
 
-        STAFF, CLIENTS, LoanApplication;
+        STAFF, CLIENTS, NEWVEHICLE, USEDVEHICLE, VEHICLEDETAILS, GUARANTOR, BANK;
 
         @Override
         public String toString() {
