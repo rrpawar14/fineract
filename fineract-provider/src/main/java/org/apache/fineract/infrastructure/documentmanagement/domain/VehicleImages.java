@@ -18,10 +18,14 @@
  */
 package org.apache.fineract.infrastructure.documentmanagement.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
+import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetails;
 
 @Entity
 @Table(name = "m_vehicle_images")
@@ -33,9 +37,14 @@ public final class VehicleImages extends AbstractPersistableCustom {
     @Column(name = "storage_type_enum")
     private Integer storageType;
 
-    public VehicleImages(final String location, final StorageType storageType) {
+    @OneToOne(optional = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "vehicle_id", nullable = true)
+    private VehicleDetails vehicleDetails;
+
+    public VehicleImages(final String location, final StorageType storageType, final VehicleDetails vehicleDetails) {
         this.location = location;
         this.storageType = storageType.getValue();
+        this.vehicleDetails = vehicleDetails;
     }
 
     VehicleImages() {

@@ -182,40 +182,47 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
         VehicleImages vehicleImage = null;
         // CustomerImage, AdharPhoto, GovermentDocument, InvoiceImage, Engine, Chassis, Vehicle, GuarantorImage,
         // GuarantorDocument, Bank
-
-        if (entityName.equals("CustomerImage")) {
+        System.out.println("Object creation");
+        // if (entityName.equals("CustomerImage")) {
+        if (EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
-            System.out.println("--USEDVEHICLE--");
+            System.out.println("--CustomerImage--");
             UsedVehicleLoan usedVehicleLoan = this.usedVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
             // image = usedVehicleLoan.getCustomerImage();
             owner = usedVehicleLoan;
             // }
         }
-        if (entityName.equals("AdharPhoto") && entityName.equals("GovernmentDocument")) {
+        // if (entityName.equals("AdharPhoto") || entityName.equals("GovernmentDocument")) {
+        if (EntityTypeForImages.ADHARPHOTO.toString().equals(entityName)
+                || EntityTypeForImages.GOVERNMENTDOCUMENT.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
-            System.out.println("--USEDVEHICLE--");
+            System.out.println("--AdharPhoto GovernmentDocument--");
             UsedVehicleLoan usedVehicleLoan = this.usedVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
             // documentImage = usedVehicleLoan.getDocumentImage();
             owner = usedVehicleLoan;
             // }
         }
-        if (entityName.equals("InvoiceImage")) {
+        if (EntityTypeForImages.NEWVEHICLE.toString().equals(entityName)) {
             // if (EntityTypeForImages.NEWVEHICLE.toString().equals(entityName)) {
-            // System.out.println("--NEWVEHICLE--");
+            System.out.println("--InvoiceImage--");
             NewVehicleLoan newVehicleLoan = this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
             // documentImage = newVehicleLoan.getInvoiceImage();
             owner = newVehicleLoan;
             // }
         }
-        if (entityName.equals("Engine") && entityName.equals("Chassis") && entityName.equals("Vehicle")) {
+        // if (entityName.equals("Engine") || entityName.equals("Chassis") || entityName.equals("Vehicle")) {
+        if (EntityTypeForImages.ENGINE.toString().equals(entityName) || EntityTypeForImages.CHASSIS.toString().equals(entityName)
+                || EntityTypeForImages.VEHICLE.toString().equals(entityName)) {
             // else if (EntityTypeForImages.VEHICLEDETAILS.toString().equals(entityName)) {
-            System.out.println("--VEHICLEDETAILS--");
+            System.out.println("--Engine--");
             VehicleDetails vehicleDetails = this.vehicleDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
             // vehicleImage = vehicleDetails.getImage();
             owner = vehicleDetails;
             // }
         }
-        if (entityName.equals("GuarantorImage") && entityName.equals("GuarantorDocument")) {
+        // if (entityName.equals("GuarantorImage") || entityName.equals("GuarantorDocument")) {
+        if (EntityTypeForImages.GUARANTORIMAGE.toString().equals(entityName)
+                || EntityTypeForImages.GUARANTORDOCUMENT.toString().equals(entityName)) {
             // else if (EntityTypeForImages.GUARANTOR.toString().equals(entityName)) {
             System.out.println("--GUARANTOR--");
             CustomerGuarantor customerGuarantor = this.customerGuarantorRepositoryWrapper.findOneWithNotFoundDetection(entityId);
@@ -257,7 +264,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             Client client = (Client) owner;
             image = client.getImage();
             clientId = client.getId();
-            image = createImage(image, imageLocation, storageType);
+            image = createImage(image, imageLocation, storageType, null, null);
             client.setImage(image);
             this.clientRepositoryWrapper.save(client);
         } else if (owner instanceof NewVehicleLoan) { // create 3 section same as database documents, images, vehicles
@@ -267,6 +274,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             // documentImage = newVehicleLoan.getInvoiceImage();
             clientId = newVehicleLoan.getId(); // get the id of the table to make change in the specific table
             documentImage = createDocumentImage(documentImage, imageLocation, storageType, null, null, newVehicleLoan, null);
+            this.documentImageRepository.saveAndFlush(documentImage);
             // newVehicleLoan.setImage(documentImage);
             // newVehicleLoan.setInvoiceImage(documentImage);
             this.newVehicleLoanRepositoryWrapper.save(newVehicleLoan);
@@ -277,12 +285,13 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             if (entityName.equals("CustomerImage")) {
                 System.out.println("--CustomerImage--");
                 // image = usedVehicleLoan.getCustomerImage(); // usedvehicle has customerimage
-                image = createImage(image, imageLocation, storageType);
+                image = createImage(image, imageLocation, storageType, usedVehicleLoan, null);
                 // usedVehicleLoan.setCustomerImage(image);
                 this.usedVehicleLoanRepository.save(usedVehicleLoan);
             } else {// usedvehicle has document
                 // documentImage = usedVehicleLoan.getDocumentImage();
                 documentImage = createDocumentImage(documentImage, imageLocation, storageType, null, null, null, usedVehicleLoan);
+                this.documentImageRepository.saveAndFlush(documentImage);
                 // usedVehicleLoan.setDocumentImage(documentImage);
                 this.usedVehicleLoanRepository.save(usedVehicleLoan);
             }
@@ -291,8 +300,9 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             VehicleDetails vehicleDetails = (VehicleDetails) owner;
             // vehicleImage = vehicleDetails.getImage();
             clientId = vehicleDetails.getId();
-            vehicleImage = createVehicleImage(vehicleImage, imageLocation, storageType);
+            vehicleImage = createVehicleImage(vehicleImage, imageLocation, storageType, vehicleDetails);
             // vehicleDetails.setImage(vehicleImage);
+            this.vehicleImageRepository.save(vehicleImage);
             this.vehicleDetailsRepository.save(vehicleDetails);
         } else if (owner instanceof CustomerGuarantor) {
             System.out.println("--CustomerGuarantor--");
@@ -302,13 +312,16 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             if (entityName.equals("GuarantorImage")) {
                 System.out.println("--GuarantorImage--");
                 // image = customerGuarantor.getGuarantorImage();
-                image = createImage(image, imageLocation, storageType);
+                image = createImage(image, imageLocation, storageType, null, customerGuarantor);
                 // customerGuarantor.setGuarantorImage(image);
+                this.imageRepository.save(image);
                 this.customerGuarantorRepository.save(customerGuarantor);
             } else { // storing guarantor documents
                 // documentImage = customerGuarantor.getDocumentImage();
+                System.out.println("--NotGuarantorImage--");
                 documentImage = createDocumentImage(documentImage, imageLocation, storageType, null, customerGuarantor, null, null);
                 // customerGuarantor.setDocumentImage(documentImage);
+                this.documentImageRepository.saveAndFlush(documentImage);
                 this.customerGuarantorRepository.save(customerGuarantor);
             }
         } else if (owner instanceof BankDetails) {
@@ -329,7 +342,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             Staff staff = (Staff) owner;
             image = staff.getImage();
             clientId = staff.getId();
-            image = createImage(image, imageLocation, storageType);
+            image = createImage(image, imageLocation, storageType, null, null);
             staff.setImage(image);
             this.staffRepositoryWrapper.save(staff);
         }
@@ -337,9 +350,10 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
         return new CommandProcessingResult(clientId);
     }
 
-    private Image createImage(Image image, final String imageLocation, final StorageType storageType) {
+    private Image createImage(Image image, final String imageLocation, final StorageType storageType, final UsedVehicleLoan usedVehicle,
+            final CustomerGuarantor customerGuarantor) {
         if (image == null) {
-            image = new Image(imageLocation, storageType);
+            image = new Image(imageLocation, storageType, usedVehicle, customerGuarantor);
         } else {
             image.setLocation(imageLocation);
             image.setStorageType(storageType.getValue());
@@ -360,9 +374,10 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
         return documentImage;
     }
 
-    private VehicleImages createVehicleImage(VehicleImages vehicleImages, final String imageLocation, final StorageType storageType) {
+    private VehicleImages createVehicleImage(VehicleImages vehicleImages, final String imageLocation, final StorageType storageType,
+            final VehicleDetails vehicleDetails) {
         if (vehicleImages == null) {
-            vehicleImages = new VehicleImages(imageLocation, storageType);
+            vehicleImages = new VehicleImages(imageLocation, storageType, vehicleDetails);
         } else {
             vehicleImages.setLocation(imageLocation);
             vehicleImages.setStorageType(storageType.getValue());

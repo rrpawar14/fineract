@@ -17,6 +17,7 @@
 -- under the License.
 --
 
+DROP TABLE m_image;
 
 -- ALTER TABLE `m_appuser`
 ALTER TABLE m_appuser MODIFY COLUMN email VARCHAR(100) NULL;
@@ -96,7 +97,6 @@ CREATE TABLE `m_vehicle_details` (
     `pollution_cert_expiry` DATE NULL DEFAULT NULL,
     `registration` DATE NULL DEFAULT NULL,
     `live_km_reading` BIGINT(20) NULL DEFAULT NULL,
-    `rc_book_image_id` INT(11) NULL DEFAULT NULL,
     INDEX `id` (`id`)
 )
 ENGINE=InnoDB
@@ -114,10 +114,7 @@ CREATE TABLE `m_customer_bank_details` (
     `bank_name` VARCHAR(50) NULL DEFAULT '0',
     `branch_name` VARCHAR(50) NULL DEFAULT '0',
     `IFSC` VARCHAR(50) NULL DEFAULT '0',
-    `passbook_image_id` INT(11) NULL DEFAULT '0',
-    INDEX `id` (`id`),
-    INDEX `FK_passbook_image_id` (`passbook_image_id`),
-    CONSTRAINT `FK_passbook_image_id` FOREIGN KEY (`passbook_image_id`) REFERENCES `m_documents_images` (`id`)
+    INDEX `id` (`id`)
 )
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
@@ -131,13 +128,12 @@ CREATE TABLE `m_apply_new_vehicle_loan` (
     `vehicle_type` VARCHAR(50) NULL DEFAULT NULL,
     `dealer` VARCHAR(50) NULL DEFAULT NULL,
     `invoice_number` VARCHAR(50) NULL DEFAULT NULL,
-    `invoice_image_id` INT(11) NULL DEFAULT NULL,
     `address_id` BIGINT(20) NULL DEFAULT NULL,
     `customerdetails_id` INT(11) NULL DEFAULT NULL,
     `vehicledetails_id` INT(50) NULL DEFAULT NULL,
     `customerguarantor_id` INT(50) NULL DEFAULT NULL,
     `bankdetails_id` INT(50) NULL DEFAULT NULL,
-    INDEX `id` (`id`),
+     INDEX `id` (`id`),
     INDEX `FK_address_id` (`address_id`),
     INDEX `FK_customer_details_id` (`customerdetails_id`),
     INDEX `FK_vehicle_details_id` (`vehicledetails_id`),
@@ -151,7 +147,8 @@ CREATE TABLE `m_apply_new_vehicle_loan` (
 )
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
-AUTO_INCREMENT=1;
+AUTO_INCREMENT=1
+;
 
 
 CREATE TABLE `m_apply_used_vehicle_loan` (
@@ -187,21 +184,57 @@ INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `c
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'CREATE_ENQUIRY', 'ENQUIRY', 'CREATE', 0);
 
 CREATE TABLE `m_documents_images` (
-    `id` INT(11) NOT NULL,
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
     `location` VARCHAR(500) NULL DEFAULT NULL,
     `storage_type_enum` SMALLINT(6) NULL DEFAULT NULL,
-    PRIMARY KEY (`id`)
+    `bank_id` INT(11) NULL DEFAULT NULL,
+    `guarantor_id` INT(11) NULL DEFAULT NULL,
+    `new_vehicle_id` INT(11) NULL DEFAULT NULL,
+    `used_vehicle_id` INT(11) NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    INDEX `FK_document_bank_images` (`bank_id`),
+    INDEX `FK_guarantor_id` (`guarantor_id`),
+    INDEX `FK_usedvehicle` (`used_vehicle_id`),
+    INDEX `FK_newvehicle_id` (`new_vehicle_id`),
+    CONSTRAINT `FK_document_bank_images` FOREIGN KEY (`bank_id`) REFERENCES `m_customer_bank_details` (`id`),
+    CONSTRAINT `FK_guarantor_id` FOREIGN KEY (`guarantor_id`) REFERENCES `m_customer_guarantor` (`id`),
+    CONSTRAINT `FK_usedvehicle` FOREIGN KEY (`used_vehicle_id`) REFERENCES `m_apply_used_vehicle_loan` (`id`),
+    CONSTRAINT `m_documents_images_ibfk_1` FOREIGN KEY (`new_vehicle_id`) REFERENCES `m_apply_new_vehicle_loan` (`id`)
 )
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
+AUTO_INCREMENT=1
 ;
 
 CREATE TABLE `m_vehicle_images` (
-    `id` INT(11) NOT NULL,
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
     `location` VARCHAR(500) NULL DEFAULT NULL,
+    `vehicle_id` INT(11) NULL DEFAULT NULL,
     `storage_type_enum` SMALLINT(6) NULL DEFAULT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    INDEX `fk_used_vehicle_customer` (`vehicle_id`),
+    CONSTRAINT `fk_used_vehicle_customer` FOREIGN KEY (`vehicle_id`) REFERENCES `m_vehicle_details` (`id`)
 )
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
+AUTO_INCREMENT=1
+;
+
+
+
+CREATE TABLE `m_image` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+    `location` VARCHAR(500) NULL DEFAULT NULL,
+    `guarantor_image` INT(11) NULL DEFAULT NULL,
+    `customer_image` INT(11) NULL DEFAULT NULL,
+    `storage_type_enum` SMALLINT(6) NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    INDEX `FK_guarantor_image` (`guarantor_image`),
+    INDEX `customer_image` (`customer_image`),
+    CONSTRAINT `FK_guarantor_image` FOREIGN KEY (`guarantor_image`) REFERENCES `m_customer_guarantor` (`id`),
+    CONSTRAINT `m_image_ibfk_1` FOREIGN KEY (`customer_image`) REFERENCES `m_apply_used_vehicle_loan` (`id`)
+)
+COLLATE='utf8mb4_general_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=2
 ;
