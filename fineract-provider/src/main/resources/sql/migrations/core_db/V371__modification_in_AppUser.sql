@@ -114,10 +114,10 @@ CREATE TABLE `m_customer_bank_details` (
     `bank_name` VARCHAR(50) NULL DEFAULT '0',
     `branch_name` VARCHAR(50) NULL DEFAULT '0',
     `IFSC` VARCHAR(50) NULL DEFAULT '0',
-    `passbook_image_id` BIGINT(11) NULL DEFAULT '0',
+    `passbook_image_id` INT(11) NULL DEFAULT '0',
     INDEX `id` (`id`),
     INDEX `FK_passbook_image_id` (`passbook_image_id`),
-    CONSTRAINT `FK_passbook_image_id` FOREIGN KEY (`passbook_image_id`) REFERENCES `m_image` (`id`)
+    CONSTRAINT `FK_passbook_image_id` FOREIGN KEY (`passbook_image_id`) REFERENCES `m_documents_images` (`id`)
 )
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB

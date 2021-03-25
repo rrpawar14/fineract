@@ -21,12 +21,9 @@ package org.apache.fineract.portfolio.loanaccount.domain;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
-import org.apache.fineract.infrastructure.documentmanagement.domain.VehicleImages;
 
 @Entity
 @Table(name = "m_vehicle_details")
@@ -71,9 +68,11 @@ public class VehicleDetails extends AbstractPersistableCustom {
     @Column(name = "live_km_reading")
     private String kmReading;
 
-    @OneToOne(optional = true)
-    @JoinColumn(name = "rc_book_image_id", nullable = true)
-    private VehicleImages vehicleImage;
+    /*
+     * @OneToOne(optional = true)
+     *
+     * @JoinColumn(name = "rc_book_image_id", nullable = true) private VehicleImages vehicleImage;
+     */
 
     public static VehicleDetails fromJson(final JsonCommand command) {
 
@@ -114,16 +113,12 @@ public class VehicleDetails extends AbstractPersistableCustom {
         this.kmReading = kmReading;
     }
 
-    public void setVehicleDetails(final VehicleImages vehicleImage) {
-        this.vehicleImage = vehicleImage;
-    }
-
-    public void setImage(VehicleImages vehicleImage) {
-        this.vehicleImage = vehicleImage;
-    }
-
-    public VehicleImages getImage() {
-        return this.vehicleImage;
-    }
+    /*
+     * public void setVehicleDetails(final VehicleImages vehicleImage) { this.vehicleImage = vehicleImage; }
+     *
+     * public void setImage(VehicleImages vehicleImage) { this.vehicleImage = vehicleImage; }
+     *
+     * public VehicleImages getImage() { return this.vehicleImage; }
+     */
 
 }

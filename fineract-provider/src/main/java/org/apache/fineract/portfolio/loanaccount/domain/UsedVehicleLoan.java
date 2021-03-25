@@ -25,8 +25,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
-import org.apache.fineract.infrastructure.documentmanagement.domain.DocumentImages;
-import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
 import org.apache.fineract.portfolio.address.domain.Address;
 
 @Entity
@@ -61,14 +59,15 @@ public class UsedVehicleLoan extends AbstractPersistableCustom {
     @OneToOne(optional = true)
     @JoinColumn(name = "bankdetails_id", nullable = true)
     private BankDetails bankDetails;
-
-    @OneToOne(optional = true)
-    @JoinColumn(name = "image_id", nullable = true)
-    private Image image;
-
-    @OneToOne(optional = true)
-    @JoinColumn(name = "document_image_id", nullable = true)
-    private DocumentImages documentImage;
+    /*
+     * @OneToOne(optional = true)
+     *
+     * @JoinColumn(name = "image_id", nullable = true) private Image image;
+     *
+     * @OneToOne(optional = true)
+     *
+     * @JoinColumn(name = "document_image_id", nullable = true) private DocumentImages documentImage;
+     */
 
     public static UsedVehicleLoan fromJson(final JsonCommand command, final Address address, final CustomerDetails customerDetails,
             final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final BankDetails bankDetails) {
@@ -97,25 +96,17 @@ public class UsedVehicleLoan extends AbstractPersistableCustom {
         this.bankDetails = bankDetailsObj;
     }
 
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
-    // public Image getImage() { return this.image; }
-
-    public void setCustomerImage(final Image image) {
-        this.image = image;
-    }
-
-    public Image getCustomerImage() {
-        return this.image;
-    }
-
-    public void setDocumentImage(final DocumentImages documentImages) {
-        this.documentImage = documentImages;
-    }
-
-    public DocumentImages getDocumentImage() {
-        return this.documentImage;
-    }
+    /*
+     * public void setImage(Image image) { this.image = image; }
+     *
+     * // public Image getImage() { return this.image; }
+     *
+     * public void setCustomerImage(final Image image) { this.image = image; }
+     *
+     * public Image getCustomerImage() { return this.image; }
+     *
+     * public void setDocumentImage(final DocumentImages documentImages) { this.documentImage = documentImages; }
+     *
+     * public DocumentImages getDocumentImage() { return this.documentImage; }
+     */
 }
