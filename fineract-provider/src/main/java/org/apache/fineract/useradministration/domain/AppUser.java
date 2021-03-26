@@ -304,6 +304,16 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
          */
         final String passwordNeverExpire = "passwordNeverExpires";
 
+        if (command.hasParameter(email)) {
+            final String newValue = command.stringValueOfParameterNamed(email);
+            actualChanges.put(email, newValue);
+        }
+
+        if (command.hasParameter("newMobileNo")) {
+            final String newValue = command.stringValueOfParameterNamed("newMobileNo");
+            actualChanges.put(username, newValue);
+        }
+
         if (command.hasParameter(passwordNeverExpire)) {
             if (command.isChangeInBooleanParameterNamed(passwordNeverExpire, this.passwordNeverExpires)) {
                 final boolean newValue = command.booleanPrimitiveValueOfParameterNamed(passwordNeverExpire);

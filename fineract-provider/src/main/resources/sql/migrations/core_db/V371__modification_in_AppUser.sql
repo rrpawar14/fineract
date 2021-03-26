@@ -21,6 +21,7 @@
 ALTER TABLE m_appuser MODIFY COLUMN email VARCHAR(100) NULL;
 ALTER TABLE m_appuser MODIFY COLUMN firstname VARCHAR(100) NULL;
 ALTER TABLE m_appuser MODIFY COLUMN lastname VARCHAR(100) NULL;
+ALTER TABLE m_appuser ADD COLUMN image_id INT(100) NULL;
 
 
 -- create Loan Enquiry Table
@@ -218,13 +219,25 @@ ENGINE=InnoDB
 AUTO_INCREMENT=1
 ;
 
-ALTER TABLE m_image
+    ALTER TABLE m_image
     ADD guarantor_image int(11),
     ADD CONSTRAINT FOREIGN KEY (`guarantor_image`) REFERENCES `m_customer_guarantor` (`id`);
 
     ALTER TABLE m_image
     ADD customer_image int(11),
     ADD CONSTRAINT FOREIGN KEY (`customer_image`) REFERENCES `m_apply_used_vehicle_loan` (`id`);
+
+     ALTER TABLE m_image
+    ADD profile_image int(11);
+
+    ALTER TABLE `m_image`
+    ADD INDEX `profile_image` (`profile_image`);
+
+
+ ALTER TABLE m_appuser
+ ADD CONSTRAINT fk_image_id
+ FOREIGN KEY (image_id)
+REFERENCES `m_image` (`profile_image`);
 
 
 /* CREATE TABLE `m_image` (
