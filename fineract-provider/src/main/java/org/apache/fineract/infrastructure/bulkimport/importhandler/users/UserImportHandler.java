@@ -103,8 +103,7 @@ public class UserImportHandler implements ImportHandler {
                 rolesIds.add(roleId);
             }
         }
-        return AppUserData.importInstance(officeId, staffId, userName, firstName, lastName, email, autoGenPw, overridepw, rolesIds,
-                row.getRowNum());
+        return AppUserData.importInstance(officeId, staffId, userName, lastName, email, autoGenPw, overridepw, rolesIds, row.getRowNum());
 
     }
 

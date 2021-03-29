@@ -35,8 +35,8 @@ public final class AppUserData {
     private final String username;
     private final Long officeId;
     private final String officeName;
-    private final String firstname;
-    private final String lastname;
+    private final String name;
+    // private final String lastname;
     private final String email;
     private final Boolean passwordNeverExpires;
 
@@ -58,20 +58,18 @@ public final class AppUserData {
     @SuppressWarnings("unused")
     private Set<ClientData> clients;
 
-    public static AppUserData importInstance(Long officeId, Long staffId, String username, String firstname, String lastname, String email,
+    public static AppUserData importInstance(Long officeId, Long staffId, String username, String name, String email,
             Boolean sendPasswordToEmail, Boolean passwordNeverExpires, List<Long> roleIds, Integer rowIndex) {
-        return new AppUserData(officeId, staffId, username, firstname, lastname, email, sendPasswordToEmail, passwordNeverExpires, roleIds,
-                rowIndex);
+        return new AppUserData(officeId, staffId, username, name, email, sendPasswordToEmail, passwordNeverExpires, roleIds, rowIndex);
     }
 
-    private AppUserData(Long officeId, Long staffId, String username, String firstname, String lastname, String email,
-            Boolean sendPasswordToEmail, Boolean passwordNeverExpires, List<Long> roleIds, Integer rowIndex) {
+    private AppUserData(Long officeId, Long staffId, String username, String name, String email, Boolean sendPasswordToEmail,
+            Boolean passwordNeverExpires, List<Long> roleIds, Integer rowIndex) {
         this.id = null;
         this.username = username;
         this.officeId = officeId;
         this.officeName = null;
-        this.firstname = firstname;
-        this.lastname = lastname;
+        this.name = name;
         this.email = email;
         this.passwordNeverExpires = passwordNeverExpires;
         this.roles = roleIds;
@@ -93,44 +91,42 @@ public final class AppUserData {
     }
 
     public static AppUserData template(final AppUserData user, final Collection<OfficeData> officesForDropdown) {
-        return new AppUserData(user.id, user.username, user.email, user.officeId, user.officeName, user.firstname, user.lastname,
-                user.availableRoles, user.selfServiceRoles, user.selectedRoles, officesForDropdown, user.staff, user.passwordNeverExpires,
+        return new AppUserData(user.id, user.username, user.email, user.officeId, user.officeName, user.name, user.availableRoles,
+                user.selfServiceRoles, user.selectedRoles, officesForDropdown, user.staff, user.passwordNeverExpires,
                 user.isSelfServiceUser, user.image);
     }
 
     public static AppUserData template(final Collection<OfficeData> offices, final Collection<RoleData> availableRoles,
             final Collection<RoleData> selfServiceRoles) {
-        return new AppUserData(null, null, null, null, null, null, null, availableRoles, selfServiceRoles, null, offices, null, null, null,
-                null);
+        return new AppUserData(null, null, null, null, null, null, availableRoles, selfServiceRoles, null, offices, null, null, null, null);
     }
 
     public static AppUserData dropdown(final Long id, final String username) {
-        return new AppUserData(id, username, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        return new AppUserData(id, username, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 
-    public static AppUserData customerData(final Long id, final String username, final String email, final FileData image) {
-        return new AppUserData(id, username, email, null, null, null, null, null, null, null, null, null, null, null, image);
+    public static AppUserData customerData(final Long id, final String name, final String username, final String email,
+            final FileData image) {
+        return new AppUserData(id, username, email, null, null, name, null, null, null, null, null, null, null, image);
     }
 
     public static AppUserData instance(final Long id, final String username, final String email, final Long officeId,
-            final String officeName, final String firstname, final String lastname, final Collection<RoleData> availableRoles,
+            final String officeName, final String name, final Collection<RoleData> availableRoles,
             final Collection<RoleData> selfServiceRoles, final Collection<RoleData> selectedRoles, final StaffData staff,
             final Boolean passwordNeverExpire, final Boolean isSelfServiceUser) {
-        return new AppUserData(id, username, email, officeId, officeName, firstname, lastname, availableRoles, selfServiceRoles,
-                selectedRoles, null, staff, passwordNeverExpire, isSelfServiceUser, null);
+        return new AppUserData(id, username, email, officeId, officeName, name, availableRoles, selfServiceRoles, selectedRoles, null,
+                staff, passwordNeverExpire, isSelfServiceUser, null);
     }
 
     private AppUserData(final Long id, final String username, final String email, final Long officeId, final String officeName,
-            final String firstname, final String lastname, final Collection<RoleData> availableRoles,
-            final Collection<RoleData> selfServiceRoles, final Collection<RoleData> selectedRoles,
-            final Collection<OfficeData> allowedOffices, final StaffData staff, final Boolean passwordNeverExpire,
-            final Boolean isSelfServiceUser, final FileData image) {
+            final String name, final Collection<RoleData> availableRoles, final Collection<RoleData> selfServiceRoles,
+            final Collection<RoleData> selectedRoles, final Collection<OfficeData> allowedOffices, final StaffData staff,
+            final Boolean passwordNeverExpire, final Boolean isSelfServiceUser, final FileData image) {
         this.id = id;
         this.username = username;
         this.officeId = officeId;
         this.officeName = officeName;
-        this.firstname = firstname;
-        this.lastname = lastname;
+        this.name = name;
         this.email = email;
         this.allowedOffices = allowedOffices;
         this.availableRoles = availableRoles;

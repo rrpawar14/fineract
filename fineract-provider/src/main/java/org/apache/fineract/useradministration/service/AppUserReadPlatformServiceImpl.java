@@ -22,7 +22,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
@@ -33,12 +32,9 @@ import org.apache.fineract.organisation.office.data.OfficeData;
 import org.apache.fineract.organisation.office.service.OfficeReadPlatformService;
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.organisation.staff.service.StaffReadPlatformService;
-import org.apache.fineract.portfolio.client.data.ClientData;
-import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.useradministration.data.AppUserData;
 import org.apache.fineract.useradministration.data.RoleData;
 import org.apache.fineract.useradministration.domain.AppUser;
-import org.apache.fineract.useradministration.domain.AppUserClientMapping;
 import org.apache.fineract.useradministration.domain.AppUserRepository;
 import org.apache.fineract.useradministration.domain.Role;
 import org.apache.fineract.useradministration.exception.UserNotFoundException;
@@ -152,7 +148,8 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
 
         final FileData imageData;
         if (user.getImage() != null) {
-            imageData = this.imageReadPlatformService.retrieveImage("CUSTOMERIMAGE", user.getImage().getId());
+            imageData = this.imageReadPlatformService.retrieveImage("PROFILEIMAGE", user.getId());
+            System.out.println("imageDataa: " + imageData);
         } else {
             imageData = null;
         }
@@ -164,17 +161,15 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
          * user.isSelfServiceUser());
          */
 
-        AppUserData retUser = AppUserData.customerData(user.getId(), user.getUsername(), user.getEmail(), imageData);
+        System.out.println("imageData: " + imageData);
+        AppUserData retUser = AppUserData.customerData(user.getId(), user.getFirstname(), user.getUsername(), user.getEmail(), imageData);
 
-        if (retUser.isSelfServiceUser()) {
-            Set<ClientData> clients = new HashSet<>();
-            for (AppUserClientMapping clientMap : user.getAppUserClientMappings()) {
-                Client client = clientMap.getClient();
-                clients.add(ClientData.lookup(client.getId(), client.getDisplayName(), client.getOffice().getId(),
-                        client.getOffice().getName()));
-            }
-            retUser.setClients(clients);
-        }
+        /*
+         * if (retUser.isSelfServiceUser()) { Set<ClientData> clients = new HashSet<>(); for (AppUserClientMapping
+         * clientMap : user.getAppUserClientMappings()) { Client client = clientMap.getClient();
+         * clients.add(ClientData.lookup(client.getId(), client.getDisplayName(), client.getOffice().getId(),
+         * client.getOffice().getName())); } retUser.setClients(clients); }
+         */
 
         return retUser;
     }
@@ -194,8 +189,8 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
 
             final Long id = rs.getLong("id");
             final String username = rs.getString("username");
-            final String firstname = rs.getString("firstname");
-            final String lastname = rs.getString("lastname");
+            // final String firstname = rs.getString("firstname");
+            final String name = rs.getString("name");
             final String email = rs.getString("email");
             final Long officeId = JdbcSupport.getLong(rs, "officeId");
             final String officeName = rs.getString("officeName");
@@ -210,12 +205,12 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
             } else {
                 linkedStaff = null;
             }
-            return AppUserData.instance(id, username, email, officeId, officeName, firstname, lastname, null, null, selectedRoles,
-                    linkedStaff, passwordNeverExpire, isSelfServiceUser);
+            return AppUserData.instance(id, username, email, officeId, officeName, name, null, null, selectedRoles, linkedStaff,
+                    passwordNeverExpire, isSelfServiceUser);
         }
 
         public String schema() {
-            return " u.id as id, u.username as username, u.firstname as firstname, u.lastname as lastname, u.email as email, u.password_never_expires as passwordNeverExpires, "
+            return " u.id as id, u.username as username, u.name, u.email as email, u.password_never_expires as passwordNeverExpires, "
                     + " u.office_id as officeId, o.name as officeName, u.staff_id as staffId, u.is_self_service_user as isSelfServiceUser from m_appuser u "
                     + " join m_office o on o.id = u.office_id where o.hierarchy like ? and u.is_deleted=0 order by u.username";
         }

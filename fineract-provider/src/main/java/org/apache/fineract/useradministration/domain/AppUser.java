@@ -71,7 +71,7 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     @Column(name = "username", nullable = false, length = 100)
     private String username;
 
-    @Column(name = "firstname", nullable = false, length = 100)
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
     /*
