@@ -124,21 +124,52 @@ public class UsersApiResource {
         return this.toApiJsonSerializer.serialize(settings, users, this.responseDataParameters);
     }
 
+    /*
+     * @GET
+     *
+     * @Path("{userId}")
+     *
+     * @Operation(summary = "Retrieve a User", description = "Example Requests:\n" + "\n" + "users/1\n" + "\n" + "\n" +
+     * "users/1?template=true\n" + "\n" + "\n" + "users/1?fields=username,officeName")
+     *
+     * @ApiResponses({
+     *
+     * @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation =
+     * UsersApiResourceSwagger.GetUsersUserIdResponse.class))) })
+     *
+     * @Consumes({ MediaType.APPLICATION_JSON })
+     *
+     * @Produces({ MediaType.APPLICATION_JSON }) public String retrieveOne(@PathParam("userId") @Parameter(description =
+     * "userId") final Long userId, @Context final UriInfo uriInfo) {
+     *
+     * this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions, userId);
+     *
+     * final ApiRequestJsonSerializationSettings settings =
+     * this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+     *
+     * AppUserData user = this.readPlatformService.retrieveUser(userId); if (settings.isTemplate()) { final
+     * Collection<OfficeData> offices = this.officeReadPlatformService.retrieveAllOfficesForDropdown(); user =
+     * AppUserData.template(user, offices); }
+     *
+     * return this.toApiJsonSerializer.serialize(settings, user, this.responseDataParameters); }
+     */
+
     @GET
-    @Path("{userId}")
+    @Path("{username}")
     @Operation(summary = "Retrieve a User", description = "Example Requests:\n" + "\n" + "users/1\n" + "\n" + "\n"
             + "users/1?template=true\n" + "\n" + "\n" + "users/1?fields=username,officeName")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.GetUsersUserIdResponse.class))) })
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String retrieveOne(@PathParam("userId") @Parameter(description = "userId") final Long userId, @Context final UriInfo uriInfo) {
+    public String retrieveOneByMobileNumber(@PathParam("username") @Parameter(description = "username") final String username,
+            @Context final UriInfo uriInfo) {
 
-        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions, userId);
+        // this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions, username);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
 
-        AppUserData user = this.readPlatformService.retrieveUser(userId);
+        AppUserData user = this.readPlatformService.retrieveUser(username);
         if (settings.isTemplate()) {
             final Collection<OfficeData> offices = this.officeReadPlatformService.retrieveAllOfficesForDropdown();
             user = AppUserData.template(user, offices);

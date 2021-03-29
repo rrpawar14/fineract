@@ -44,21 +44,30 @@ public class CommandProcessingResult implements Serializable {
     private final Long productId;
     private final Long gsimId;
     private final Long glimId;
+    private final Long addressId;
+    private final Long customerId;
+    private final Long vehicleId;
+    private final Long guarantorId;
+    private final Long bankDetailsId;
     private Boolean rollbackTransaction;
 
     public static CommandProcessingResult fromCommandProcessingResult(CommandProcessingResult commandResult) {
         return new CommandProcessingResult(commandResult.commandId, commandResult.officeId, commandResult.groupId, commandResult.clientId,
                 commandResult.loanId, commandResult.savingsId, commandResult.resourceIdentifier, commandResult.resourceId,
                 commandResult.transactionId, commandResult.changes, commandResult.productId, commandResult.gsimId, commandResult.glimId,
-                commandResult.creditBureauReportData, commandResult.rollbackTransaction, commandResult.subResourceId);
+                commandResult.creditBureauReportData, commandResult.rollbackTransaction, commandResult.subResourceId,
+                commandResult.addressId, commandResult.customerId, commandResult.vehicleId, commandResult.guarantorId,
+                commandResult.bankDetailsId);
     }
 
     public static CommandProcessingResult fromDetails(final Long commandId, final Long officeId, final Long groupId, final Long clientId,
             final Long loanId, final Long savingsId, final String resourceIdentifier, final Long entityId, final Long gsimId,
             final Long glimId, final CreditBureauReportData creditBureauReportData, final String transactionId,
-            final Map<String, Object> changes, final Long productId, final Boolean rollbackTransaction, final Long subResourceId) {
+            final Map<String, Object> changes, final Long productId, final Boolean rollbackTransaction, final Long subResourceId,
+            final Long addressId, final Long customerId, final Long vehicleId, final Long guarantorId, final Long bankDetailsId) {
         return new CommandProcessingResult(commandId, officeId, groupId, clientId, loanId, savingsId, resourceIdentifier, entityId,
-                transactionId, changes, productId, gsimId, glimId, creditBureauReportData, rollbackTransaction, subResourceId);
+                transactionId, changes, productId, gsimId, glimId, creditBureauReportData, rollbackTransaction, subResourceId, addressId,
+                customerId, vehicleId, guarantorId, bankDetailsId);
     }
 
     public static CommandProcessingResult commandOnlyResult(final Long commandId) {
@@ -112,12 +121,18 @@ public class CommandProcessingResult implements Serializable {
         this.glimId = null;
         this.creditBureauReportData = null;
         this.subResourceId = null;
+        this.addressId = null;
+        this.customerId = null;
+        this.vehicleId = null;
+        this.guarantorId = null;
+        this.bankDetailsId = null;
     }
 
     private CommandProcessingResult(final Long commandId, final Long officeId, final Long groupId, final Long clientId, final Long loanId,
             final Long savingsId, final String resourceIdentifier, final Long resourceId, final String transactionId,
             final Map<String, Object> changesOnly, final Long productId, final Long gsimId, final Long glimId,
-            final CreditBureauReportData creditBureauReportData, Boolean rollbackTransaction, final Long subResourceId) {
+            final CreditBureauReportData creditBureauReportData, Boolean rollbackTransaction, final Long subResourceId,
+            final Long addressId, final Long customerId, final Long vehicleId, final Long guarantorId, final Long bankDetailsId) {
         this.commandId = commandId;
         this.officeId = officeId;
         this.groupId = groupId;
@@ -134,6 +149,11 @@ public class CommandProcessingResult implements Serializable {
         this.creditBureauReportData = creditBureauReportData;
         this.rollbackTransaction = rollbackTransaction;
         this.subResourceId = subResourceId;
+        this.addressId = addressId;
+        this.customerId = customerId;
+        this.vehicleId = vehicleId;
+        this.guarantorId = guarantorId;
+        this.bankDetailsId = bankDetailsId;
     }
 
     protected CommandProcessingResult(final Long resourceId, final Long officeId, final Long commandId,
@@ -157,11 +177,17 @@ public class CommandProcessingResult implements Serializable {
         this.glimId = null;
         this.creditBureauReportData = null;
         this.subResourceId = null;
+        this.addressId = null;
+        this.customerId = null;
+        this.vehicleId = null;
+        this.guarantorId = null;
+        this.bankDetailsId = null;
     }
 
     protected CommandProcessingResult(final Long resourceId, final Long officeId, final Long commandId,
             final Map<String, Object> changesOnly, long clientId) {
-        this(commandId, officeId, null, clientId, null, null, null, resourceId, null, changesOnly, null, null, null, null, null, null);
+        this(commandId, officeId, null, clientId, null, null, null, resourceId, null, changesOnly, null, null, null, null, null, null, null,
+                null, null, null, null);
     }
 
     public Long commandId() {

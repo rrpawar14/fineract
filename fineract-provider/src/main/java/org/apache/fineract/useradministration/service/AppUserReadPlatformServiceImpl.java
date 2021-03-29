@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
+import org.apache.fineract.infrastructure.documentmanagement.data.FileData;
+import org.apache.fineract.infrastructure.documentmanagement.service.ImageReadPlatformService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.organisation.office.data.OfficeData;
 import org.apache.fineract.organisation.office.service.OfficeReadPlatformService;
@@ -55,17 +57,20 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
     private final RoleReadPlatformService roleReadPlatformService;
     private final AppUserRepository appUserRepository;
     private final StaffReadPlatformService staffReadPlatformService;
+    private final ImageReadPlatformService imageReadPlatformService;
 
     @Autowired
     public AppUserReadPlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource,
             final OfficeReadPlatformService officeReadPlatformService, final RoleReadPlatformService roleReadPlatformService,
-            final AppUserRepository appUserRepository, final StaffReadPlatformService staffReadPlatformService) {
+            final AppUserRepository appUserRepository, final StaffReadPlatformService staffReadPlatformService,
+            final ImageReadPlatformService imageReadPlatformService) {
         this.context = context;
         this.officeReadPlatformService = officeReadPlatformService;
         this.roleReadPlatformService = roleReadPlatformService;
         this.appUserRepository = appUserRepository;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.staffReadPlatformService = staffReadPlatformService;
+        this.imageReadPlatformService = imageReadPlatformService;
     }
 
     /*
@@ -112,13 +117,20 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
     }
 
     @Override
-    public AppUserData retrieveUser(final Long userId) {
+    public AppUserData retrieveUser(final String username) {
 
         this.context.authenticatedUser();
+        // String mobileNo = username.toString();
 
-        final AppUser user = this.appUserRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        final AppUser user = this.appUserRepository.findAppUserByName(username);// .orElseThrow(() -> new
+                                                                                // UserNotFoundException(username));
+        // UserNotFoundException userNotFound = new UserNotFoundException();
+
+        if (user == null) {
+            throw new UserNotFoundException(username);
+        }
         if (user.isDeleted()) {
-            throw new UserNotFoundException(userId);
+            throw new UserNotFoundException(username);
         }
 
         final Collection<RoleData> availableRoles = this.roleReadPlatformService.retrieveAll();
@@ -138,9 +150,21 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
             linkedStaff = null;
         }
 
-        AppUserData retUser = AppUserData.instance(user.getId(), user.getUsername(), user.getEmail(), user.getOffice().getId(),
-                user.getOffice().getName(), user.getFirstname(), user.getLastname(), availableRoles, null, selectedUserRoles, linkedStaff,
-                user.getPasswordNeverExpires(), user.isSelfServiceUser());
+        final FileData imageData;
+        if (user.getImage() != null) {
+            imageData = this.imageReadPlatformService.retrieveImage("CUSTOMERIMAGE", user.getImage().getId());
+        } else {
+            imageData = null;
+        }
+
+        /*
+         * AppUserData retUser = AppUserData.instance(user.getId(), user.getUsername(), user.getEmail(),
+         * user.getOffice().getId(), user.getOffice().getName(), user.getFirstname(), user.getLastname(),
+         * availableRoles, null, selectedUserRoles, linkedStaff, user.getPasswordNeverExpires(),
+         * user.isSelfServiceUser());
+         */
+
+        AppUserData retUser = AppUserData.customerData(user.getId(), user.getUsername(), user.getEmail(), imageData);
 
         if (retUser.isSelfServiceUser()) {
             Set<ClientData> clients = new HashSet<>();

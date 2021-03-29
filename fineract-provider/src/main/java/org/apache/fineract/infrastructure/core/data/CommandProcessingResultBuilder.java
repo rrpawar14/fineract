@@ -37,6 +37,11 @@ public class CommandProcessingResultBuilder {
     private Long subEntityId;
     private Long gsimId;
     private Long glimId;
+    private Long addressId;
+    private Long customerId;
+    private Long vehicleId;
+    private Long guarantorId;
+    private Long bankDetailsId;
     private String transactionId;
     private Map<String, Object> changes;
     private CreditBureauReportData creditBureauReportData;
@@ -46,7 +51,8 @@ public class CommandProcessingResultBuilder {
     public CommandProcessingResult build() {
         return CommandProcessingResult.fromDetails(this.commandId, this.officeId, this.groupId, this.clientId, this.loanId, this.savingsId,
                 this.resourceIdentifier, this.entityId, this.gsimId, this.glimId, this.creditBureauReportData, this.transactionId,
-                this.changes, this.productId, this.rollbackTransaction, this.subEntityId);
+                this.changes, this.productId, this.rollbackTransaction, this.subEntityId, this.addressId, this.customerId, this.vehicleId,
+                this.guarantorId, this.bankDetailsId);
     }
 
     public CommandProcessingResultBuilder withCommandId(final Long withCommandId) {
@@ -116,6 +122,32 @@ public class CommandProcessingResultBuilder {
 
     public CommandProcessingResultBuilder withGlimId(final Long glimId) {
         this.glimId = glimId;
+        return this;
+    }
+    // VLMS
+
+    public CommandProcessingResultBuilder withAddressId(final Long addressId) {
+        this.addressId = addressId;
+        return this;
+    }
+
+    public CommandProcessingResultBuilder withCustomerDetailsId(final Long customerId) {
+        this.customerId = customerId;
+        return this;
+    }
+
+    public CommandProcessingResultBuilder withVehicleDetailsId(final Long vehicleId) {
+        this.vehicleId = vehicleId;
+        return this;
+    }
+
+    public CommandProcessingResultBuilder withCustomerGuarantorId(final Long guarantorId) {
+        this.guarantorId = guarantorId;
+        return this;
+    }
+
+    public CommandProcessingResultBuilder withBankDetailsId(final Long bankDetailsId) {
+        this.bankDetailsId = bankDetailsId;
         return this;
     }
 

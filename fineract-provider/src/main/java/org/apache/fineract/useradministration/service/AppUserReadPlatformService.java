@@ -29,7 +29,7 @@ public interface AppUserReadPlatformService {
 
     AppUserData retrieveNewUserDetails();
 
-    AppUserData retrieveUser(Long userId);
+    AppUserData retrieveUser(String username);
 
     boolean isUsernameExist(String username);
 }

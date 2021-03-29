@@ -144,9 +144,9 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             final BankDetails bankDetailsObj = this.bankDetailsRepository.getOne(bankDetailsId);
             System.out.println("bankDetailsObj" + bankDetailsObj);
 
-            final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command, addobj, customerDetailsObj, vehicleDetails,
-                    customerGuarantor, bankDetails);
-            System.out.println("newVehicleLoan" + newVehicleLoan);
+            final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command, addobj, customerDetailsObj, vehicleDetailsObj,
+                    customerGuarantorObj, bankDetailsObj);
+            System.out.println("newVehicleLoan" + bankDetailsObj);
 
             // final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command);
 
@@ -156,9 +156,10 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withEntityId(newVehicleLoan.getId()) //
-                    // .withOfficeId(loan.getOfficeId()) //
-                    // .withClientId(loan.getClientId()) //
-                    // .withGroupId(loan.getGroupId()) //
+                    .withAddressId(addobj.getId()) //
+                    .withCustomerDetailsId(customerDetailsObj.getId()) //
+                    .withVehicleDetailsId(vehicleDetailsObj.getId()) //
+                    .withCustomerGuarantorId(customerGuarantorObj.getId()).withBankDetailsId(bankDetailsObj.getId())//
                     // .withLoanId(loanId) //
                     // .with(changes) //
                     .build();

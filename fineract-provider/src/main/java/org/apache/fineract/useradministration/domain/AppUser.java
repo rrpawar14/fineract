@@ -44,6 +44,7 @@ import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
+import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
 import org.apache.fineract.infrastructure.security.domain.PlatformUser;
 import org.apache.fineract.infrastructure.security.exception.NoAuthorizationException;
 import org.apache.fineract.infrastructure.security.service.PlatformPasswordEncoder;
@@ -104,6 +105,10 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     @ManyToOne
     @JoinColumn(name = "staff_id", nullable = true)
     private Staff staff;
+
+    @ManyToOne
+    @JoinColumn(name = "image_id", nullable = true)
+    private Image image;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "m_appuser_role", joinColumns = @JoinColumn(name = "appuser_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -455,6 +460,10 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     public String getEmail() {
         return this.email;
+    }
+
+    public Image getImage() {
+        return this.image;
     }
 
     public Set<Role> getRoles() {
