@@ -112,8 +112,7 @@ public class TwoFactorServiceImpl implements TwoFactorService {
             final OTPRequest request = generateNewToken(emailDelivery, extendedAccessToken);
             final String emailSubject = configurationService.getFormattedEmailSubjectFor(user, request);
             final String emailBody = configurationService.getFormattedEmailBodyFor(user, request);
-            final EmailDetail emailData = new EmailDetail(emailSubject, emailBody, user.getEmail(),
-                    user.getFirstname() + " " + user.getLastname());
+            final EmailDetail emailData = new EmailDetail(emailSubject, emailBody, user.getEmail(), user.getFirstname());
             emailService.sendDefinedEmail(emailData);
             otpRequestRepository.addOTPRequest(user, request);
             return request;

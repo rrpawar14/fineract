@@ -22,6 +22,9 @@ ALTER TABLE m_appuser MODIFY COLUMN email VARCHAR(100) NULL;
 ALTER TABLE m_appuser MODIFY COLUMN firstname VARCHAR(100) NULL;
 ALTER TABLE m_appuser MODIFY COLUMN lastname VARCHAR(100) NULL;
 ALTER TABLE m_appuser ADD COLUMN image_id INT(100) NULL;
+ALTER TABLE m_appuser drop column firstname;
+ALTER TABLE m_appuser drop column lastname;
+ALTER TABLE m_appuser add column name VARCHAR(100) NULL after username;
 
 
 -- create Loan Enquiry Table

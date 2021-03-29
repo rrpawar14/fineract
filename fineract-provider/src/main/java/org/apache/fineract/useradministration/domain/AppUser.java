@@ -72,10 +72,11 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     private String username;
 
     @Column(name = "firstname", nullable = false, length = 100)
-    private String firstname;
+    private String name;
 
-    @Column(name = "lastname", nullable = false, length = 100)
-    private String lastname;
+    /*
+     * @Column(name = "lastname", nullable = false, length = 100) private String lastname;
+     */
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -157,13 +158,12 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
                 authorities);
 
         final String email = command.stringValueOfParameterNamed("email");
-        final String firstname = command.stringValueOfParameterNamed("firstname");
-        final String lastname = command.stringValueOfParameterNamed("lastname");
+        final String name = command.stringValueOfParameterNamed("firstname");
+        // final String lastname = command.stringValueOfParameterNamed("lastname");
 
         final boolean isSelfServiceUser = command.booleanPrimitiveValueOfParameterNamed(AppUserConstants.IS_SELF_SERVICE_USER);
 
-        return new AppUser(userOffice, user, allRoles, email, firstname, lastname, linkedStaff, passwordNeverExpire, isSelfServiceUser,
-                clients);
+        return new AppUser(userOffice, user, allRoles, email, name, linkedStaff, passwordNeverExpire, isSelfServiceUser, clients);
     }
 
     public static AppUser fromJson(final JsonCommand command) {
@@ -179,7 +179,7 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     public AppUser(final String name, final String mobileNo, final String password, final boolean accountNonExpired,
             final boolean accountNonLocked, final boolean credentialsNonExpired, final boolean enabled) {
-        this.firstname = name;
+        this.name = name;
         this.username = mobileNo;
         this.password = password;
         this.accountNonExpired = accountNonExpired;
@@ -194,14 +194,13 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
         this.roles = new HashSet<>();
     }
 
-    public AppUser(final Office office, final User user, final Set<Role> roles, final String email, final String firstname,
-            final String lastname, final Staff staff, final boolean passwordNeverExpire, final boolean isSelfServiceUser,
-            final Collection<Client> clients) {
+    public AppUser(final Office office, final User user, final Set<Role> roles, final String email, final String name, final Staff staff,
+            final boolean passwordNeverExpire, final boolean isSelfServiceUser, final Collection<Client> clients) {
         this.office = office;
         this.email = email.trim();
         this.username = user.getUsername().trim();
-        this.firstname = firstname.trim();
-        this.lastname = lastname.trim();
+        this.name = name.trim();
+        // this.lastname = lastname.trim();
         this.password = user.getPassword().trim();
         this.accountNonExpired = user.isAccountNonExpired();
         this.accountNonLocked = user.isAccountNonLocked();
@@ -323,10 +322,23 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
             this.username = newValue;
         }
 
-        if (command.hasParameter("newMobileNo")) {
-            final String newValue = command.stringValueOfParameterNamed("newMobileNo");
-            actualChanges.put(username, newValue);
+        if (command.isChangeInStringParameterNamed(newMobileParamName, this.username)) {
+            final String newValue = command.stringValueOfParameterNamed(newMobileParamName);
+            actualChanges.put(newMobileParamName, newValue);
+            this.username = newValue;
         }
+
+        final String nameParamName = "name";
+        if (command.isChangeInStringParameterNamed(nameParamName, this.username)) {
+            final String newValue = command.stringValueOfParameterNamed(nameParamName);
+            actualChanges.put(nameParamName, newValue);
+            this.username = newValue;
+        }
+
+        /*
+         * if (command.hasParameter("newMobileNo")) { final String newValue =
+         * command.stringValueOfParameterNamed("newMobileNo"); actualChanges.put(username, newValue); }
+         */
 
         if (command.hasParameter(passwordNeverExpire)) {
             if (command.isChangeInBooleanParameterNamed(passwordNeverExpire, this.passwordNeverExpires)) {
@@ -432,11 +444,11 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
         if (this.staff != null && StringUtils.isNotBlank(this.staff.displayName())) {
             return this.staff.displayName();
         }
-        String firstName = StringUtils.isNotBlank(this.firstname) ? this.firstname : "";
-        if (StringUtils.isNotBlank(this.lastname)) {
-            return firstName + " " + this.lastname;
-        }
-        return firstName;
+        String name = StringUtils.isNotBlank(this.name) ? this.name : "";
+        /*
+         * if (StringUtils.isNotBlank(this.lastname)) { return firstName + " " + this.lastname; }
+         */
+        return name;
     }
 
     @Override
@@ -460,12 +472,12 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     }
 
     public String getFirstname() {
-        return this.firstname;
+        return this.name;
     }
 
-    public String getLastname() {
-        return this.lastname;
-    }
+    /*
+     * public String getLastname() { return this.lastname; }
+     */
 
     public String getEmail() {
         return this.email;
