@@ -302,16 +302,25 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
          * final String lastnameParamName = "lastname"; if (command.isChangeInStringParameterNamed(lastnameParamName,
          * this.lastname)) { final String newValue = command.stringValueOfParameterNamed(lastnameParamName);
          * actualChanges.put(lastnameParamName, newValue); this.lastname = newValue; }
-         *
-         * final String emailParamName = "email"; if (command.isChangeInStringParameterNamed(emailParamName,
-         * this.email)) { final String newValue = command.stringValueOfParameterNamed(emailParamName);
-         * actualChanges.put(emailParamName, newValue); this.email = newValue; }
          */
+        final String emailParamName = "email";
+        if (command.isChangeInStringParameterNamed(emailParamName, this.email)) {
+            final String newValue = command.stringValueOfParameterNamed(emailParamName);
+            actualChanges.put(emailParamName, newValue);
+            this.email = newValue;
+        }
+
         final String passwordNeverExpire = "passwordNeverExpires";
 
-        if (command.hasParameter(email)) {
-            final String newValue = command.stringValueOfParameterNamed(email);
-            actualChanges.put(email, newValue);
+        /*
+         * if (command.hasParameter(email)) { final String newValue = command.stringValueOfParameterNamed(email);
+         * actualChanges.put(email, newValue); }
+         */
+        final String newMobileParamName = "newMobileNo";
+        if (command.isChangeInStringParameterNamed(newMobileParamName, this.username)) {
+            final String newValue = command.stringValueOfParameterNamed(newMobileParamName);
+            actualChanges.put(newMobileParamName, newValue);
+            this.username = newValue;
         }
 
         if (command.hasParameter("newMobileNo")) {
