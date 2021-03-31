@@ -218,7 +218,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             owner = usedVehicleLoan;
             // }
         }
-        if (EntityTypeForImages.NEWVEHICLE.toString().equals(entityName)) {
+        if (EntityTypeForImages.INVOICEIMAGE.toString().equals(entityName)) {
             // if (EntityTypeForImages.NEWVEHICLE.toString().equals(entityName)) {
             System.out.println("--InvoiceImage--");
             NewVehicleLoan newVehicleLoan = this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);

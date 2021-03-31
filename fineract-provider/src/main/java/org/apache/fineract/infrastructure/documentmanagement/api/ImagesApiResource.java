@@ -111,6 +111,7 @@ public class ImagesApiResource {
             @HeaderParam("Content-Length") final Long fileSize, @FormDataParam("file") final InputStream inputStream,
             @FormDataParam("file") final FormDataContentDisposition fileDetails, @FormDataParam("file") final FormDataBodyPart bodyPart) {
         validateEntityTypeforImage(entityName);
+        System.out.println("addNewLoanApplicationImage : " + entityName);
         fileUploadValidator.validate(fileSize, inputStream, fileDetails, bodyPart);
         // TODO: vishwas might need more advances validation (like reading magic
         // number) for handling malicious clients
