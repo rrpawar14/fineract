@@ -32,6 +32,9 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
     // @Column(name = "g", nullable = false, length = 100)
     // private BigDecimal loanEligibleAmount;
 
+    @Column(name = "guarantor_name")
+    private String guarantorName;
+
     @Column(name = "mobile_number")
     private Integer mobileNumber;
 
@@ -61,6 +64,7 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
      */
     public static CustomerGuarantor fromJson(final JsonCommand command) {
 
+        final String guarantorName = command.stringValueOfParameterNamed("guarantor_name");
         final Integer mobileNumber = command.integerValueOfParameterNamed("guarantor_mobile_number");
         final String gender = command.stringValueOfParameterNamed("guarantor_gender");
         final Date dob = command.dateValueOfParameterNamed("guarantor_dob");
@@ -68,17 +72,22 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
         final String spouseName = command.stringValueOfParameterNamed("guarantor_spouseName");
         final String profession = command.stringValueOfParameterNamed("guarantor_profession");
 
-        return new CustomerGuarantor(mobileNumber, gender, dob, maritalStatus, spouseName, profession);
+        return new CustomerGuarantor(guarantorName, mobileNumber, gender, dob, maritalStatus, spouseName, profession);
     }
 
-    private CustomerGuarantor(final Integer mobileNumber, final String gender, final Date dob, final String maritalStatus,
-            final String spouseName, final String profession) {
+    private CustomerGuarantor(final String guarantorName, final Integer mobileNumber, final String gender, final Date dob,
+            final String maritalStatus, final String spouseName, final String profession) {
+        this.guarantorName = guarantorName;
         this.mobileNumber = mobileNumber;
         this.gender = gender;
         this.dob = dob;
         this.maritalStatus = maritalStatus;
         this.spouseName = spouseName;
         this.profession = profession;
+    }
+
+    public String getGuarantorName() {
+        return this.guarantorName;
     }
 
     /*

@@ -91,6 +91,10 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
         this.bankDetails = bankDetails;
     }
 
+    public String getName() {
+        return this.customerName;
+    }
+
     /*
      * public void setInvoiceImage(final DocumentImages invoiceImage) { this.image = invoiceImage; }
      *

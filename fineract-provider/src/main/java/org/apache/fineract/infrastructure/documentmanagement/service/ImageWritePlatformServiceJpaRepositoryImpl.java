@@ -200,17 +200,17 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             // }
         }
         // if (entityName.equals("CustomerImage")) {
-        if (EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityName)) {
-            // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
-            System.out.println("--CustomerImage--");
-            UsedVehicleLoan usedVehicleLoan = this.usedVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
-            // image = usedVehicleLoan.getCustomerImage();
-            owner = usedVehicleLoan;
-            // }
-        }
+        /*
+         * if (EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityName)) { // if
+         * (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) { System.out.println("--CustomerImage--");
+         * UsedVehicleLoan usedVehicleLoan =
+         * this.usedVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId); // image =
+         * usedVehicleLoan.getCustomerImage(); owner = usedVehicleLoan; // } }
+         */
         // if (entityName.equals("AdharPhoto") || entityName.equals("GovernmentDocument")) {
         if (EntityTypeForImages.ADHARPHOTO.toString().equals(entityName)
-                || EntityTypeForImages.GOVERNMENTDOCUMENT.toString().equals(entityName)) {
+                || EntityTypeForImages.GOVERNMENTDOCUMENT.toString().equals(entityName)
+                || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
             System.out.println("--AdharPhoto GovernmentDocument--");
             UsedVehicleLoan usedVehicleLoan = this.usedVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);

@@ -27,12 +27,23 @@ import org.apache.fineract.infrastructure.documentmanagement.contentrepository.C
 import org.apache.fineract.infrastructure.documentmanagement.contentrepository.ContentRepositoryFactory;
 import org.apache.fineract.infrastructure.documentmanagement.data.FileData;
 import org.apache.fineract.infrastructure.documentmanagement.data.ImageData;
+import org.apache.fineract.infrastructure.documentmanagement.domain.DocumentImageRepository;
 import org.apache.fineract.infrastructure.documentmanagement.domain.StorageType;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.portfolio.client.exception.ImageNotFoundException;
+import org.apache.fineract.portfolio.loanaccount.domain.BankDetails;
+import org.apache.fineract.portfolio.loanaccount.domain.BankDetailsRepositoryWrapper;
+import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantor;
+import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantorRepositoryWrapper;
+import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoan;
+import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoanRepositoryWrapper;
+import org.apache.fineract.portfolio.loanaccount.domain.UsedVehicleLoan;
+import org.apache.fineract.portfolio.loanaccount.domain.UsedVehicleLoanRepositoryWrapper;
+import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetails;
+import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetailsRepositoryWrapper;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,16 +60,32 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
     private final ClientRepositoryWrapper clientRepositoryWrapper;
     private final StaffRepositoryWrapper staffRepositoryWrapper;
     private final AppUserRepositoryWrapper appUserRepositoryWrapper;
+    private final DocumentImageRepository documentImageRepository;
+    private final BankDetailsRepositoryWrapper bankDetailsRepositoryWrapper;
+    private final CustomerGuarantorRepositoryWrapper customerGuarantorRepositoryWrapper;
+    private final UsedVehicleLoanRepositoryWrapper usedVehicleLoanRepositoryWrapper;
+    private final NewVehicleLoanRepositoryWrapper newVehicleLoanRepositoryWrapper;
+    private final VehicleDetailsRepositoryWrapper vehicleDetailsRepositoryWrapper;
 
     @Autowired
     public ImageReadPlatformServiceImpl(final RoutingDataSource dataSource, final ContentRepositoryFactory documentStoreFactory,
             final ClientRepositoryWrapper clientRepositoryWrapper, StaffRepositoryWrapper staffRepositoryWrapper,
-            final AppUserRepositoryWrapper appUserRepositoryWrapper) {
+            final AppUserRepositoryWrapper appUserRepositoryWrapper, final BankDetailsRepositoryWrapper bankDetailsRepositoryWrapper,
+            final VehicleDetailsRepositoryWrapper vehicleDetailsRepositoryWrapper,
+            final CustomerGuarantorRepositoryWrapper customerGuarantorRepositoryWrapper,
+            final UsedVehicleLoanRepositoryWrapper usedVehicleLoanRepositoryWrapper, final DocumentImageRepository documentImageRepository,
+            final NewVehicleLoanRepositoryWrapper newVehicleLoanRepositoryWrapper) {
         this.staffRepositoryWrapper = staffRepositoryWrapper;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.contentRepositoryFactory = documentStoreFactory;
         this.clientRepositoryWrapper = clientRepositoryWrapper;
         this.appUserRepositoryWrapper = appUserRepositoryWrapper;
+        this.bankDetailsRepositoryWrapper = bankDetailsRepositoryWrapper;
+        this.vehicleDetailsRepositoryWrapper = vehicleDetailsRepositoryWrapper;
+        this.customerGuarantorRepositoryWrapper = customerGuarantorRepositoryWrapper;
+        this.usedVehicleLoanRepositoryWrapper = usedVehicleLoanRepositoryWrapper;
+        this.documentImageRepository = documentImageRepository;
+        this.newVehicleLoanRepositoryWrapper = newVehicleLoanRepositoryWrapper;
     }
 
     private static final class ImageMapper implements RowMapper<ImageData> {
@@ -73,10 +100,31 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
             StringBuilder builder = new StringBuilder(
                     "image.id as id, image.location as location, image.storage_type_enum as storageType ");
             if (EntityTypeForImages.CLIENTS.toString().equalsIgnoreCase(entityType)) {
+                System.out.println("CLIENTS-Entity");
                 builder.append(" from m_image image , m_client client " + " where client.image_id = image.id and client.id=?");
             } else if (EntityTypeForImages.STAFF.toString().equalsIgnoreCase(entityType)) {
+                System.out.println("STAFF-Entity");
                 builder.append("from m_image image , m_staff staff " + " where staff.image_id = image.id and staff.id=?");
             } else if (EntityTypeForImages.CUSTOMERIMAGE.toString().equalsIgnoreCase(entityType)) {
+                System.out.println("CUSTOMERIMAGE-Entity");
+                builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
+            } else if (EntityTypeForImages.PROFILEIMAGE.toString().equalsIgnoreCase(entityType)) {
+                System.out.println("profileimage");
+                builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
+            } else if (EntityTypeForImages.ADHARPHOTO.toString().equals(entityType)
+                    || EntityTypeForImages.GOVERNMENTDOCUMENT.toString().equals(entityType)
+                    || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityType)) {
+                builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
+
+            } else if (EntityTypeForImages.INVOICEIMAGE.toString().equalsIgnoreCase(entityType)) {
+                builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
+
+            } else if (EntityTypeForImages.ENGINE.toString().equals(entityType) || EntityTypeForImages.CHASSIS.toString().equals(entityType)
+                    || EntityTypeForImages.VEHICLE.toString().equals(entityType)) {
+                builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
+            } else if (EntityTypeForImages.GUARANTORIMAGE.toString().equals(entityType)) {
+                builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
+            } else if (EntityTypeForImages.BANK.toString().equals(entityType)) {
                 builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
             }
             return builder.toString();
@@ -94,7 +142,7 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
     @Override
     public FileData retrieveImage(String entityType, final Long entityId) {
         try {
-            String displayName;
+            String displayName = null;
             if (EntityTypeForImages.CLIENTS.toString().equalsIgnoreCase(entityType)) {
                 Client owner = this.clientRepositoryWrapper.findOneWithNotFoundDetection(entityId);
                 displayName = owner.getDisplayName();
@@ -104,6 +152,24 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
             } else if (EntityTypeForImages.PROFILEIMAGE.toString().equalsIgnoreCase(entityType)) {
                 AppUser owner = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(entityId);
                 displayName = owner.getFirstname();
+            } else if (EntityTypeForImages.ADHARPHOTO.toString().equals(entityType)
+                    || EntityTypeForImages.GOVERNMENTDOCUMENT.toString().equals(entityType)
+                    || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityType)) {
+                UsedVehicleLoan owner = this.usedVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = owner.getName();
+            } else if (EntityTypeForImages.INVOICEIMAGE.toString().equalsIgnoreCase(entityType)) {
+                NewVehicleLoan owner = this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = owner.getName();
+            } else if (EntityTypeForImages.ENGINE.toString().equals(entityType) || EntityTypeForImages.CHASSIS.toString().equals(entityType)
+                    || EntityTypeForImages.VEHICLE.toString().equals(entityType)) {
+                VehicleDetails vehicleDetails = this.vehicleDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                // displayName = owner.getFirstname();
+            } else if (EntityTypeForImages.GUARANTORIMAGE.toString().equals(entityType)) {
+                CustomerGuarantor owner = this.customerGuarantorRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = owner.getGuarantorName();
+            } else if (EntityTypeForImages.BANK.toString().equals(entityType)) {
+                BankDetails owner = this.bankDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = owner.getAccountHolderName();
             } else {
                 displayName = "UnknownEntityType:" + entityType;
             }

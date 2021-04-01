@@ -46,6 +46,7 @@ AUTO_INCREMENT=1;
 
 CREATE TABLE `m_customer_guarantor` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `guarantor_name` varchar(100) NULL DEFAULT 'NULL',
     `mobile_number` BIGINT(20) NULL DEFAULT '0',
     `gender` varchar(100) NULL DEFAULT '0',
     `dob` DATE NULL DEFAULT NULL,

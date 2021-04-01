@@ -96,6 +96,10 @@ public class UsedVehicleLoan extends AbstractPersistableCustom {
         this.bankDetails = bankDetailsObj;
     }
 
+    public String getName() {
+        return this.customerName;
+    }
+
     /*
      * public void setImage(Image image) { this.image = image; }
      *

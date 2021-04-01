@@ -85,6 +85,10 @@ public class BankDetails extends AbstractPersistableCustom {
         this.IFSC = IFSC;
     }
 
+    public String getAccountHolderName() {
+        return this.accountHolderName;
+    }
+
     /*
      * public void setImage(DocumentImages image) { this.image = image; }
      *
