@@ -89,18 +89,24 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             this.context.authenticatedUser();
 
             System.out.println("-------------New Request-------------");
-            final Address add = Address.fromJson(command);
-            System.out.println("add" + add);
-            this.addressRepository.save(add);
-            System.out.println("addressRepository" + addressRepository);
+            Address customerAdd = Address.fromJson(command, "customer_communicationAddress");
+            this.addressRepository.save(customerAdd);
+            Long addressid = customerAdd.getId();
+            Address customerCommunicationAdd = this.addressRepository.getOne(addressid);
 
-            final Long addressid = add.getId();
-            System.out.println("addressid" + addressid);
-            final Address addobj = this.addressRepository.getOne(addressid);
-            System.out.println("addobj" + addobj);
+            customerAdd = Address.fromJson(command, "customer_permanentAddress");
+            this.addressRepository.save(customerAdd);
+            addressid = customerAdd.getId();
+            Address customerPermanentAdd = this.addressRepository.getOne(addressid);
+
+            customerAdd = Address.fromJson(command, "customer_officeAddress");
+            this.addressRepository.save(customerAdd);
+            addressid = customerAdd.getId();
+            Address customerOfficeAdd = this.addressRepository.getOne(addressid);
 
             // createcustomerdetails
-            final CustomerDetails customerDetails = CustomerDetails.fromJson(command);
+            final CustomerDetails customerDetails = CustomerDetails.fromJson(command, customerCommunicationAdd, customerPermanentAdd,
+                    customerOfficeAdd); // add 3 address object
             System.out.println("customerDetails" + customerDetails);
             this.customerDetailsRepository.save(customerDetails);
             System.out.println("customerDetailsRepository");
@@ -123,7 +129,23 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
 
             // createguarantordetails
 
-            final CustomerGuarantor customerGuarantor = CustomerGuarantor.fromJson(command);
+            Address add = Address.fromJson(command, "guarantor_commucationAddress");
+            this.addressRepository.save(add);
+            addressid = add.getId();
+            Address guarantorCommunicationAdd = this.addressRepository.getOne(addressid);
+
+            add = Address.fromJson(command, "guarantor_permanentAddress");
+            this.addressRepository.save(add);
+            addressid = add.getId();
+            Address guarantorPermanentAdd = this.addressRepository.getOne(addressid);
+
+            add = Address.fromJson(command, "guarantor_officeAddress");
+            this.addressRepository.save(add);
+            addressid = add.getId();
+            Address guarantorOfficeAdd = this.addressRepository.getOne(addressid);
+
+            final CustomerGuarantor customerGuarantor = CustomerGuarantor.fromJson(command, guarantorCommunicationAdd,
+                    guarantorPermanentAdd, guarantorOfficeAdd); // add 3 address object
             System.out.println("customerGuarantor" + customerGuarantor);
             this.customerGuarantorRepository.save(customerGuarantor);
             System.out.println("customerGuarantorRepository" + customerGuarantorRepository);
@@ -144,7 +166,7 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             final BankDetails bankDetailsObj = this.bankDetailsRepository.getOne(bankDetailsId);
             System.out.println("bankDetailsObj" + bankDetailsObj);
 
-            final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command, addobj, customerDetailsObj, vehicleDetailsObj,
+            final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj,
                     customerGuarantorObj, bankDetailsObj);
             System.out.println("newVehicleLoan" + bankDetailsObj);
 
@@ -156,7 +178,7 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withEntityId(newVehicleLoan.getId()) //
-                    .withAddressId(addobj.getId()) //
+                    // .withAddressId(addobj.getId()) //
                     .withCustomerDetailsId(customerDetailsObj.getId()) //
                     .withVehicleDetailsId(vehicleDetailsObj.getId()) //
                     .withCustomerGuarantorId(customerGuarantorObj.getId()).withBankDetailsId(bankDetailsObj.getId())//
@@ -188,18 +210,24 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             this.context.authenticatedUser();
 
             // create address
-            final Address add = Address.fromJson(command);
-            System.out.println("add");
-            this.addressRepository.save(add);
-            System.out.println("addressRepository");
+            Address customerAdd = Address.fromJson(command, "customer_communicationAddress");
+            this.addressRepository.save(customerAdd);
+            Long addressid = customerAdd.getId();
+            Address customerCommunicationAdd = this.addressRepository.getOne(addressid);
 
-            final Long addressid = add.getId();
-            System.out.println("addressid");
-            final Address addobj = this.addressRepository.getOne(addressid);
-            System.out.println("addobj");
+            customerAdd = Address.fromJson(command, "customer_permanentAddress");
+            this.addressRepository.save(customerAdd);
+            addressid = customerAdd.getId();
+            Address customerPermanentAdd = this.addressRepository.getOne(addressid);
+
+            customerAdd = Address.fromJson(command, "customer_officeAddress");
+            this.addressRepository.save(customerAdd);
+            addressid = customerAdd.getId();
+            Address customerOfficeAdd = this.addressRepository.getOne(addressid);
 
             // createcustomerdetails
-            final CustomerDetails customerDetails = CustomerDetails.fromJson(command);
+            final CustomerDetails customerDetails = CustomerDetails.fromJson(command, customerCommunicationAdd, customerPermanentAdd,
+                    customerOfficeAdd);
             System.out.println("customerDetails");
             this.customerDetailsRepository.save(customerDetails);
             System.out.println("customerDetailsRepository");
@@ -220,9 +248,25 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             final VehicleDetails vehicleDetailsObj = this.vehicleDetailsRepository.getOne(vehicleDetailsId);
             System.out.println("vehicleDetailsObj");
 
+            Address add = Address.fromJson(command, "guarantor_commucationAddress");
+            this.addressRepository.save(add);
+            addressid = add.getId();
+            Address guarantorCommunicationAdd = this.addressRepository.getOne(addressid);
+
+            add = Address.fromJson(command, "guarantor_permanentAddress");
+            this.addressRepository.save(add);
+            addressid = add.getId();
+            Address guarantorPermanentAdd = this.addressRepository.getOne(addressid);
+
+            add = Address.fromJson(command, "guarantor_officeAddress");
+            this.addressRepository.save(add);
+            addressid = add.getId();
+            Address guarantorOfficeAdd = this.addressRepository.getOne(addressid);
+
             // createguarantordetails
 
-            final CustomerGuarantor customerGuarantor = CustomerGuarantor.fromJson(command);
+            final CustomerGuarantor customerGuarantor = CustomerGuarantor.fromJson(command, guarantorCommunicationAdd,
+                    guarantorPermanentAdd, guarantorOfficeAdd);
             System.out.println("customerGuarantor");
             this.customerGuarantorRepository.save(customerGuarantor);
             System.out.println("customerGuarantorRepository");
@@ -245,7 +289,7 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
 
             // store all in usedvehicle like addresswriteplatformservice
 
-            final UsedVehicleLoan usedVehicleLoan = UsedVehicleLoan.fromJson(command, addobj, customerDetailsObj, vehicleDetailsObj,
+            final UsedVehicleLoan usedVehicleLoan = UsedVehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj,
                     customerGuarantorObj, bankDetailsObj);
 
             this.usedVehicleLoanRepository.save(usedVehicleLoan);

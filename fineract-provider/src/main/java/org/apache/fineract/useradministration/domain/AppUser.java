@@ -487,6 +487,10 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
         return this.image;
     }
 
+    public void setImage(Image profileImage) {
+        this.image = profileImage;
+    }
+
     public Set<Role> getRoles() {
         return this.roles;
     }

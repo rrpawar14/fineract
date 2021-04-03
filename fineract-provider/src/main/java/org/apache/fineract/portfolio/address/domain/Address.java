@@ -18,6 +18,9 @@
  */
 package org.apache.fineract.portfolio.address.domain;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -179,23 +182,52 @@ public class Address extends AbstractPersistableCustom {
                 postalCode, latitude, longitude, createdBy, createdOn, updatedBy, updatedOn);
     }
 
-    public static Address fromJson(final JsonCommand command) {
+    public static Address fromJson(final JsonCommand command, final String paramName) {
 
-        final String addressLine1 = command.stringValueOfParameterNamed("addressLine1");
+        JsonObject addressObject = command.parsedJson().getAsJsonObject();
+        JsonElement guarantorObject = addressObject.get(paramName);
+        System.out.println("guarantorObject: " + guarantorObject);
 
-        final String addressLine2 = command.stringValueOfParameterNamed("addressLine2");
+        if (!(guarantorObject instanceof JsonNull)) { // NOTE : "element instanceof JsonNull" is for handling empty
+                                                      // values (and
+            // assigning null) while fetching data from results
+            addressObject = (JsonObject) guarantorObject;
+        }
 
-        final String landmark = command.stringValueOfParameterNamed("landmark");
+        JsonObject borrowerInfos = null;
+        String borrowerInfo = null;
 
-        final String postalCode = command.stringValueOfParameterNamed("pincode");
+        Gson gson = new Gson();
 
-        final String area = command.stringValueOfParameterNamed("area");
+        guarantorObject = addressObject.get("addressLine1");
+        System.out.println("addressLine1: " + guarantorObject);
+        final String addressLine1 = gson.toJson(guarantorObject);
 
-        final String city = command.stringValueOfParameterNamed("city");
+        guarantorObject = addressObject.get("addressLine2");
+        System.out.println("addressLine2: " + guarantorObject);
+        final String addressLine2 = gson.toJson(guarantorObject);
 
-        final String state = command.stringValueOfParameterNamed("state");
+        guarantorObject = addressObject.get("landmark");
+        System.out.println("landmark: " + guarantorObject);
+        final String landmark = gson.toJson(guarantorObject);
 
-        return new Address(addressLine1, addressLine2, landmark, postalCode, area, city, state);
+        guarantorObject = addressObject.get("pincode");
+        System.out.println("pincode: " + guarantorObject);
+        final String pincode = gson.toJson(guarantorObject);
+
+        guarantorObject = addressObject.get("area");
+        System.out.println("area: " + guarantorObject);
+        final String area = gson.toJson(guarantorObject);
+
+        guarantorObject = addressObject.get("city");
+        System.out.println("city: " + guarantorObject);
+        final String city = gson.toJson(guarantorObject);
+
+        guarantorObject = addressObject.get("state");
+        System.out.println("state: " + guarantorObject);
+        final String state = gson.toJson(guarantorObject);
+
+        return new Address(addressLine1, addressLine2, landmark, pincode, area, city, state);
     }
 
     private Address(final String addressLine1, final String addressLine2, final String landmark, final String postalCode, final String area,

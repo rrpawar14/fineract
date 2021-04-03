@@ -21,10 +21,12 @@ package org.apache.fineract.portfolio.loanaccount.domain;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
-import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
+import org.apache.fineract.portfolio.address.domain.Address;
 
 @Entity
 @Table(name = "m_customer_details")
@@ -48,10 +50,20 @@ public class CustomerDetails extends AbstractPersistableCustom {
     @Column(name = "profession")
     private String profession;
 
-    @Column(name = "proof_image_id")
-    private Image proof;
+    @OneToOne(optional = true)
+    @JoinColumn(name = "communicationadd_id", nullable = true)
+    private Address communicationAdd;
 
-    public static CustomerDetails fromJson(final JsonCommand command) {
+    @OneToOne(optional = true)
+    @JoinColumn(name = "permanentadd_id", nullable = true)
+    private Address permanentAdd;
+
+    @OneToOne(optional = true)
+    @JoinColumn(name = "officeadd_id", nullable = true)
+    private Address officeAdd;
+
+    public static CustomerDetails fromJson(final JsonCommand command, final Address customerCommunicationAdd,
+            final Address customerPermanentAdd, final Address customerOfficeAdd) {
 
         final String name = command.stringValueOfParameterNamed("customerName");
         final String gender = command.stringValueOfParameterNamed("gender");
@@ -60,26 +72,30 @@ public class CustomerDetails extends AbstractPersistableCustom {
         final String spousename = command.stringValueOfParameterNamed("spouseName");
         final String profession = command.stringValueOfParameterNamed("profession");
 
-        return new CustomerDetails(name, gender, dob, maritalStatus, spousename, profession);
+        return new CustomerDetails(name, gender, dob, maritalStatus, spousename, profession, customerCommunicationAdd, customerPermanentAdd,
+                customerOfficeAdd);
 
     }
 
     private CustomerDetails(final String name, final String gender, final Date dob, final String maritalStatus, final String spousename,
-            final String profession) {
+            final String profession, final Address customerCommunicationAdd, final Address customerPermanentAdd,
+            final Address customerOfficeAdd) {
         this.name = name;
         this.gender = gender;
         this.dob = dob;
         this.maritalStatus = maritalStatus;
         this.spousename = spousename;
         this.profession = profession;
+        this.communicationAdd = customerCommunicationAdd;
+        this.permanentAdd = customerPermanentAdd;
+        this.officeAdd = customerOfficeAdd;
+
     }
 
-    public void setImage(Image image) {
-        this.proof = image;
-    }
-
-    public Image getImage() {
-        return this.proof;
-    }
+    /*
+     * public void setImage(Image image) { this.proof = image; }
+     *
+     * public Image getImage() { return this.proof; }
+     */
 
 }

@@ -20,11 +20,11 @@ package org.apache.fineract.portfolio.loanaccount.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
-import org.apache.fineract.portfolio.address.domain.Address;
 
 @Entity
 @Table(name = "m_apply_new_vehicle_loan")
@@ -46,24 +46,38 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
      * @OneToOne(optional = true)
      *
      * @JoinColumn(name = "invoice_image_id", nullable = true) private DocumentImages image;
+     *
+     *
+     * @ManyToOne private Address address;
      */
 
-    @ManyToOne
-    private Address address;
+    /*
+     * @ManyToOne private CustomerDetails customerDetails;
+     *
+     * @ManyToOne private VehicleDetails vehicleDetails;
+     *
+     * @ManyToOne private CustomerGuarantor customerGuarantor;
+     *
+     * @ManyToOne private BankDetails bankDetails;
+     */
 
-    @ManyToOne
+    @OneToOne(optional = true)
+    @JoinColumn(name = "customerdetails_id", nullable = true)
     private CustomerDetails customerDetails;
 
-    @ManyToOne
+    @OneToOne(optional = true)
+    @JoinColumn(name = "vehicledetails_id", nullable = true)
     private VehicleDetails vehicleDetails;
 
-    @ManyToOne
+    @OneToOne(optional = true)
+    @JoinColumn(name = "guarantordetails_id", nullable = true)
     private CustomerGuarantor customerGuarantor;
 
-    @ManyToOne
+    @OneToOne(optional = true)
+    @JoinColumn(name = "bankdetails_id", nullable = true)
     private BankDetails bankDetails;
 
-    public static NewVehicleLoan fromJson(final JsonCommand command, final Address address, final CustomerDetails customerDetails,
+    public static NewVehicleLoan fromJson(final JsonCommand command, final CustomerDetails customerDetails,
             final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final BankDetails bankDetails) {
 
         final String customerName = command.stringValueOfParameterNamed("customerName");
@@ -72,19 +86,18 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
         final String invoiceNumber = command.stringValueOfParameterNamed("invoiceNumber");
         // final Integer image = command.stringValueOfParameterNamed("invoiceImageId");
 
-        return new NewVehicleLoan(customerName, vehicleType, dealer, invoiceNumber, address, customerDetails, vehicleDetails,
-                customerGuarantor, bankDetails);
+        return new NewVehicleLoan(customerName, vehicleType, dealer, invoiceNumber, customerDetails, vehicleDetails, customerGuarantor,
+                bankDetails);
 
     }
 
     private NewVehicleLoan(final String customerName, final String vehicleType, final String dealer, final String invoiceNumber,
-            final Address address, final CustomerDetails customerDetails, final VehicleDetails vehicleDetails,
-            final CustomerGuarantor customerGuarantor, final BankDetails bankDetails) {
+            final CustomerDetails customerDetails, final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor,
+            final BankDetails bankDetails) {
         this.customerName = customerName;
         this.vehicleType = vehicleType;
         this.dealer = dealer;
         this.invoiceNumber = invoiceNumber;
-        this.address = address;
         this.customerDetails = customerDetails;
         this.vehicleDetails = vehicleDetails;
         this.customerGuarantor = customerGuarantor;

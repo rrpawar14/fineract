@@ -66,7 +66,7 @@ public class VehicleDetails extends AbstractPersistableCustom {
     private Date registration;
 
     @Column(name = "live_km_reading")
-    private String kmReading;
+    private Integer kmReading;
 
     /*
      * @OneToOne(optional = true)
@@ -88,7 +88,7 @@ public class VehicleDetails extends AbstractPersistableCustom {
         final Date insuranceExpiry = command.dateValueOfParameterNamed("insuranceExpiry");
         final Date pollutionCertExpiry = command.dateValueOfParameterNamed("pollutionCertExpiry");
         final Date registration = command.dateValueOfParameterNamed("registration");
-        final String kmReading = command.stringValueOfParameterNamed("kmReading");
+        final Integer kmReading = command.integerValueOfParameterNamed("kmReading");
 
         return new VehicleDetails(vehicleNumber, maker, model, color, mfgYear, engineNumber, chassisNumber, insuranceCompany,
                 insurancePolicy, insuranceExpiry, pollutionCertExpiry, registration, kmReading);
@@ -97,7 +97,7 @@ public class VehicleDetails extends AbstractPersistableCustom {
 
     private VehicleDetails(final String vehicleNumber, final String maker, final String model, final String color, final String mfgYear,
             final String engineNumber, final String chassisNumber, final String insuranceCompany, final String insurancePolicy,
-            final Date insuranceExpiry, final Date pollutionCertExpiry, final Date registration, final String kmReading) {
+            final Date insuranceExpiry, final Date pollutionCertExpiry, final Date registration, final Integer kmReading) {
         this.vehicleNumber = vehicleNumber;
         this.maker = maker;
         this.model = model;

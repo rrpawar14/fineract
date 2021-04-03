@@ -21,9 +21,12 @@ package org.apache.fineract.portfolio.loanaccount.domain;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
+import org.apache.fineract.portfolio.address.domain.Address;
 
 @Entity
 @Table(name = "m_customer_guarantor")
@@ -53,6 +56,18 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
     @Column(name = "profession")
     private String profession;
 
+    @OneToOne(optional = true)
+    @JoinColumn(name = "communicationadd_id", nullable = true)
+    private Address communicationAdd;
+
+    @OneToOne(optional = true)
+    @JoinColumn(name = "permanentadd_id", nullable = true)
+    private Address permanentAdd;
+
+    @OneToOne(optional = true)
+    @JoinColumn(name = "officeadd_id", nullable = true)
+    private Address officeAdd;
+
     /*
      * @OneToOne(optional = true)
      *
@@ -62,7 +77,8 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
      *
      * @JoinColumn(name = "document_image_id", nullable = true) private DocumentImages documentImage;
      */
-    public static CustomerGuarantor fromJson(final JsonCommand command) {
+    public static CustomerGuarantor fromJson(final JsonCommand command, final Address customerCommunicationAdd,
+            final Address customerPermanentAdd, final Address customerOfficeAdd) {
 
         final String guarantorName = command.stringValueOfParameterNamed("guarantor_name");
         final Integer mobileNumber = command.integerValueOfParameterNamed("guarantor_mobile_number");
@@ -72,11 +88,13 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
         final String spouseName = command.stringValueOfParameterNamed("guarantor_spouseName");
         final String profession = command.stringValueOfParameterNamed("guarantor_profession");
 
-        return new CustomerGuarantor(guarantorName, mobileNumber, gender, dob, maritalStatus, spouseName, profession);
+        return new CustomerGuarantor(guarantorName, mobileNumber, gender, dob, maritalStatus, spouseName, profession,
+                customerCommunicationAdd, customerPermanentAdd, customerOfficeAdd);
     }
 
     private CustomerGuarantor(final String guarantorName, final Integer mobileNumber, final String gender, final Date dob,
-            final String maritalStatus, final String spouseName, final String profession) {
+            final String maritalStatus, final String spouseName, final String profession, final Address customerCommunicationAdd,
+            final Address customerPermanentAdd, final Address customerOfficeAdd) {
         this.guarantorName = guarantorName;
         this.mobileNumber = mobileNumber;
         this.gender = gender;
@@ -84,6 +102,9 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
         this.maritalStatus = maritalStatus;
         this.spouseName = spouseName;
         this.profession = profession;
+        this.communicationAdd = customerCommunicationAdd;
+        this.permanentAdd = customerPermanentAdd;
+        this.officeAdd = customerOfficeAdd;
     }
 
     public String getGuarantorName() {
