@@ -921,6 +921,42 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createFEEnquiry() {
+        this.actionName = "CREATE";
+        this.entityName = "FEENQUIRYLOAN";
+        this.entityId = null;
+        this.loanId = null;
+        this.href = "/loans/feenquiry";
+        return this;
+    }
+
+    public CommandWrapperBuilder createFEEnroll() {
+        this.actionName = "CREATE";
+        this.entityName = "FEENROLL";
+        this.entityId = null;
+        this.loanId = null;
+        this.href = "/loans/feenroll";
+        return this;
+    }
+
+    public CommandWrapperBuilder createNewLoan() {
+        this.actionName = "CREATE";
+        this.entityName = "NEWLOAN";
+        this.entityId = null;
+        this.loanId = null;
+        this.href = "/loans/newloan";
+        return this;
+    }
+
+    public CommandWrapperBuilder createNewApplicantLoan() {
+        this.actionName = "CREATE";
+        this.entityName = "NEWAPPLICANTLOAN";
+        this.entityId = null;
+        this.loanId = null;
+        this.href = "/loans/newApplicantloan";
+        return this;
+    }
+
     public CommandWrapperBuilder updateLoanApplication(final Long loanId) {
         this.actionName = "UPDATE";
         this.entityName = "LOAN";

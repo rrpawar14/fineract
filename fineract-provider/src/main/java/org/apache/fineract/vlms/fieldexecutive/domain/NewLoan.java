@@ -1,0 +1,72 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.fineract.vlms.fieldexecutive.domain;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
+
+@Entity
+@Table(name = "m_fe_new_vehicle_loan")
+public class NewLoan extends AbstractPersistableCustom {
+
+    @Column(name = "customerId", nullable = false, length = 100)
+    private String customerId;
+
+    @Column(name = "customer_name", nullable = false, length = 100)
+    private String customerName;
+
+    @Column(name = "vehicle_type", nullable = false, length = 100)
+    private String vehicleType;
+
+    @Column(name = "dealer", nullable = false, length = 100)
+    private String dealer;
+
+    @Column(name = "invoice_number", nullable = false, length = 100)
+    private String invoiceNumber;
+
+    @Column(name = "vehicle_condition", nullable = false, length = 100)
+    private String vehicleCondition;
+
+    public static NewLoan fromJson(final JsonCommand command) {
+
+        final String customerId = command.stringValueOfParameterNamed("customerId");
+        final String customerName = command.stringValueOfParameterNamed("customerName");
+        final String vehicleType = command.stringValueOfParameterNamed("vehicleType");
+        final String dealer = command.stringValueOfParameterNamed("dealer");
+        final String invoiceNumber = command.stringValueOfParameterNamed("invoiceNumber");
+        final String vehicleCondition = command.stringValueOfParameterNamed("vehicleCondition");
+
+        return new NewLoan(customerId, customerName, vehicleType, dealer, invoiceNumber, vehicleCondition);
+
+    }
+
+    private NewLoan(final String customerId, final String customerName, final String vehicleType, final String dealer,
+            final String invoiceNumber, final String vehicleCondition) {
+        this.customerId = customerId; // MobileNo is stored in username column for authentication
+        this.customerName = customerName;
+        this.vehicleType = vehicleType;
+        this.dealer = dealer;
+        this.invoiceNumber = invoiceNumber;
+        this.vehicleCondition = vehicleCondition;
+    }
+
+}

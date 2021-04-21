@@ -137,6 +137,8 @@ import org.apache.fineract.portfolio.rate.data.RateData;
 import org.apache.fineract.portfolio.rate.service.RateReadService;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountStatusType;
+import org.apache.fineract.vlms.customer.data.CustomerDetailsData;
+import org.apache.fineract.vlms.customer.service.CustomerVehicleLoanReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -220,6 +222,9 @@ public class LoansApiResource {
     private final Set<String> loanApprovalDataParameters = new HashSet<>(Arrays.asList("approvalDate", "approvalAmount"));
     final Set<String> glimAccountsDataParameters = new HashSet<>(Arrays.asList("glimId", "groupId", "clientId", "parentLoanAccountNo",
             "parentPrincipalAmount", "childLoanAccountNo", "childPrincipalAmount", "clientName"));
+    private final Set<String> vehicleloanDataParameters = new HashSet<>(Arrays.asList("name", "gender", "dob", "maritalStatus",
+            "spouseName", "profession", "communicationAdd", "communicationAdd", "permanentAdd", "officeAdd"));
+
     private final String resourceNameForPermissions = "LOAN";
 
     private final PlatformSecurityContext context;
@@ -235,6 +240,7 @@ public class LoansApiResource {
     private final CodeValueReadPlatformService codeValueReadPlatformService;
     private final GroupReadPlatformService groupReadPlatformService;
     private final DefaultToApiJsonSerializer<LoanAccountData> toApiJsonSerializer;
+    private final DefaultToApiJsonSerializer<CustomerDetailsData> toCustomerApiJsonSerializer;
     private final DefaultToApiJsonSerializer<LoanApprovalData> loanApprovalDataToApiJsonSerializer;
     private final DefaultToApiJsonSerializer<LoanScheduleData> loanScheduleToApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
@@ -253,6 +259,7 @@ public class LoansApiResource {
     private final ConfigurationDomainService configurationDomainService;
     private final DefaultToApiJsonSerializer<GlimRepaymentTemplate> glimTemplateToApiJsonSerializer;
     private final GLIMAccountInfoReadPlatformService glimAccountInfoReadPlatformService;
+    private final CustomerVehicleLoanReadPlatformService customerVehicleLoanReadPlatformService;
 
     @Autowired
     public LoansApiResource(final PlatformSecurityContext context, final LoanReadPlatformService loanReadPlatformService,
@@ -278,7 +285,9 @@ public class LoansApiResource {
             final BulkImportWorkbookPopulatorService bulkImportWorkbookPopulatorService, final RateReadService rateReadService,
             final ConfigurationDomainService configurationDomainService,
             final DefaultToApiJsonSerializer<GlimRepaymentTemplate> glimTemplateToApiJsonSerializer,
-            final GLIMAccountInfoReadPlatformService glimAccountInfoReadPlatformService) {
+            final GLIMAccountInfoReadPlatformService glimAccountInfoReadPlatformService,
+            final CustomerVehicleLoanReadPlatformService customerVehicleLoanReadPlatformService,
+            final DefaultToApiJsonSerializer<CustomerDetailsData> toCustomerApiJsonSerializer) {
         this.context = context;
         this.loanReadPlatformService = loanReadPlatformService;
         this.loanProductReadPlatformService = loanProductReadPlatformService;
@@ -310,6 +319,8 @@ public class LoansApiResource {
         this.configurationDomainService = configurationDomainService;
         this.glimTemplateToApiJsonSerializer = glimTemplateToApiJsonSerializer;
         this.glimAccountInfoReadPlatformService = glimAccountInfoReadPlatformService;
+        this.customerVehicleLoanReadPlatformService = customerVehicleLoanReadPlatformService;
+        this.toCustomerApiJsonSerializer = toCustomerApiJsonSerializer;
     }
 
     /*
@@ -837,6 +848,53 @@ public class LoansApiResource {
 
         return this.toApiJsonSerializer.serialize(result);
     }
+
+    // fetch all vehicle customer loan applications
+    @GET
+    @Path("vehicleLoan")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve a Loan", description = "Note: template=true parameter doesn't apply to this resource."
+            + "Example Requests:\n" + "\n" + "loans/1\n" + "\n" + "\n" + "loans/1?fields=id,principal,annualInterestRate\n" + "\n" + "\n"
+            + "loans/1?associations=all\n" + "\n" + "loans/1?associations=all&exclude=guarantors\n" + "\n" + "\n"
+            + "loans/1?fields=id,principal,annualInterestRate&associations=repaymentSchedule,transactions")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansLoanIdResponse.class))) })
+    public String retrieveVehicleLoan(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId,
+            @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
+            @Context final UriInfo uriInfo) {
+
+        final Collection<CustomerDetailsData> vehicleLoanBasicDetails = this.customerVehicleLoanReadPlatformService
+                .retrieveAllCustomerVehicleLoan();
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toCustomerApiJsonSerializer.serialize(settings, vehicleLoanBasicDetails, this.vehicleloanDataParameters);
+    }
+
+    /*
+     * @POST
+     *
+     * @Path("fieldExecutive/Enquiry")
+     *
+     * @Operation(summary = "Create a User Loan Enquiry", description =
+     * "Removes the user and the associated roles and permissions.")
+     *
+     * @ApiResponses({
+     *
+     * @ApiResponse(responseCode = "200", description = "OK") })
+     *
+     * @Consumes({ MediaType.APPLICATION_JSON })
+     *
+     * @Produces({ MediaType.APPLICATION_JSON }) public String customerEnquiry(@Parameter(hidden = true) final String
+     * apiRequestBodyAsJson) {
+     *
+     * final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+     * .createFEEnquiry().withJson(apiRequestBodyAsJson) // .build();
+     *
+     * final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+     *
+     * return this.toApiJsonSerializer.serialize(result); }
+     */
 
     @PUT
     @Path("{loanId}")
