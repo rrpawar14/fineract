@@ -77,6 +77,8 @@ public class CustomerDetails extends AbstractPersistableCustom {
 
     }
 
+    public CustomerDetails() {}
+
     private CustomerDetails(final String name, final String gender, final Date dob, final String maritalStatus, final String spousename,
             final String profession, final Address customerCommunicationAdd, final Address customerPermanentAdd,
             final Address customerOfficeAdd) {

@@ -92,6 +92,8 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
                 customerCommunicationAdd, customerPermanentAdd, customerOfficeAdd);
     }
 
+    public CustomerGuarantor() {}
+
     private CustomerGuarantor(final String guarantorName, final Integer mobileNumber, final String gender, final Date dob,
             final String maritalStatus, final String spouseName, final String profession, final Address customerCommunicationAdd,
             final Address customerPermanentAdd, final Address customerOfficeAdd) {

@@ -64,6 +64,8 @@ public class FETransferDetails extends AbstractPersistableCustom {
 
     }
 
+    public FETransferDetails() {}
+
     private FETransferDetails(final String disbursalType, final String accountNumber, final String accountHolderName, final String bankName,
             final String branchName, final String IFSC) {
         this.disbursalType = disbursalType;

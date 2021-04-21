@@ -83,6 +83,8 @@ public class UsedVehicleLoan extends AbstractPersistableCustom {
 
     }
 
+    public UsedVehicleLoan() {}
+
     private UsedVehicleLoan(final String customerName, final String vehicleType, final String loanType,
             final CustomerDetails customerDetails, final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor,
             final BankDetails bankDetailsObj) {

@@ -61,6 +61,8 @@ public class CustomerLoanEnquiry extends AbstractPersistableCustom {
 
     }
 
+    public CustomerLoanEnquiry() {}
+
     private CustomerLoanEnquiry(final String customername, final String vehiclenumber, final String email, final String pincode,
             final String enquiryId, final String notes) {
         this.customername = customername; // MobileNo is stored in username column for authentication

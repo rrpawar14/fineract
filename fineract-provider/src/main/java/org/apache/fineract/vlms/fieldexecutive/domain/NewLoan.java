@@ -59,6 +59,8 @@ public class NewLoan extends AbstractPersistableCustom {
 
     }
 
+    public NewLoan() {}
+
     private NewLoan(final String customerId, final String customerName, final String vehicleType, final String dealer,
             final String invoiceNumber, final String vehicleCondition) {
         this.customerId = customerId; // MobileNo is stored in username column for authentication

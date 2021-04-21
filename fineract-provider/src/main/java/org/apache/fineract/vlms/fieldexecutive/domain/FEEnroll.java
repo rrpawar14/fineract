@@ -54,6 +54,8 @@ public class FEEnroll extends AbstractPersistableCustom {
     @Column(name = "applicant_id", nullable = false, length = 100)
     private String applicantId;
 
+    public FEEnroll() {}
+
     public static FEEnroll fromJson(final JsonCommand command) {
 
         final String applicantId = command.stringValueOfParameterNamed("applicantId");

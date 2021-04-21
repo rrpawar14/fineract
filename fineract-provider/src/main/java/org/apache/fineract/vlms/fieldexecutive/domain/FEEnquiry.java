@@ -55,6 +55,8 @@ public class FEEnquiry extends AbstractPersistableCustom {
 
     }
 
+    public FEEnquiry() {}
+
     private FEEnquiry(final String mobileNumber, final String customerName, final String vehicleNumber, final String email,
             final String enquiryId) {
         this.mobileNumber = mobileNumber; // MobileNo is stored in username column for authentication

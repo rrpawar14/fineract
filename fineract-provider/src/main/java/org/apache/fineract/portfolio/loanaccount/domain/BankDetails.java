@@ -73,6 +73,8 @@ public class BankDetails extends AbstractPersistableCustom {
 
     }
 
+    public BankDetails() {}
+
     private BankDetails(final Integer loanEligibleAmount, final String accountType, final String disbursalType, final String accountNumber,
             final String accountHolderName, final String bankName, final String branchName, final String IFSC) {
         this.loanEligibleAmount = loanEligibleAmount;

@@ -74,6 +74,8 @@ public class VehicleDetails extends AbstractPersistableCustom {
      * @JoinColumn(name = "rc_book_image_id", nullable = true) private VehicleImages vehicleImage;
      */
 
+    public VehicleDetails() {}
+
     public static VehicleDetails fromJson(final JsonCommand command) {
 
         final String vehicleNumber = command.stringValueOfParameterNamed("vehicleNumber");

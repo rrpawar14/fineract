@@ -66,6 +66,8 @@ public class FELoanDetails extends AbstractPersistableCustom {
 
     }
 
+    public FELoanDetails() {}
+
     private FELoanDetails(final Integer loanAmount, final Integer loanTerm, final Integer loanInterest, final Integer emi,
             final Integer interestINR, final Date dueDate) {
         this.loanAmount = loanAmount;

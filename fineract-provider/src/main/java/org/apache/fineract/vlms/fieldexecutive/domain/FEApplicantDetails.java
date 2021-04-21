@@ -89,6 +89,8 @@ public class FEApplicantDetails extends AbstractPersistableCustom {
     @JoinColumn(name = "officeadd_id", nullable = true)
     private Address officeAdd;
 
+    public FEApplicantDetails() {}
+
     public static FEApplicantDetails fromJson(final JsonCommand command, final Address customerCommunicationAdd,
             final Address customerPermanentAdd, final Address customerOfficeAdd) {
 

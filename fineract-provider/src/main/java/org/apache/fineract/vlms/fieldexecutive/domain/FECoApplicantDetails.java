@@ -101,6 +101,8 @@ public class FECoApplicantDetails extends AbstractPersistableCustom {
 
     }
 
+    public FECoApplicantDetails() {}
+
     private FECoApplicantDetails(final String customerId, final String mobileNumber, final String customerName, final String applicantType,
             final String companyName, final Integer netIncome, final String incomeFrequency, final Date salaryDate, final Date dob,
             final Integer age, final String maritalStatus, final String spouseName, final Address customerCommunicationAdd,

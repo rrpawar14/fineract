@@ -87,6 +87,8 @@ public class FEVehicleDetails extends AbstractPersistableCustom {
 
     }
 
+    public FEVehicleDetails() {}
+
     private FEVehicleDetails(final String vehicleNumber, final String maker, final String model, final String color, final String mfgYear,
             final String engineNumber, final String chassisNumber, final String insuranceCompany, final String insurancePolicy,
             final Date insuranceExpiry, final Integer kmReading) {

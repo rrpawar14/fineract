@@ -77,6 +77,8 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
     @JoinColumn(name = "bankdetails_id", nullable = true)
     private BankDetails bankDetails;
 
+    public NewVehicleLoan() {}
+
     public static NewVehicleLoan fromJson(final JsonCommand command, final CustomerDetails customerDetails,
             final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final BankDetails bankDetails) {
 

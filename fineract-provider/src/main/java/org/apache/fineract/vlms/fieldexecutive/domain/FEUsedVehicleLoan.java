@@ -59,6 +59,8 @@ public class FEUsedVehicleLoan extends AbstractPersistableCustom {
     @JoinColumn(name = "transfer_details_id", nullable = true)
     private FETransferDetails transferDetails;
 
+    public FEUsedVehicleLoan() {}
+
     public static FEUsedVehicleLoan fromJson(final JsonCommand command, final FEApplicantDetails applicantDetails,
             final FECoApplicantDetails coApplicantDetails, final FEVehicleDetails vehicleDetails, final FELoanDetails loanDetails,
             final FETransferDetails transferDetails) {
