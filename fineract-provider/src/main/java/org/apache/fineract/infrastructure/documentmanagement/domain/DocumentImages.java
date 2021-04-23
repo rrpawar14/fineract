@@ -42,6 +42,9 @@ public final class DocumentImages extends AbstractPersistableCustom {
     @Column(name = "storage_type_enum")
     private Integer storageType;
 
+    @Column(name = "document_number")
+    private String documentNumber;
+
     @OneToOne(optional = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "bank_id", nullable = true)
     private BankDetails bankImage;
@@ -66,9 +69,9 @@ public final class DocumentImages extends AbstractPersistableCustom {
     @JoinColumn(name = "newLoan_id", nullable = true)
     private NewLoan newLoan;
 
-    public DocumentImages(final String location, final StorageType storageType, final BankDetails bankDetailsImage,
-            final CustomerGuarantor customerGuarantor, final NewVehicleLoan newVehicleImage, final UsedVehicleLoan usedVehicleImage,
-            final FEEnroll feEnroll, final NewLoan newLoan) {
+    public DocumentImages(final String location, final String documentNumber, final StorageType storageType,
+            final BankDetails bankDetailsImage, final CustomerGuarantor customerGuarantor, final NewVehicleLoan newVehicleImage,
+            final UsedVehicleLoan usedVehicleImage, final FEEnroll feEnroll, final NewLoan newLoan) {
         this.location = location;
         this.storageType = storageType.getValue();
         this.bankImage = bankDetailsImage;
@@ -77,6 +80,8 @@ public final class DocumentImages extends AbstractPersistableCustom {
         this.usedVehicleImage = usedVehicleImage;
         this.feEnroll = feEnroll;
         this.newLoan = newLoan;
+        this.documentNumber = documentNumber;
+        System.out.println("documentNumberT: " + documentNumber);
     }
 
     DocumentImages() {

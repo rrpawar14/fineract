@@ -126,32 +126,34 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
 
     @Transactional
     @Override
-    public CommandProcessingResult saveOrUpdateImage(String entityName, final Long formId, final String imageName,
+    public CommandProcessingResult saveOrUpdateImage(String entityName, final Long formId, String documentNumber, final String imageName,
             final InputStream inputStream, final Long fileSize) {
 
         System.out.println("--image testing 1 --");
 
         Object owner = deletePreviousImage(entityName, formId);
-
+        System.out.println("documentnumberWriteStream1: " + documentNumber);
         final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository();
         final String imageLocation = contentRepository.saveImage(inputStream, formId, imageName, fileSize); // it stores
                                                                                                             // the image
                                                                                                             // and get
                                                                                                             // the
                                                                                                             // location
-        return updateImage(entityName, owner, imageLocation, contentRepository.getStorageType());
+        return updateImage(entityName, owner, imageLocation, documentNumber, contentRepository.getStorageType());
     }
 
     @Transactional
     @Override
-    public CommandProcessingResult saveOrUpdateImage(String entityName, final Long clientId, final Base64EncodedImage encodedImage) {
+    public CommandProcessingResult saveOrUpdateImage(String entityName, final Long clientId, String documentNumber,
+            final Base64EncodedImage encodedImage) {
         Object owner = deletePreviousImage(entityName, clientId);
+        System.out.println("documentnumberWritebase641: " + documentNumber);
 
         System.out.println("--image testing 2 --");
         final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository();
         final String imageLocation = contentRepository.saveImage(encodedImage, clientId, "image");
         System.out.println("--imageLocation--" + imageLocation);
-        return updateImage(entityName, owner, imageLocation, contentRepository.getStorageType());
+        return updateImage(entityName, owner, imageLocation, documentNumber, contentRepository.getStorageType());
     }
 
     @Transactional
@@ -299,8 +301,9 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
         return owner;
     }
 
-    private CommandProcessingResult updateImage(String entityName, final Object owner, final String imageLocation,
+    private CommandProcessingResult updateImage(String entityName, final Object owner, final String imageLocation, String documentNumber,
             final StorageType storageType) {
+        System.out.println("documentnumberWrite2: " + documentNumber);
         Image image = null; // NewVehicleLoan, UsedVehicleLoan, VehicleDetails, CustomerGuarantor, BankDetails
         DocumentImages documentImage = null;
         VehicleImages vehicleImage = null;
@@ -333,7 +336,8 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
 
             // documentImage = newVehicleLoan.getInvoiceImage();
             clientId = newVehicleLoan.getId(); // get the id of the table to make change in the specific table
-            documentImage = createDocumentImage(documentImage, imageLocation, storageType, null, null, newVehicleLoan, null, null, null);
+            documentImage = createDocumentImage(documentImage, imageLocation, documentNumber, storageType, null, null, newVehicleLoan, null,
+                    null, null);
             this.documentImageRepository.saveAndFlush(documentImage);
             // newVehicleLoan.setImage(documentImage);
             // newVehicleLoan.setInvoiceImage(documentImage);
@@ -350,8 +354,8 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 this.usedVehicleLoanRepository.save(usedVehicleLoan);
             } else {// usedvehicle has document
                 // documentImage = usedVehicleLoan.getDocumentImage();
-                documentImage = createDocumentImage(documentImage, imageLocation, storageType, null, null, null, usedVehicleLoan, null,
-                        null);
+                documentImage = createDocumentImage(documentImage, imageLocation, documentNumber, storageType, null, null, null,
+                        usedVehicleLoan, null, null);
                 this.documentImageRepository.saveAndFlush(documentImage);
                 // usedVehicleLoan.setDocumentImage(documentImage);
                 this.usedVehicleLoanRepository.save(usedVehicleLoan);
@@ -380,8 +384,8 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             } else { // storing guarantor documents
                 // documentImage = customerGuarantor.getDocumentImage();
                 System.out.println("--NotGuarantorImage--");
-                documentImage = createDocumentImage(documentImage, imageLocation, storageType, null, customerGuarantor, null, null, null,
-                        null);
+                documentImage = createDocumentImage(documentImage, imageLocation, documentNumber, storageType, null, customerGuarantor,
+                        null, null, null, null);
                 // customerGuarantor.setDocumentImage(documentImage);
                 this.documentImageRepository.saveAndFlush(documentImage);
                 this.customerGuarantorRepository.save(customerGuarantor);
@@ -392,7 +396,8 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             // documentImage = bankDetails.getImage();
             clientId = bankDetails.getId();
             System.out.println("--clientId--:" + clientId);
-            documentImage = createDocumentImage(documentImage, imageLocation, storageType, bankDetails, null, null, null, null, null);
+            documentImage = createDocumentImage(documentImage, imageLocation, documentNumber, storageType, bankDetails, null, null, null,
+                    null, null);
             // bankDetails.setImage(documentImage);
             System.out.println("--setImage--" + bankDetails);
             this.documentImageRepository.saveAndFlush(documentImage);
@@ -405,7 +410,8 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             FEEnroll feEnroll = (FEEnroll) owner;
             clientId = feEnroll.getId();
 
-            documentImage = createDocumentImage(documentImage, imageLocation, storageType, null, null, null, null, feEnroll, null);
+            documentImage = createDocumentImage(documentImage, imageLocation, documentNumber, storageType, null, null, null, null, feEnroll,
+                    null);
 
             this.documentImageRepository.saveAndFlush(documentImage);
             System.out.println("--FEENROLLRepository--" + feEnroll);
@@ -417,7 +423,8 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             NewLoan newLoan = (NewLoan) owner;
             clientId = newLoan.getId();
 
-            documentImage = createDocumentImage(documentImage, imageLocation, storageType, null, null, null, null, null, newLoan);
+            documentImage = createDocumentImage(documentImage, imageLocation, documentNumber, storageType, null, null, null, null, null,
+                    newLoan);
 
             this.documentImageRepository.saveAndFlush(documentImage);
             System.out.println("--newLoanRepository--" + newLoan);
@@ -447,11 +454,12 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
         return image;
     }
 
-    private DocumentImages createDocumentImage(DocumentImages documentImage, final String imageLocation, final StorageType storageType,
-            final BankDetails bankDetails, final CustomerGuarantor customerGuarantor, final NewVehicleLoan newVehicleImage,
-            final UsedVehicleLoan usedVehicleImage, final FEEnroll feEnroll, final NewLoan newLoan) {
+    private DocumentImages createDocumentImage(DocumentImages documentImage, final String imageLocation, final String documentNumber,
+            final StorageType storageType, final BankDetails bankDetails, final CustomerGuarantor customerGuarantor,
+            final NewVehicleLoan newVehicleImage, final UsedVehicleLoan usedVehicleImage, final FEEnroll feEnroll, final NewLoan newLoan) {
         if (documentImage == null) {
-            documentImage = new DocumentImages(imageLocation, storageType, bankDetails, customerGuarantor, newVehicleImage,
+            System.out.println("documentnumberWrite3: " + documentNumber);
+            documentImage = new DocumentImages(imageLocation, documentNumber, storageType, bankDetails, customerGuarantor, newVehicleImage,
                     usedVehicleImage, feEnroll, newLoan);
         } else {
             documentImage.setLocation(imageLocation);

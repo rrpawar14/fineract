@@ -56,6 +56,21 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
     @Column(name = "profession")
     private String profession;
 
+    @Column(name = "salary_type")
+    private String salaryType;
+
+    @Column(name = "applicant_type")
+    private String applicantType;
+
+    @Column(name = "net_income")
+    private String netIncome;
+
+    @Column(name = "company_name")
+    private String companyName;
+
+    @Column(name = "salary_date")
+    private Date salaryDate;
+
     @OneToOne(optional = true)
     @JoinColumn(name = "communicationadd_id", nullable = true)
     private Address communicationAdd;
@@ -87,16 +102,22 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
         final String maritalStatus = command.stringValueOfParameterNamed("guarantor_maritalStatus");
         final String spouseName = command.stringValueOfParameterNamed("guarantor_spouseName");
         final String profession = command.stringValueOfParameterNamed("guarantor_profession");
+        final String salaryType = command.stringValueOfParameterNamed("guarantor_salaryType");
+        final String applicantType = command.stringValueOfParameterNamed("guarantor_applicantType");
+        final String netIncome = command.stringValueOfParameterNamed("guarantor_netIncome");
+        final String companyName = command.stringValueOfParameterNamed("guarantor_companyName");
+        final Date salaryDate = command.dateValueOfParameterNamed("guarantor_salaryDate");
 
-        return new CustomerGuarantor(guarantorName, mobileNumber, gender, dob, maritalStatus, spouseName, profession,
-                customerCommunicationAdd, customerPermanentAdd, customerOfficeAdd);
+        return new CustomerGuarantor(guarantorName, mobileNumber, gender, dob, maritalStatus, spouseName, profession, salaryType,
+                applicantType, netIncome, companyName, salaryDate, customerCommunicationAdd, customerPermanentAdd, customerOfficeAdd);
     }
 
     public CustomerGuarantor() {}
 
     private CustomerGuarantor(final String guarantorName, final Integer mobileNumber, final String gender, final Date dob,
-            final String maritalStatus, final String spouseName, final String profession, final Address customerCommunicationAdd,
-            final Address customerPermanentAdd, final Address customerOfficeAdd) {
+            final String maritalStatus, final String spouseName, final String profession, final String salaryType,
+            final String applicantType, final String netIncome, final String companyName, final Date salaryDate,
+            final Address customerCommunicationAdd, final Address customerPermanentAdd, final Address customerOfficeAdd) {
         this.guarantorName = guarantorName;
         this.mobileNumber = mobileNumber;
         this.gender = gender;
@@ -104,6 +125,11 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
         this.maritalStatus = maritalStatus;
         this.spouseName = spouseName;
         this.profession = profession;
+        this.salaryType = salaryType;
+        this.applicantType = applicantType;
+        this.netIncome = netIncome;
+        this.companyName = companyName;
+        this.salaryDate = salaryDate;
         this.communicationAdd = customerCommunicationAdd;
         this.permanentAdd = customerPermanentAdd;
         this.officeAdd = customerOfficeAdd;

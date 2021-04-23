@@ -250,12 +250,12 @@ public class SelfClientsApiResource {
     @Consumes({ MediaType.MULTIPART_FORM_DATA })
     @Produces({ MediaType.APPLICATION_JSON })
     public String addNewClientImage(@PathParam("clientId") final Long clientId, @HeaderParam("Content-Length") final Long fileSize,
-            @FormDataParam("file") final InputStream inputStream, @FormDataParam("file") final FormDataContentDisposition fileDetails,
-            @FormDataParam("file") final FormDataBodyPart bodyPart) {
+            @FormDataParam("file") final InputStream inputStream, @QueryParam("documentNumber") final String documentNumber,
+            @FormDataParam("file") final FormDataContentDisposition fileDetails, @FormDataParam("file") final FormDataBodyPart bodyPart) {
 
         validateAppuserClientsMapping(clientId);
-        return this.imagesApiResource.addNewClientImage(ClientApiConstants.clientEntityName, clientId, fileSize, inputStream, fileDetails,
-                bodyPart);
+        return this.imagesApiResource.addNewClientImage(ClientApiConstants.clientEntityName, clientId, fileSize, inputStream,
+                documentNumber, fileDetails, bodyPart);
 
     }
 
@@ -266,7 +266,7 @@ public class SelfClientsApiResource {
     public String addNewClientImage(@PathParam("entity") final String entityName, @PathParam("clientId") final Long clientId,
             final String jsonRequestBody) {
         validateAppuserClientsMapping(clientId);
-        return this.imagesApiResource.addNewClientImage(ClientApiConstants.clientEntityName, clientId, jsonRequestBody);
+        return this.imagesApiResource.addNewClientImage(ClientApiConstants.clientEntityName, clientId, null, jsonRequestBody);
 
     }
 

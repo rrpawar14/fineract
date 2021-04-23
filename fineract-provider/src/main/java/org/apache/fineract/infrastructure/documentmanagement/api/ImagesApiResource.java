@@ -86,7 +86,8 @@ public class ImagesApiResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String addNewClientImage(@PathParam("entity") final String entityName, @PathParam("entityId") final Long entityId,
             @HeaderParam("Content-Length") final Long fileSize, @FormDataParam("file") final InputStream inputStream,
-            @FormDataParam("file") final FormDataContentDisposition fileDetails, @FormDataParam("file") final FormDataBodyPart bodyPart) {
+            @QueryParam("documentNumber") final String documentNumber, @FormDataParam("file") final FormDataContentDisposition fileDetails,
+            @FormDataParam("file") final FormDataBodyPart bodyPart) {
         validateEntityTypeforImage(entityName);
         fileUploadValidator.validate(fileSize, inputStream, fileDetails, bodyPart);
         // TODO: vishwas might need more advances validation (like reading magic
@@ -97,7 +98,7 @@ public class ImagesApiResource {
         ContentRepositoryUtils.validateClientImageNotEmpty(fileDetails.getFileName());
         ContentRepositoryUtils.validateImageMimeType(bodyPart.getMediaType().toString());
 
-        final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityName, entityId,
+        final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityName, entityId, documentNumber,
                 fileDetails.getFileName(), inputStream, fileSize);
 
         return this.toApiJsonSerializer.serialize(result);
@@ -119,7 +120,7 @@ public class ImagesApiResource {
         ContentRepositoryUtils.validateClientImageNotEmpty(fileDetails.getFileName());
         ContentRepositoryUtils.validateImageMimeType(bodyPart.getMediaType().toString());
 
-        final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityName, entityId,
+        final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityName, entityId, null,
                 fileDetails.getFileName(), inputStream, fileSize);
 
         return this.toApiJsonSerializer.serialize(result);
@@ -132,12 +133,14 @@ public class ImagesApiResource {
     @Consumes({ MediaType.TEXT_PLAIN, MediaType.TEXT_HTML, MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     public String addNewClientImage(@PathParam("entity") final String entityName, @PathParam("entityId") final Long entityId,
-            final String jsonRequestBody) {
+            @QueryParam("documentNumber") final String documentNumber, final String jsonRequestBody) {
         validateEntityTypeforImage(entityName);
 
+        System.out.println("documentNumber: " + documentNumber);
         final Base64EncodedImage base64EncodedImage = ContentRepositoryUtils.extractImageFromDataURL(jsonRequestBody);
 
-        final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityName, entityId, base64EncodedImage);
+        final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityName, entityId, documentNumber,
+                base64EncodedImage);
 
         return this.toApiJsonSerializer.serialize(result);
     }
@@ -198,8 +201,9 @@ public class ImagesApiResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String updateClientImage(@PathParam("entity") final String entityName, @PathParam("entityId") final Long entityId,
             @HeaderParam("Content-Length") final Long fileSize, @FormDataParam("file") final InputStream inputStream,
-            @FormDataParam("file") final FormDataContentDisposition fileDetails, @FormDataParam("file") final FormDataBodyPart bodyPart) {
-        return addNewClientImage(entityName, entityId, fileSize, inputStream, fileDetails, bodyPart);
+            @QueryParam("documentNumber") final String documentNumber, @FormDataParam("file") final FormDataContentDisposition fileDetails,
+            @FormDataParam("file") final FormDataBodyPart bodyPart) {
+        return addNewClientImage(entityName, entityId, fileSize, inputStream, documentNumber, fileDetails, bodyPart);
     }
 
     /**
@@ -212,8 +216,8 @@ public class ImagesApiResource {
     @Consumes({ MediaType.TEXT_PLAIN, MediaType.TEXT_HTML, MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     public String updateClientImage(@PathParam("entity") final String entityName, @PathParam("entityId") final Long entityId,
-            final String jsonRequestBody) {
-        return addNewClientImage(entityName, entityId, jsonRequestBody);
+            @PathParam("documentNumber") final String documentNumber, final String jsonRequestBody) {
+        return addNewClientImage(entityName, entityId, documentNumber, jsonRequestBody);
     }
 
     @DELETE
