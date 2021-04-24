@@ -38,8 +38,11 @@ public class FEApplicantDetails extends AbstractPersistableCustom {
     @Column(name = "mobile_number", nullable = true, length = 100)
     private String mobileNumber;
 
-    @Column(name = "customer_name", nullable = true, length = 100)
-    private String customerName;
+    @Column(name = "applicant_name", nullable = true, length = 100)
+    private String applicantName;
+
+    @Column(name = "gender", nullable = true, length = 100)
+    private String gender;
 
     @Column(name = "father_name", nullable = true, length = 100)
     private String fatherName;
@@ -96,7 +99,7 @@ public class FEApplicantDetails extends AbstractPersistableCustom {
 
         final String customerId = command.stringValueOfParameterNamed("customerId");
         final String mobileNumber = command.stringValueOfParameterNamed("mobileNumber");
-        final String customerName = command.stringValueOfParameterNamed("customerName");
+        final String applicantName = command.stringValueOfParameterNamed("customerName");
         final String fatherName = command.stringValueOfParameterNamed("fatherName");
         final String referenceName = command.stringValueOfParameterNamed("referenceName");
         final String referenceContact = command.stringValueOfParameterNamed("referenceContact");
@@ -110,20 +113,20 @@ public class FEApplicantDetails extends AbstractPersistableCustom {
         final String maritalStatus = command.stringValueOfParameterNamed("maritalStatus");
         final String spouseName = command.stringValueOfParameterNamed("spouseName");
 
-        return new FEApplicantDetails(customerId, mobileNumber, customerName, fatherName, referenceName, referenceContact, applicantType,
+        return new FEApplicantDetails(customerId, mobileNumber, applicantName, fatherName, referenceName, referenceContact, applicantType,
                 companyName, netIncome, incomeFrequency, salaryDate, dob, age, maritalStatus, spouseName, customerCommunicationAdd,
                 customerPermanentAdd, customerOfficeAdd);
 
     }
 
-    private FEApplicantDetails(final String customerId, final String mobileNumber, final String customerName, final String fatherName,
+    private FEApplicantDetails(final String customerId, final String mobileNumber, final String applicantName, final String fatherName,
             final String referenceName, final String referenceContact, final String applicantType, final String companyName,
             final Integer netIncome, final String incomeFrequency, final Date salaryDate, final Date dob, final Integer age,
             final String maritalStatus, final String spouseName, final Address customerCommunicationAdd, final Address customerPermanentAdd,
             final Address customerOfficeAdd) {
         this.customerId = customerId;
         this.mobileNumber = mobileNumber;
-        this.customerName = customerName;
+        this.applicantName = applicantName;
         this.fatherName = fatherName;
         this.referenceName = referenceName;
         this.referenceContact = referenceContact;

@@ -25,7 +25,12 @@ import java.util.Collection;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.vlms.customer.data.AddressData;
+import org.apache.fineract.vlms.customer.data.BankDetailsData;
 import org.apache.fineract.vlms.customer.data.CustomerDetailsData;
+import org.apache.fineract.vlms.customer.data.GuarantorDetailsData;
+import org.apache.fineract.vlms.customer.data.VehicleDetailsData;
+import org.apache.fineract.vlms.customer.data.VehicleLoanData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -44,19 +49,18 @@ public class CustomerVehicleLoanReadPlatformServiceImpl implements CustomerVehic
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    private static final class VehicleLoanMapper implements RowMapper<CustomerDetailsData> {
+    private static final class VehicleLoanMapper implements RowMapper<VehicleLoanData> {
 
         public String schema() {
-            return " au.id as id, au.customer_id as customer_id from m_appuser au, "
-                    + " cnv.customer_name as customer_name, cnv.vehicle_type as vehicle_type, cnv.dealer as dealer, "
-                    + " cnv.invoice_number as invoice_number, "
+            return " au.id as id, au.customer_id as customerId, "
 
-                    + " cnv.customer_name as customername, cnv.vehicle_type as vehicletype, cnv.dealer as dealer, "
+                    // customer new vehicle
+                    + " cnv.customer_name as customerName,cnv.loan_type as loanType, cnv.vehicle_type as vehicleType, cnv.dealer as dealer, "
                     + " cnv.invoice_number as invoicenumber, "
 
                     // customer details
                     + " cd.name as customer_name, cd.gender as gender, cd.dob as dob, "
-                    + " cnv.maritalstatus as maritalstatus,  cd.spousename as spousename, cd.profession as profession, cd.proof_image_id as proofImageId, "
+                    + " cd.maritalstatus as maritalstatus,  cd.spousename as spouseName, cd.profession as profession, cd.proof_image_id as proofImageId, "
 
                     // communicationaddress cadd of customerdetails
                     + " cadd.street as street, cadd.address_line_1 as addressline1, cadd.address_line_2 as addressline2, "
@@ -74,7 +78,7 @@ public class CustomerVehicleLoanReadPlatformServiceImpl implements CustomerVehic
                     + " oadd.area as area, oadd.state as state, "
 
                     // guarantor details
-                    + " cg.guarantor_name as guarantorname, cg.gender as gender, cg.dob as dob, "
+                    + " cg.guarantor_name as guarantorName, cg.gender as gender, cg.dob as dob, cg.mobile_number as guarantorMobileNumber, "
                     + " cg.marital_status as maritalstatus,  cg.spouse_name as spousename, cg.profession as profession, "
 
                     // communicationaddress gcadd of guarantordetails
@@ -99,66 +103,218 @@ public class CustomerVehicleLoanReadPlatformServiceImpl implements CustomerVehic
                     + " bd.branch_name as branchName, bd.IFSC as IFSC, "
 
                     // vehicledetails vd of customer new vehicle
-                    + " vd.vehicle_number as vehicleNnumber, vd.maker as accountType, " + " vd.maker as maker, vd.model as model, "
-                    + " vd.color as color, vd.mfg_year as mfg_year, "
-                    + " vd.engine_number as vehicleNnumber, vd.chassis_number as chassisNumber, "
+                    + " vd.vehicle_number as vehicleNumber," + " vd.maker as maker, vd.model as model, "
+                    + " vd.color as color, vd.mfg_year as mfgYear, "
+                    + " vd.engine_number as engineNumber, vd.chassis_number as chassisNumber, "
                     + " vd.insurance_company as insuranceCompany, vd.insurance_policy as insurancePolicy, "
                     + " vd.insurance_expiry as insuranceExpiry, vd.pollution_cert_expiry as pollutionCertExpiry, "
-                    + " vd.registration as registration, vd.live_km_reading as liveKmReading, "
+                    + " vd.registration as registration, vd.live_km_reading as liveKmReading from m_appuser au "
 
                     // customer new vehicle completed
 
+                    ///////////////////////////////////////////////////////////
+
+                    // customer used vehicle cuv
+                    /*
+                     * + " cnv.customer_name as customerName, cnv.vehicle_type as vehicleType, cnv.loan_id as loanId, "
+                     * + " cnv.loan_type as loanType, "
+                     *
+                     * // customer details uvcd +
+                     * " uvcd.name as customer_name, uvcd.gender as gender, uvcd.dob as dob, " +
+                     * " uvcd.maritalstatus as maritalstatus,  uvcd.spousename as spousename, uvcd.profession as profession, uvcd.proof_image_id as proofImageId, "
+                     *
+                     * // communicationaddress uvcadd of customerdetails +
+                     * " uvcadd.street as street, uvcadd.address_line_1 as addressline1, uvcadd.address_line_2 as addressline2, "
+                     * + " uvcadd.city as city, uvcadd.postal_code as postalcode, uvcadd.landmark as landmark, " +
+                     * " uvcadd.area as area, uvcadd.state as state, "
+                     *
+                     * // permanentaddress uvpadd +
+                     * " uvpadd.street as street, uvpadd.address_line_1 as addressline1, uvpadd.address_line_2 as addressline2, "
+                     * + " uvpadd.city as city, uvpadd.postal_code as postalcode, uvpadd.landmark as landmark, " +
+                     * " uvpadd.area as area, uvpadd.state as state, "
+                     *
+                     * // officeaddress uvoadd +
+                     * " uvoadd.street as street, uvoadd.address_line_1 as addressline1, uvoadd.address_line_2 as addressline2, "
+                     * + " uvoadd.city as city, uvoadd.postal_code as postalcode, uvoadd.landmark as landmark, " +
+                     * " uvoadd.area as area, uvoadd.state as state, "
+                     *
+                     * // guarantor details uvcg +
+                     * " uvcg.guarantor_name as guarantorName, uvcg.mobile_number as guarantorMobileNumber, uvcg.gender as gender, uvcg.dob as dob, "
+                     * +
+                     * " uvcg.marital_status as maritalStatus,  uvcg.spouse_name as spousename, uvcg.profession as profession, "
+                     *
+                     * // communicationaddress uvgcadd of guarantordetails +
+                     * " uvgcadd.street as street, uvgcadd.address_line_1 as addressline1, uvgcadd.address_line_2 as addressline2, "
+                     * + " uvgcadd.city as city, uvgcadd.postal_code as postalcode, uvgcadd.landmark as landmark, " +
+                     * " uvgcadd.area as area, uvgcadd.state as state, "
+                     *
+                     * // permanentaddress uvgpadd +
+                     * " uvgpadd.street as street, uvgpadd.address_line_1 as addressline1, uvgpadd.address_line_2 as addressline2, "
+                     * + " uvgpadd.city as city, uvgpadd.postal_code as postalcode, uvgpadd.landmark as landmark, " +
+                     * " uvgpadd.area as area, uvgpadd.state as state, "
+                     *
+                     * // officeaddress uvgoadd +
+                     * " uvgoadd.street as street, uvgoadd.address_line_1 as addressline1, uvgoadd.address_line_2 as addressline2, "
+                     * + " uvgoadd.city as city, uvgoadd.postal_code as postalcode, uvgoadd.landmark as landmark, " +
+                     * " uvgoadd.area as area, uvgoadd.state as state, "
+                     *
+                     * // bankdetails uvbd of customer new vehicle +
+                     * " uvbd.loan_eligible_amount as eligibleAmount, uvbd.account_type as accountType, " +
+                     * " uvbd.disbursal_type as disbursalType, uvbd.account_number as accountNumber, " +
+                     * " uvbd.account_holder_name as accountHolderName, uvbd.bank_name as bankName, " +
+                     * " uvbd.branch_name as branchName, uvbd.IFSC as IFSC, "
+                     *
+                     * // vehicledetails uvd of customer new vehicle +
+                     * " uvd.vehicle_number as vehicleNumber, uvd.maker as accountType, " +
+                     * " uvd.maker as maker, uvd.model as model, " + " uvd.color as color, uvd.mfg_year as mfgYear, " +
+                     * " uvd.engine_number as engineNumber, uvd.chassis_number as chassisNumber, " +
+                     * " uvd.insurance_company as insuranceCompany, uvd.insurance_policy as insurancePolicy, " +
+                     * " uvd.insurance_expiry as insuranceExpiry, uvd.pollution_cert_expiry as pollutionCertExpiry, " +
+                     * " uvd.registration as registration, uvd.live_km_reading as liveKmReading from m_apply_used_vehicle_loan cuv "
+                     */
+
+                    // customer used vehicle completed
+
+                    // join the customer new vehicle
                     + " join m_apply_new_vehicle_loan cnv on cnv.customer_id = au.customer_id "
                     + " join m_customer_details cd on cnv.customerdetails_id = cd.id "
                     + " join m_vehicle_details vd on cnv.vehicledetails_id = vd.id "
-                    + " join m_customer_guarantor cg on nv.guarantordetails_id = cg.id "
-                    + " join m_customer_bank_details bd on nv.bankdetails_id = cd.id "
+                    + " left join m_customer_guarantor cg on cnv.guarantordetails_id = cg.id "
+                    + " left join m_customer_bank_details bd on cnv.bankdetails_id = cd.id "
 
-                    + " join m_address cadd on cd.communicationadd_id = cadd.id" // join the
-                                                                                 // customer-communicationaddress
-                    + " join m_address padd on cd.permanentadd_id = padd.id" // join the customer-permenantaddress
-                    + " join m_address oadd on cd.officeadd_id = oadd.id" // join the customer-officeaddress
+                    + " left join m_address cadd on cd.communicationadd_id = cadd.id  "
 
-                    + " join m_address gcadd on cg.communicationadd_id = gcadd.id" // join the
-                                                                                   // guarantor-communicationaddress
-                    + " join m_address gpadd on cg.permanentadd_id = gpadd.id" // join the guarantor-permenantaddress
-                    + " join m_address goadd on cg.officeadd_id = goadd.id"; // join the guarantor-officeaddress
+                    + " left join m_address padd on cd.permanentadd_id = padd.id "
+                    + " left join m_address oadd on cd.officeadd_id = oadd.id "
 
-            // + " join m_customer_details cd on nv.customerdetails_id = cd.id ";
+                    + " left join m_address gcadd on cg.communicationadd_id = gcadd.id  "
+
+                    + "  left join m_address gpadd on cg.permanentadd_id = gpadd.id "
+                    + " left join m_address goadd on cg.officeadd_id = goadd.id ";
+
+            // join the customer used vehicle
+            /*
+             * + " join m_apply_used_vehicle_loan cuv on cuv.customer_id = au.customer_id " +
+             * " join m_customer_details uvcd on cuv.customerdetails_id = uvcd.id " +
+             * " join m_vehicle_details uvd on cuv.vehicledetails_id = uvd.id " +
+             * " join m_customer_guarantor uvcg on cuv.guarantordetails_id = uvcg.id " +
+             * " join m_customer_bank_details uvbd on cuv.bankdetails_id = uvbd.id "
+             *
+             * + " join m_address uvcadd on uvcd.communicationadd_id = uvcadd.id " //
+             * customer-usedvehiclecommunicationaddress
+             *
+             * + " join m_address uvpadd on uvcd.permanentadd_id = uvpadd.id " // customer-usedvehiclepermenantaddress +
+             * " join m_address uvoadd on uvcd.officeadd_id = uvoadd.id " // customer-usedvehicleofficeaddress
+             *
+             * + " join m_address uvgcadd on uvcg.communicationadd_id = uvgcadd.id " // guarantor-communicationaddress
+             *
+             * + " join m_address uvgpadd on uvcg.permanentadd_id = uvgpadd.id " // join the //
+             * guarantor-permenantaddress + " join m_address uvgoadd on uvcg.officeadd_id = uvgoadd.id "; // join the
+             * guarantor-officeaddress
+             *
+             * // + " join m_customer_details cd on nv.customerdetails_id = cd.id ";
+             */
         }
 
         @Override
-        public CustomerDetailsData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public VehicleLoanData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
 
             final Long id = rs.getLong("id");
-            final String customerId = rs.getString("customer_id");
+            final String customerId = rs.getString("customerId");
 
             final Long detailsId = rs.getLong("id");
-            final String name = rs.getString("name");
+            final String customerName = rs.getString("customerName");
             final String gender = rs.getString("gender");
 
             // final LocalDate dob = JdbcSupport.getLocalDate(rs, "overdueSinceDate");
             final LocalDate dob = JdbcSupport.getLocalDate(rs, "dob");
             final String maritalStatus = rs.getString("maritalstatus");
             final String profession = rs.getString("profession");
-            final Long imageId = rs.getLong("proof_image_id");
+            final Long imageId = rs.getLong("proofImageId");
             // final Long communicationAdd = rs.getLong("communicationadd_id");
             // final Long permanentAdd = rs.getLong("permanentadd_id");
             // final Long officeAdd = rs.getLong("officeadd_id");
 
             // fetched addresses and create address objects and inject in customerDetailsData
+            final String street = rs.getString("street");
+            final String addressLine1 = rs.getString("addressLine1");
+            final String addressLine2 = rs.getString("addressLine2");
+            final String city = rs.getString("city");
 
-            return CustomerDetailsData.instance(name, gender, dob, maritalStatus, null, profession, null, null, null);
+            final String pincode = rs.getString("postalcode");
+            final String landmark = rs.getString("landmark");
+            final String area = rs.getString("area");
+            final String state = rs.getString("state");
+
+            final AddressData communicationAddressData = new AddressData(addressLine1, addressLine2, city, pincode, landmark, area, state);
+
+            final AddressData permanentAddressData = new AddressData(addressLine1, addressLine2, city, pincode, landmark, area, state);
+
+            final AddressData officeAddressData = new AddressData(addressLine1, addressLine2, city, pincode, landmark, area, state);
+
+            CustomerDetailsData customerDetailsData = new CustomerDetailsData(customerName, gender, dob, maritalStatus, null, profession,
+                    communicationAddressData, permanentAddressData, officeAddressData);
+
+            final String guarantorName = rs.getString("guarantorName");
+            final String guarantorMobileNumber = rs.getString("guarantorMobileNumber");
+            // final String gender = rs.getString("gender");
+            // final LocalDate dob = JdbcSupport.getLocalDate(rs, "dob");
+
+            // final String maritalStatus = rs.getString("maritalStatus");
+            final String spouseName = rs.getString("spouseName");
+            // final String profession = rs.getString("profession");
+            // final String state = rs.getString("state");
+
+            GuarantorDetailsData guarantorDetailsData = new GuarantorDetailsData(guarantorName, guarantorMobileNumber, gender, dob,
+                    maritalStatus, spouseName, profession, communicationAddressData, permanentAddressData, officeAddressData);
+
+            final Long eligibleAmount = rs.getLong("eligibleAmount");
+            final String accountType = rs.getString("accountType");
+            final String disbursalType = rs.getString("disbursalType");
+            final String accountNumber = rs.getString("accountNumber");
+
+            final String accountHolderName = rs.getString("accountHolderName");
+            final String bankName = rs.getString("bankName");
+            final String branchName = rs.getString("branchName");
+            final String IFSC = rs.getString("IFSC");
+
+            BankDetailsData bankDetailsData = new BankDetailsData(eligibleAmount, accountType, disbursalType, accountNumber,
+                    accountHolderName, bankName, branchName, IFSC);
+
+            final String vehicleNumber = rs.getString("vehicleNumber");
+            final String maker = rs.getString("maker");
+            final String color = rs.getString("color");
+            final String model = rs.getString("model");
+            final String mfgYear = rs.getString("mfgYear");
+            final String engineNumber = rs.getString("engineNumber");
+
+            final String chassisNumber = rs.getString("chassisNumber");
+            final String insuranceCompany = rs.getString("insuranceCompany");
+            final String insurancePolicy = rs.getString("insurancePolicy");
+            final LocalDate insuranceExpiry = JdbcSupport.getLocalDate(rs, "insuranceExpiry");
+            final LocalDate pollutionCertExpiry = JdbcSupport.getLocalDate(rs, "pollutionCertExpiry");
+            final LocalDate registration = JdbcSupport.getLocalDate(rs, "registration");
+            final Long liveKmReading = rs.getLong("liveKmReading");
+
+            VehicleDetailsData vehicleDetailsData = new VehicleDetailsData(vehicleNumber, maker, model, color, mfgYear, engineNumber,
+                    chassisNumber, insuranceCompany, insurancePolicy, insuranceExpiry, pollutionCertExpiry, registration, liveKmReading);
+
+            final String vehicleType = rs.getString("vehicleType");
+            final String loanType = rs.getString("loanType");
+
+            return VehicleLoanData.instance(customerName, vehicleType, loanType, customerDetailsData, guarantorDetailsData,
+                    vehicleDetailsData, bankDetailsData);
+
         }
     }
 
     @Override
-    @Cacheable(value = "customerDetailsData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
-    public Collection<CustomerDetailsData> retrieveAllCustomerVehicleLoan() {
+    @Cacheable(value = "VehicleLoanData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<VehicleLoanData> retrieveAllCustomerVehicleLoan() {
         this.context.authenticatedUser();
 
         final VehicleLoanMapper rm = new VehicleLoanMapper();
-        final String sql = "select " + rm.schema() + " order by nv.customer_name";
+        final String sql = "select " + rm.schema() + " order by cnv.customer_name";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
     }

@@ -53,7 +53,7 @@ public class FEUsedVehicleLoan extends AbstractPersistableCustom {
 
     @OneToOne(optional = true)
     @JoinColumn(name = "loan_details_id", nullable = true)
-    private FELoanDetails loanDetails;
+    private LoanDetails loanDetails;
 
     @OneToOne(optional = true)
     @JoinColumn(name = "transfer_details_id", nullable = true)
@@ -62,7 +62,7 @@ public class FEUsedVehicleLoan extends AbstractPersistableCustom {
     public FEUsedVehicleLoan() {}
 
     public static FEUsedVehicleLoan fromJson(final JsonCommand command, final FEApplicantDetails applicantDetails,
-            final FECoApplicantDetails coApplicantDetails, final FEVehicleDetails vehicleDetails, final FELoanDetails loanDetails,
+            final FECoApplicantDetails coApplicantDetails, final FEVehicleDetails vehicleDetails, final LoanDetails loanDetails,
             final FETransferDetails transferDetails) {
 
         final String customerId = command.stringValueOfParameterNamed("customerId");
@@ -76,7 +76,7 @@ public class FEUsedVehicleLoan extends AbstractPersistableCustom {
 
     private FEUsedVehicleLoan(final String customerId, final String customerName, final String loanClassification,
             final FEApplicantDetails applicantDetails, final FECoApplicantDetails coApplicantDetails, final FEVehicleDetails vehicleDetails,
-            final FELoanDetails loanDetails, final FETransferDetails transferDetails) {
+            final LoanDetails loanDetails, final FETransferDetails transferDetails) {
         this.customerId = customerId; // MobileNo is stored in username column for authentication
         this.customerName = customerName;
         this.loanClassification = loanClassification;

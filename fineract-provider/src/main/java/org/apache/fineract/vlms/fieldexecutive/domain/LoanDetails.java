@@ -26,8 +26,8 @@ import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
 @Entity
-@Table(name = "m_fe_loan_details")
-public class FELoanDetails extends AbstractPersistableCustom {
+@Table(name = "m_loan_details")
+public class LoanDetails extends AbstractPersistableCustom {
 
     @Column(name = "loan_amount")
     private Integer loanAmount;
@@ -47,13 +47,34 @@ public class FELoanDetails extends AbstractPersistableCustom {
     @Column(name = "due_date")
     private Date dueDate;
 
+    @Column(name = "doc_charge")
+    private Integer docCharge;
+
+    @Column(name = "processing_charge")
+    private Integer processingCharge;
+
+    @Column(name = "hold_amount")
+    private Integer holdAmount;
+
+    @Column(name = "other_charge")
+    private Integer otherCharge;
+
+    @Column(name = "closing_account")
+    private Integer closingAccount;
+
+    @Column(name = "closing_discount")
+    private Integer closingDiscount;
+
+    @Column(name = "balance")
+    private Integer balance;
+
     /*
      * @OneToOne(optional = true)
      *
      * @JoinColumn(name = "rc_book_image_id", nullable = true) private VehicleImages vehicleImage;
      */
 
-    public static FELoanDetails fromJson(final JsonCommand command) {
+    public static LoanDetails fromJson(final JsonCommand command) {
 
         final Integer loanAmount = command.integerValueOfParameterNamed("loanAmount");
         final Integer loanTerm = command.integerValueOfParameterNamed("loanTerm");
@@ -62,13 +83,13 @@ public class FELoanDetails extends AbstractPersistableCustom {
         final Integer interestINR = command.integerValueOfParameterNamed("interestINR");
         final Date dueDate = command.dateValueOfParameterNamed("dueDate");
 
-        return new FELoanDetails(loanAmount, loanTerm, loanInterest, emi, interestINR, dueDate);
+        return new LoanDetails(loanAmount, loanTerm, loanInterest, emi, interestINR, dueDate);
 
     }
 
-    public FELoanDetails() {}
+    public LoanDetails() {}
 
-    private FELoanDetails(final Integer loanAmount, final Integer loanTerm, final Integer loanInterest, final Integer emi,
+    private LoanDetails(final Integer loanAmount, final Integer loanTerm, final Integer loanInterest, final Integer emi,
             final Integer interestINR, final Date dueDate) {
         this.loanAmount = loanAmount;
         this.loanTerm = loanTerm;

@@ -21,6 +21,6 @@ package org.apache.fineract.vlms.fieldexecutive.domain;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface FELoanDetailsRepository extends JpaRepository<LoanDetails, Long>, JpaSpecificationExecutor<LoanDetails> {
+public interface LoanDetailsRepository extends JpaRepository<LoanDetails, Long>, JpaSpecificationExecutor<LoanDetails> {
 
 }

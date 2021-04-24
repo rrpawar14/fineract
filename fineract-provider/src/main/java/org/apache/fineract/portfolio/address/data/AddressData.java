@@ -144,6 +144,13 @@ public class AddressData implements Serializable {
         this.addressTypeIdOptions = addressTypeIdOptions;
     }
 
+    /*
+     * private AddressData(final String addressLine1, final String addressLine2, final String landmark, final String
+     * pincode, final String area, final String city, final String state) { this.addressLine1 = addressLine1;
+     * this.addressLine2 = addressLine2; this.landmark = landmark; this.postalCode = pincode; this.area = area;
+     * this.city = city; this.state = state; }
+     */
+
     public static AddressData instance(final String addressType, final Long clientID, final Long addressId, final Long addressTypeId,
             final Boolean is_active, final String street, final String addressLine1, final String addressLine2, final String addressLine3,
             final String townVillage, final String city, final String countyDistrict, final Long stateProvinceId, final Long countryId,

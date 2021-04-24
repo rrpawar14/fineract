@@ -36,7 +36,6 @@ import org.apache.fineract.vlms.fieldexecutive.domain.FEEnquiry;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnquiryRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnroll;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnrollRepository;
-import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetailsRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FETransferDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.FETransferDetailsRepository;
@@ -44,6 +43,7 @@ import org.apache.fineract.vlms.fieldexecutive.domain.FEUsedVehicleLoan;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEUsedVehicleLoanRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEVehicleDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEVehicleDetailsRepository;
+import org.apache.fineract.vlms.fieldexecutive.domain.LoanDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.NewLoan;
 import org.apache.fineract.vlms.fieldexecutive.domain.NewLoanRepository;
 import org.slf4j.Logger;
@@ -246,7 +246,7 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
             System.out.println("bankDetails" + feVehicleDetails);
             this.feVehicleDetailsRepository.save(feVehicleDetails);
 
-            final FELoanDetails loanDetails = FELoanDetails.fromJson(command);
+            final LoanDetails loanDetails = LoanDetails.fromJson(command);
             System.out.println("loanDetails" + loanDetails);
             this.feLoanDetailsRepository.save(loanDetails);
 

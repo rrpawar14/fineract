@@ -25,10 +25,14 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
+import org.apache.fineract.vlms.fieldexecutive.domain.LoanDetails;
 
 @Entity
-@Table(name = "m_apply_new_vehicle_loan")
+@Table(name = "m_apply_vehicle_loan")
 public class NewVehicleLoan extends AbstractPersistableCustom {
+
+    @Column(name = "customer_id", nullable = true, length = 100)
+    private String customerId;
 
     @Column(name = "customer_name", nullable = true, length = 100)
     private String customerName;
@@ -41,25 +45,6 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
 
     @Column(name = "invoice_number", nullable = true, length = 100)
     private String invoiceNumber;
-
-    /*
-     * @OneToOne(optional = true)
-     *
-     * @JoinColumn(name = "invoice_image_id", nullable = true) private DocumentImages image;
-     *
-     *
-     * @ManyToOne private Address address;
-     */
-
-    /*
-     * @ManyToOne private CustomerDetails customerDetails;
-     *
-     * @ManyToOne private VehicleDetails vehicleDetails;
-     *
-     * @ManyToOne private CustomerGuarantor customerGuarantor;
-     *
-     * @ManyToOne private BankDetails bankDetails;
-     */
 
     @OneToOne(optional = true)
     @JoinColumn(name = "customerdetails_id", nullable = true)
@@ -77,25 +62,32 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
     @JoinColumn(name = "bankdetails_id", nullable = true)
     private BankDetails bankDetails;
 
+    @OneToOne(optional = true)
+    @JoinColumn(name = "loandetails_id", nullable = true)
+    private LoanDetails loanDetails;
+
     public NewVehicleLoan() {}
 
     public static NewVehicleLoan fromJson(final JsonCommand command, final CustomerDetails customerDetails,
-            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final BankDetails bankDetails) {
+            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final BankDetails bankDetails,
+            final LoanDetails loanDetails) {
 
+        final String customerId = command.stringValueOfParameterNamed("customerId");
         final String customerName = command.stringValueOfParameterNamed("customerName");
         final String vehicleType = command.stringValueOfParameterNamed("vehicleType");
         final String dealer = command.stringValueOfParameterNamed("dealer");
         final String invoiceNumber = command.stringValueOfParameterNamed("invoiceNumber");
         // final Integer image = command.stringValueOfParameterNamed("invoiceImageId");
 
-        return new NewVehicleLoan(customerName, vehicleType, dealer, invoiceNumber, customerDetails, vehicleDetails, customerGuarantor,
-                bankDetails);
+        return new NewVehicleLoan(customerId, customerName, vehicleType, dealer, invoiceNumber, customerDetails, vehicleDetails,
+                customerGuarantor, bankDetails, loanDetails);
 
     }
 
-    private NewVehicleLoan(final String customerName, final String vehicleType, final String dealer, final String invoiceNumber,
-            final CustomerDetails customerDetails, final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor,
-            final BankDetails bankDetails) {
+    private NewVehicleLoan(final String customerId, final String customerName, final String vehicleType, final String dealer,
+            final String invoiceNumber, final CustomerDetails customerDetails, final VehicleDetails vehicleDetails,
+            final CustomerGuarantor customerGuarantor, final BankDetails bankDetails, final LoanDetails loanDetails) {
+        this.customerId = customerId;
         this.customerName = customerName;
         this.vehicleType = vehicleType;
         this.dealer = dealer;
@@ -104,6 +96,7 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
         this.vehicleDetails = vehicleDetails;
         this.customerGuarantor = customerGuarantor;
         this.bankDetails = bankDetails;
+        this.loanDetails = loanDetails;
     }
 
     public String getName() {

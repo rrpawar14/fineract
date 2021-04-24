@@ -19,7 +19,7 @@
 
 -- ALTER TABLE `m_appuser`
 
-CREATE TABLE `m_feEnquiry` (
+/* CREATE TABLE `m_feEnquiry` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `mobile_number` VARCHAR(50) NULL DEFAULT NULL,
     `customer_name` VARCHAR(50) NULL DEFAULT NULL,
@@ -31,10 +31,10 @@ CREATE TABLE `m_feEnquiry` (
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=1
-;
+;*/
 
 
-CREATE TABLE `m_feEnroll` (
+/* CREATE TABLE `m_feEnroll` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `customer_name` VARCHAR(50) NULL DEFAULT NULL,
     `mobile_number` VARCHAR(50) NULL DEFAULT NULL,
@@ -49,9 +49,9 @@ CREATE TABLE `m_feEnroll` (
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=1
-;
+;*/
 
-CREATE TABLE `m_fe_applicant_details` (
+CREATE TABLE `m_applicant_details` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `customerId` VARCHAR(50) NULL DEFAULT NULL,
     `mobile_number` VARCHAR(50) NULL DEFAULT NULL,
@@ -85,7 +85,7 @@ AUTO_INCREMENT=1
 ;
 
 
-CREATE TABLE `m_fe_co_applicant_details` (
+CREATE TABLE `m_co_applicant_details` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `customerId` VARCHAR(50) NULL DEFAULT NULL,
     `mobile_number` VARCHAR(50) NULL DEFAULT NULL,
@@ -116,7 +116,69 @@ AUTO_INCREMENT=1
 ;
 
 
-CREATE TABLE `m_fe_vehicle_details` (
+CREATE TABLE `m_apply_vehicle_loan` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `customer_name` VARCHAR(50) NULL DEFAULT NULL,
+    `customer_id` BIGINT(20) NULL DEFAULT '0',
+    `vehicle_type` VARCHAR(50) NULL DEFAULT NULL,
+    `loan_classification` VARCHAR(50) NULL DEFAULT NULL,
+    `loan_type` VARCHAR(50) NULL DEFAULT NULL,
+    `dealer` VARCHAR(50) NULL DEFAULT NULL,
+    `vehicle_condition` VARCHAR(50) NULL DEFAULT NULL,
+    `invoice_number` VARCHAR(50) NULL DEFAULT NULL,
+    `loan_id` VARCHAR(50) NULL DEFAULT NULL,
+    `applicantdetails_id` BIGINT(20) NULL DEFAULT NULL,
+    `coapplicantdetails_id` BIGINT(20) NULL DEFAULT NULL,
+    `vehicledetails_id` BIGINT(20) NULL DEFAULT NULL,
+    `bankdetails_id` BIGINT(20) NULL DEFAULT NULL,
+    `loandetails_id` BIGINT(20) NULL DEFAULT NULL,
+    INDEX `id` (`id`),
+    INDEX `FK_customer_details_id` (`applicantdetails_id`),
+    INDEX `FK_vehicle_details_id` (`vehicledetails_id`),
+    INDEX `FK_guarantor_details_id` (`coapplicantdetails_id`),
+    INDEX `FK_bank_details_id` (`bankdetails_id`),
+    INDEX `customer_id` (`customer_id`),
+    INDEX `loandetails_id` (`loandetails_id`),
+    CONSTRAINT `FK_bank_details_id` FOREIGN KEY (`bankdetails_id`) REFERENCES `m_customer_bank_details` (`id`),
+    CONSTRAINT `FK_applicant_details_id` FOREIGN KEY (`applicantdetails_id`) REFERENCES `m_applicant_details` (`id`),
+    CONSTRAINT `FK_coapplicant_details_id` FOREIGN KEY (`coapplicantdetails_id`) REFERENCES `m_co_applicant_details` (`id`),
+    CONSTRAINT `FK_vehicle_details_id` FOREIGN KEY (`vehicledetails_id`) REFERENCES `m_vehicle_details` (`id`),
+    CONSTRAINT `c_new_vehicle_org` FOREIGN KEY (`customer_id`) REFERENCES `m_appuser` (`customer_id`),
+    CONSTRAINT `loan_details_org` FOREIGN KEY (`loandetails_id`) REFERENCES `m_loan_details` (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=1
+;
+
+CREATE TABLE `m_documents_images` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `location` VARCHAR(500) NULL DEFAULT NULL,
+    `storage_type_enum` SMALLINT(6) NULL DEFAULT NULL,
+    `bank_id` BIGINT(20) NULL DEFAULT NULL,
+    `coapplicant_id` INT(11) NULL DEFAULT NULL,
+    `vehicle_id` INT(11) NULL DEFAULT NULL,
+    `vehicle_id` INT(11) NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    INDEX `FK_document_bank_images` (`bank_id`),
+    INDEX `FK_guarantor_id` (`guarantor_id`),
+    INDEX `FK_usedvehicle` (`used_vehicle_id`),
+    INDEX `FK_newvehicle_id` (`new_vehicle_id`),
+    CONSTRAINT `FK_document_bank_images` FOREIGN KEY (`bank_id`) REFERENCES `m_customer_bank_details` (`id`),
+    CONSTRAINT `FK_guarantor_id` FOREIGN KEY (`coapplicant_id`) REFERENCES `m_co_applicant_details` (`id`),
+    CONSTRAINT `FK_vehicle` FOREIGN KEY (`vehicle_id`) REFERENCES `m_apply_vehicle_loan` (`id`),
+   -- CONSTRAINT `m_documents_images_ibfk_1` FOREIGN KEY (`new_vehicle_id`) REFERENCES `m_apply_new_vehicle_loan` (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=1
+;
+
+ALTER TABLE m_image
+    ADD customer_image BIGINT(11),
+    ADD CONSTRAINT FOREIGN KEY (`customer_image`) REFERENCES `m_apply_vehicle_loan` (`id`);
+
+/* CREATE TABLE `m_fe_vehicle_details` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `vehicle_number` VARCHAR(50) NULL DEFAULT NULL,
     `maker` VARCHAR(50) NULL DEFAULT NULL,
@@ -134,10 +196,10 @@ CREATE TABLE `m_fe_vehicle_details` (
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=1
-;
+;*/
 
 
-CREATE TABLE `m_fe_loan_details` (
+/*CREATE TABLE `m_fe_loan_details` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `loan_amount` BIGINT(20) NULL DEFAULT NULL,
     `loan_term` BIGINT(20) NULL DEFAULT NULL,
@@ -150,10 +212,10 @@ CREATE TABLE `m_fe_loan_details` (
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=1
-;
+;*/
 
 
-CREATE TABLE `m_fe_transfer_details` (
+/*CREATE TABLE `m_fe_transfer_details` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `disbursal_type` VARCHAR(50) NULL DEFAULT NULL,
     `account_number` VARCHAR(50) NULL DEFAULT NULL,
@@ -166,9 +228,9 @@ CREATE TABLE `m_fe_transfer_details` (
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=1
-;
+;*/
 
-CREATE TABLE `m_fe_used_vehicle_loan` (
+/*CREATE TABLE `m_fe_used_vehicle_loan` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `customer_id` BIGINT(20) NULL DEFAULT '0',
     `customer_name` VARCHAR(50) NULL DEFAULT '0',
@@ -212,4 +274,4 @@ INSERT INTO `fineract_default`.`m_documents_type` (`id`, `documents_name`, `stat
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'CREATE_FEENQUIRYLOAN', 'FEENQUIRYLOAN', 'CREATE', 0);
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'CREATE_FEENROLL', 'FEENROLL', 'CREATE', 0);
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'CREATE_NEWLOAN', 'NEWLOAN', 'CREATE', 0);
-INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'CREATE_NEWAPPLICANTLOAN', 'NEWAPPLICANTLOAN', 'CREATE', 0);
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'CREATE_NEWAPPLICANTLOAN', 'NEWAPPLICANTLOAN', 'CREATE', 0);*/
