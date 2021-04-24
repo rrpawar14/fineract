@@ -24,9 +24,11 @@ import java.time.LocalDate;
  * Immutable data object representing loan summary information.
  */
 @SuppressWarnings("unused")
-public class CustomerDetailsData {
+public class GuarantorDetailsData {
 
-    private final String name;
+    private final String guarantorName;
+
+    private final String mobileNumber;
 
     private final String gender;
 
@@ -44,17 +46,19 @@ public class CustomerDetailsData {
 
     private final AddressData officeAdd;
 
-    public static CustomerDetailsData instance(final String name, final String gender, final LocalDate dob, final String maritalStatus,
-            final String spouseName, final String profession, final AddressData communicationAdd, final AddressData permanentAdd,
-            final AddressData officeAdd) {
+    public static GuarantorDetailsData instance(final String name, final String mobileNumber, final String gender, final LocalDate dob,
+            final String maritalStatus, final String spouseName, final String profession, final AddressData communicationAdd,
+            final AddressData permanentAdd, final AddressData officeAdd) {
 
-        return new CustomerDetailsData(name, gender, dob, maritalStatus, spouseName, profession, communicationAdd, permanentAdd, officeAdd);
+        return new GuarantorDetailsData(name, mobileNumber, gender, dob, maritalStatus, spouseName, profession, communicationAdd,
+                permanentAdd, officeAdd);
     }
 
-    public CustomerDetailsData(final String name, final String gender, final LocalDate dob, final String maritalStatus,
-            final String spouseName, final String profession, final AddressData communicationAdd, final AddressData permanentAdd,
-            final AddressData officeAdd) {
-        this.name = name;
+    public GuarantorDetailsData(final String name, final String mobileNumber, final String gender, final LocalDate dob,
+            final String maritalStatus, final String spouseName, final String profession, final AddressData communicationAdd,
+            final AddressData permanentAdd, final AddressData officeAdd) {
+        this.guarantorName = name;
+        this.mobileNumber = mobileNumber;
         this.gender = gender;
         this.dob = dob;
         this.maritalStatus = maritalStatus;

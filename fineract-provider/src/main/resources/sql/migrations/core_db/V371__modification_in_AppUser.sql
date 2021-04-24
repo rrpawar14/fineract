@@ -51,29 +51,34 @@ ENGINE=InnoDB
 AUTO_INCREMENT=1;
 
 CREATE TABLE `m_customer_guarantor` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `guarantor_name` varchar(100) NULL DEFAULT 'NULL',
-    `mobile_number` BIGINT(20) NULL DEFAULT '0',
-    `gender` varchar(100) NULL DEFAULT '0',
-    `dob` DATE NULL DEFAULT NULL,
-    `marital_status` VARCHAR(50) NULL DEFAULT '0',
-    `spouse_name` VARCHAR(100) NULL DEFAULT '0',
-    `profession` VARCHAR(50) NULL DEFAULT '0',
-    `communicationadd_id` BIGINT(11) NULL DEFAULT NULL,
-    `permanentadd_id` BIGINT(11) NULL DEFAULT NULL,
-    `officeadd_id` BIGINT(11) NULL DEFAULT NULL,
-    INDEX `id` (`id`),
-    INDEX `fk_guarantorcommunicationadd` (`communicationadd_id`),
-    INDEX `fk_guarantorpermenantadd` (`permanentadd_id`),
-    INDEX `fk_guarantorofficeadd` (`officeadd_id`),
-    CONSTRAINT `fk_guarantorcommunicationadd` FOREIGN KEY (`communicationadd_id`) REFERENCES `m_address` (`id`),
-    CONSTRAINT `fk_guarantorofficeadd` FOREIGN KEY (`officeadd_id`) REFERENCES `m_address` (`id`),
-    CONSTRAINT `fk_guarantorpermenantadd` FOREIGN KEY (`permanentadd_id`) REFERENCES `m_address` (`id`)
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`guarantor_name` VARCHAR(100) NULL DEFAULT 'NULL',
+	`mobile_number` BIGINT(20) NULL DEFAULT '0',
+	`gender` VARCHAR(100) NULL DEFAULT '0',
+	`dob` DATE NULL DEFAULT NULL,
+	`marital_status` VARCHAR(50) NULL DEFAULT '0',
+	`spouse_name` VARCHAR(100) NULL DEFAULT '0',
+	`profession` VARCHAR(50) NULL DEFAULT '0',
+	`applicant_type` VARCHAR(50) NULL DEFAULT '0',
+	`company_name` VARCHAR(50) NULL DEFAULT '0',
+	`net_income` BIGINT(20) NULL DEFAULT '0',
+	`salary_date` DATE NULL DEFAULT NULL,
+	`salary_type` VARCHAR(50) NULL DEFAULT NULL,
+	`communicationadd_id` BIGINT(11) NULL DEFAULT NULL,
+	`permanentadd_id` BIGINT(11) NULL DEFAULT NULL,
+	`officeadd_id` BIGINT(11) NULL DEFAULT NULL,
+	INDEX `id` (`id`),
+	INDEX `fk_guarantorcommunicationadd` (`communicationadd_id`),
+	INDEX `fk_guarantorpermenantadd` (`permanentadd_id`),
+	INDEX `fk_guarantorofficeadd` (`officeadd_id`),
+	CONSTRAINT `fk_guarantorcommunicationadd` FOREIGN KEY (`communicationadd_id`) REFERENCES `m_address` (`id`),
+	CONSTRAINT `fk_guarantorofficeadd` FOREIGN KEY (`officeadd_id`) REFERENCES `m_address` (`id`),
+	CONSTRAINT `fk_guarantorpermenantadd` FOREIGN KEY (`permanentadd_id`) REFERENCES `m_address` (`id`)
 )
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
-AUTO_INCREMENT=1
-;
+AUTO_INCREMENT=1;
+
 
 ALTER table m_address
 ADD landmark varchar(100),

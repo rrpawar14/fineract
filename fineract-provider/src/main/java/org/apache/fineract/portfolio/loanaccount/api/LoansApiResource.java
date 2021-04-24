@@ -850,26 +850,39 @@ public class LoansApiResource {
     }
 
     // fetch all vehicle customer loan applications
-    @GET
-    @Path("vehicleLoan")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Retrieve a Loan", description = "Note: template=true parameter doesn't apply to this resource."
-            + "Example Requests:\n" + "\n" + "loans/1\n" + "\n" + "\n" + "loans/1?fields=id,principal,annualInterestRate\n" + "\n" + "\n"
-            + "loans/1?associations=all\n" + "\n" + "loans/1?associations=all&exclude=guarantors\n" + "\n" + "\n"
-            + "loans/1?fields=id,principal,annualInterestRate&associations=repaymentSchedule,transactions")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansLoanIdResponse.class))) })
-    public String retrieveVehicleLoan(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId,
-            @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
-            @Context final UriInfo uriInfo) {
-
-        final Collection<CustomerDetailsData> vehicleLoanBasicDetails = this.customerVehicleLoanReadPlatformService
-                .retrieveAllCustomerVehicleLoan();
-
-        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.toCustomerApiJsonSerializer.serialize(settings, vehicleLoanBasicDetails, this.vehicleloanDataParameters);
-    }
+    /*
+     * @GET
+     *
+     * @Path("vehicleLoan")
+     *
+     * @Consumes({ MediaType.APPLICATION_JSON })
+     *
+     * @Produces({ MediaType.APPLICATION_JSON })
+     *
+     * @Operation(summary = "Retrieve a Loan", description =
+     * "Note: template=true parameter doesn't apply to this resource." + "Example Requests:\n" + "\n" + "loans/1\n" +
+     * "\n" + "\n" + "loans/1?fields=id,principal,annualInterestRate\n" + "\n" + "\n" + "loans/1?associations=all\n" +
+     * "\n" + "loans/1?associations=all&exclude=guarantors\n" + "\n" + "\n" +
+     * "loans/1?fields=id,principal,annualInterestRate&associations=repaymentSchedule,transactions")
+     *
+     * @ApiResponses({
+     *
+     * @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation =
+     * LoansApiResourceSwagger.GetLoansLoanIdResponse.class))) }) public String
+     * retrieveVehicleLoan(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId,
+     *
+     * @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description =
+     * "staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
+     *
+     * @Context final UriInfo uriInfo) {
+     *
+     * final Collection<CustomerDetailsData> vehicleLoanBasicDetails = this.customerVehicleLoanReadPlatformService
+     * .retrieveAllCustomerVehicleLoan();
+     *
+     * final ApiRequestJsonSerializationSettings settings =
+     * this.apiRequestParameterHelper.process(uriInfo.getQueryParameters()); return
+     * this.toCustomerApiJsonSerializer.serialize(settings, vehicleLoanBasicDetails, this.vehicleloanDataParameters); }
+     */
 
     /*
      * @POST

@@ -168,6 +168,13 @@ ENGINE=InnoDB
 AUTO_INCREMENT=1
 ;
 
+ ALTER table m_appuser
+ ADD customer_id BIGINT(100);
+
+ ALTER TABLE `m_appuser`
+ ADD INDEX `customer_id` (`customer_id`);
+
+
 CREATE TABLE `m_fe_used_vehicle_loan` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `customer_id` BIGINT(20) NULL DEFAULT '0',

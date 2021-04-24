@@ -19,10 +19,10 @@
 package org.apache.fineract.vlms.customer.service;
 
 import java.util.Collection;
-import org.apache.fineract.vlms.customer.data.CustomerDetailsData;
+import org.apache.fineract.vlms.customer.data.VehicleLoanData;
 
 public interface CustomerVehicleLoanReadPlatformService {
 
-    Collection<CustomerDetailsData> retrieveAllCustomerVehicleLoan();
+    Collection<VehicleLoanData> retrieveAllCustomerVehicleLoan();
 
 }
