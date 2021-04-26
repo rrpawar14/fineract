@@ -163,7 +163,7 @@ AUTO_INCREMENT=1
 ;
 
 
-CREATE TABLE `m_apply_new_vehicle_loan` (
+CREATE TABLE `m_apply_vehicle_loan` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `customer_name` VARCHAR(50) NULL DEFAULT NULL,
     `vehicle_type` VARCHAR(50) NULL DEFAULT NULL,
@@ -185,7 +185,7 @@ CREATE TABLE `m_apply_new_vehicle_loan` (
     CONSTRAINT `FK_customer_details_id` FOREIGN KEY (`customerdetails_id`) REFERENCES `m_customer_details` (`id`),
     CONSTRAINT `FK_guarantor_details_id` FOREIGN KEY (`guarantordetails_id`) REFERENCES `m_customer_guarantor` (`id`),
     CONSTRAINT `FK_vehicle_details_id` FOREIGN KEY (`vehicledetails_id`) REFERENCES `m_vehicle_details` (`id`),
-    CONSTRAINT `fK_used_vehicle_org` FOREIGN KEY (`customer_id`) REFERENCES `m_appuser` (`customer_id`)
+    CONSTRAINT `fK_used_vehicle_org` FOREIGN KEY (`customer_id`) REFERENCES `m_appuser` (`id`)
 )
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
@@ -193,7 +193,7 @@ ENGINE=InnoDB
 
 
 
-CREATE TABLE `m_apply_used_vehicle_loan` (
+/*CREATE TABLE `m_apply_used_vehicle_loan` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `customer_name` VARCHAR(50) NULL DEFAULT NULL,
     `vehicle_type` VARCHAR(50) NULL DEFAULT NULL,
@@ -214,7 +214,7 @@ CREATE TABLE `m_apply_used_vehicle_loan` (
 )
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
-;
+;*/
 
 
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('customer', 'UPDATE_CUSTOMER', 'CUSTOMER', 'UPDATE', 0);
@@ -222,28 +222,25 @@ INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `c
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'CREATE_USEDVEHICLELOAN', 'USEDVEHICLELOAN', 'CREATE', 0);
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'CREATE_ENQUIRY', 'ENQUIRY', 'CREATE', 0);
 
-CREATE TABLE `m_documents_images` (
+ CREATE TABLE `m_documents_images` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `location` VARCHAR(500) NULL DEFAULT NULL,
     `storage_type_enum` SMALLINT(6) NULL DEFAULT NULL,
     `bank_id` INT(11) NULL DEFAULT NULL,
     `guarantor_id` INT(11) NULL DEFAULT NULL,
-    `new_vehicle_id` INT(11) NULL DEFAULT NULL,
-    `used_vehicle_id` INT(11) NULL DEFAULT NULL,
+    `vehicle_id` INT(11) NULL DEFAULT NULL,
     PRIMARY KEY (`id`),
     INDEX `FK_document_bank_images` (`bank_id`),
     INDEX `FK_guarantor_id` (`guarantor_id`),
-    INDEX `FK_usedvehicle` (`used_vehicle_id`),
-    INDEX `FK_newvehicle_id` (`new_vehicle_id`),
+    INDEX `FK_newvehicle_id` (`vehicle_id`),
     CONSTRAINT `FK_document_bank_images` FOREIGN KEY (`bank_id`) REFERENCES `m_customer_bank_details` (`id`),
     CONSTRAINT `FK_guarantor_id` FOREIGN KEY (`guarantor_id`) REFERENCES `m_customer_guarantor` (`id`),
-    CONSTRAINT `FK_usedvehicle` FOREIGN KEY (`used_vehicle_id`) REFERENCES `m_apply_used_vehicle_loan` (`id`),
-    CONSTRAINT `m_documents_images_ibfk_1` FOREIGN KEY (`new_vehicle_id`) REFERENCES `m_apply_new_vehicle_loan` (`id`)
+    CONSTRAINT `m_documents_images_ibfk_1` FOREIGN KEY (`vehicle_id`) REFERENCES `m_apply_vehicle_loan` (`id`)
 )
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
-AUTO_INCREMENT=1
-;
+AUTO_INCREMENT=1;
+
 
 CREATE TABLE `m_vehicle_images` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -265,7 +262,7 @@ AUTO_INCREMENT=1
 
     ALTER TABLE m_image
     ADD customer_image int(11),
-    ADD CONSTRAINT FOREIGN KEY (`customer_image`) REFERENCES `m_apply_used_vehicle_loan` (`id`);
+    ADD CONSTRAINT FOREIGN KEY (`customer_image`) REFERENCES `m_apply_vehicle_loan` (`id`);
 
   /*   ALTER TABLE m_image
     ADD profile_image int(11);

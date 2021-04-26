@@ -36,10 +36,10 @@ import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantor;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantorRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoan;
 import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoanRepository;
-import org.apache.fineract.portfolio.loanaccount.domain.UsedVehicleLoan;
-import org.apache.fineract.portfolio.loanaccount.domain.UsedVehicleLoanRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetailsRepository;
+import org.apache.fineract.useradministration.domain.AppUser;
+import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,29 +54,29 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
     private final PlatformSecurityContext context;
     private final FromJsonHelper fromJsonHelper;
     private final NewVehicleLoanRepository newVehicleLoanRepository;
-    private final UsedVehicleLoanRepository usedVehicleLoanRepository;
     private final CustomerDetailsRepository customerDetailsRepository;
     private final VehicleDetailsRepository vehicleDetailsRepository;
     private final BankDetailsRepository bankDetailsRepository;
     private final CustomerGuarantorRepository customerGuarantorRepository;
     private final AddressRepository addressRepository;
+    private final AppUserRepositoryWrapper appUserRepositoryWrapper;
     private static final Logger LOG = LoggerFactory.getLogger(VehicleLoanManagementWritePlatformServiceImpl.class);
 
     @Autowired
     public VehicleLoanManagementWritePlatformServiceImpl(final PlatformSecurityContext context, final FromJsonHelper fromJsonHelper,
-            final NewVehicleLoanRepository newVehicleLoanRepository, final UsedVehicleLoanRepository usedVehicleLoanRepository,
-            final CustomerDetailsRepository customerDetailsRepository, final VehicleDetailsRepository vehicleDetailsRepository,
-            final BankDetailsRepository bankDetailsRepository, final CustomerGuarantorRepository customerGuarantorRepository,
-            final AddressRepository addressRepository) {
+            final NewVehicleLoanRepository newVehicleLoanRepository, final CustomerDetailsRepository customerDetailsRepository,
+            final VehicleDetailsRepository vehicleDetailsRepository, final BankDetailsRepository bankDetailsRepository,
+            final CustomerGuarantorRepository customerGuarantorRepository, final AddressRepository addressRepository,
+            final AppUserRepositoryWrapper appUserRepositoryWrapper) {
         this.context = context;
         this.fromJsonHelper = fromJsonHelper;
         this.newVehicleLoanRepository = newVehicleLoanRepository;
-        this.usedVehicleLoanRepository = usedVehicleLoanRepository;
         this.customerDetailsRepository = customerDetailsRepository;
         this.vehicleDetailsRepository = vehicleDetailsRepository;
         this.bankDetailsRepository = bankDetailsRepository;
         this.customerGuarantorRepository = customerGuarantorRepository;
         this.addressRepository = addressRepository;
+        this.appUserRepositoryWrapper = appUserRepositoryWrapper;
     }
 
     @Transactional
@@ -166,9 +166,12 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             final BankDetails bankDetailsObj = this.bankDetailsRepository.getOne(bankDetailsId);
             System.out.println("bankDetailsObj" + bankDetailsObj);
 
+            final Long customerId = command.longValueOfParameterNamed("customerId");
+            final AppUser appuser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(customerId);
+
             final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj,
-                    customerGuarantorObj, bankDetailsObj);
-            System.out.println("newVehicleLoan" + bankDetailsObj);
+                    customerGuarantorObj, bankDetailsObj, appuser);
+            System.out.println("newVehicleLoan" + newVehicleLoan);
 
             // final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command);
 
@@ -200,127 +203,88 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
 
     }
 
-    @Transactional
-    @Override
-    public CommandProcessingResult submitUsedVehicleLoanApplication(final JsonCommand command) {
-
-        // this.fromApiJsonDeserializer.validateForCreate(command.json());
-
-        try {
-            this.context.authenticatedUser();
-
-            // create address
-            Address customerAdd = Address.fromJson(command, "customer_communicationAddress");
-            this.addressRepository.save(customerAdd);
-            Long addressid = customerAdd.getId();
-            Address customerCommunicationAdd = this.addressRepository.getOne(addressid);
-
-            customerAdd = Address.fromJson(command, "customer_permanentAddress");
-            this.addressRepository.save(customerAdd);
-            addressid = customerAdd.getId();
-            Address customerPermanentAdd = this.addressRepository.getOne(addressid);
-
-            customerAdd = Address.fromJson(command, "customer_officeAddress");
-            this.addressRepository.save(customerAdd);
-            addressid = customerAdd.getId();
-            Address customerOfficeAdd = this.addressRepository.getOne(addressid);
-
-            // createcustomerdetails
-            final CustomerDetails customerDetails = CustomerDetails.fromJson(command, customerCommunicationAdd, customerPermanentAdd,
-                    customerOfficeAdd);
-            System.out.println("customerDetails");
-            this.customerDetailsRepository.save(customerDetails);
-            System.out.println("customerDetailsRepository");
-
-            final Long customerDetailsId = customerDetails.getId();
-            System.out.println("customerDetailsId");
-            final CustomerDetails customerDetailsObj = this.customerDetailsRepository.getOne(customerDetailsId);
-            System.out.println("customerDetailsObj");
-
-            // createVehicleDetails
-            final VehicleDetails vehicleDetails = VehicleDetails.fromJson(command);
-            System.out.println("vehicleDetails");
-            this.vehicleDetailsRepository.save(vehicleDetails);
-            System.out.println("vehicleDetailsRepository");
-
-            final Long vehicleDetailsId = vehicleDetails.getId();
-            System.out.println("vehicleDetailsId");
-            final VehicleDetails vehicleDetailsObj = this.vehicleDetailsRepository.getOne(vehicleDetailsId);
-            System.out.println("vehicleDetailsObj");
-
-            Address add = Address.fromJson(command, "guarantor_commucationAddress");
-            this.addressRepository.save(add);
-            addressid = add.getId();
-            Address guarantorCommunicationAdd = this.addressRepository.getOne(addressid);
-
-            add = Address.fromJson(command, "guarantor_permanentAddress");
-            this.addressRepository.save(add);
-            addressid = add.getId();
-            Address guarantorPermanentAdd = this.addressRepository.getOne(addressid);
-
-            add = Address.fromJson(command, "guarantor_officeAddress");
-            this.addressRepository.save(add);
-            addressid = add.getId();
-            Address guarantorOfficeAdd = this.addressRepository.getOne(addressid);
-
-            // createguarantordetails
-
-            final CustomerGuarantor customerGuarantor = CustomerGuarantor.fromJson(command, guarantorCommunicationAdd,
-                    guarantorPermanentAdd, guarantorOfficeAdd);
-            System.out.println("customerGuarantor");
-            this.customerGuarantorRepository.save(customerGuarantor);
-            System.out.println("customerGuarantorRepository");
-
-            final Long customerGuarantorId = customerGuarantor.getId();
-            System.out.println("customerGuarantorId");
-            final CustomerGuarantor customerGuarantorObj = this.customerGuarantorRepository.getOne(customerGuarantorId);
-            System.out.println("customerGuarantorObj");
-
-            // createbankdetails
-            final BankDetails bankDetails = BankDetails.fromJson(command);
-            System.out.println("bankDetails");
-            this.bankDetailsRepository.save(bankDetails);
-            System.out.println("bankDetailsRepository");
-
-            final Long bankDetailsId = bankDetails.getId();
-            System.out.println("bankDetailsId");
-            final BankDetails bankDetailsObj = this.bankDetailsRepository.getOne(bankDetailsId);
-            System.out.println("bankDetailsObj");
-
-            // store all in usedvehicle like addresswriteplatformservice
-
-            final UsedVehicleLoan usedVehicleLoan = UsedVehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj,
-                    customerGuarantorObj, bankDetailsObj);
-
-            this.usedVehicleLoanRepository.save(usedVehicleLoan);
-
-            return new CommandProcessingResultBuilder() //
-                    .withCommandId(command.commandId()) //
-                    .withEntityId(usedVehicleLoan.getId()) //
-                    .withCustomerDetailsId(customerDetailsObj.getId()) //
-                    .withVehicleDetailsId(vehicleDetailsObj.getId()) //
-                    .withCustomerGuarantorId(customerGuarantorObj.getId()).withBankDetailsId(bankDetailsObj.getId())//
-                    // .withOfficeId(loan.getOfficeId()) //
-                    // .withClientId(loan.getClientId()) //
-                    // .withGroupId(loan.getGroupId()) //
-                    // .withLoanId(loanId) //
-                    // .with(changes) //
-                    .build();
-        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
-            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
-            return new CommandProcessingResultBuilder() //
-                    .withCommandId(command.commandId()) //
-                    .build();
-        } catch (final PersistenceException dve) {
-            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
-            handleDataIntegrityIssues(command, throwable, dve);
-            return new CommandProcessingResultBuilder() //
-                    .withCommandId(command.commandId()) //
-                    .build();
-        }
-
-    }
-
+    /*
+     * @Transactional
+     *
+     * @Override public CommandProcessingResult submitUsedVehicleLoanApplication(final JsonCommand command) {
+     *
+     * // this.fromApiJsonDeserializer.validateForCreate(command.json());
+     *
+     * try { this.context.authenticatedUser();
+     *
+     * // create address Address customerAdd = Address.fromJson(command, "customer_communicationAddress");
+     * this.addressRepository.save(customerAdd); Long addressid = customerAdd.getId(); Address customerCommunicationAdd
+     * = this.addressRepository.getOne(addressid);
+     *
+     * customerAdd = Address.fromJson(command, "customer_permanentAddress"); this.addressRepository.save(customerAdd);
+     * addressid = customerAdd.getId(); Address customerPermanentAdd = this.addressRepository.getOne(addressid);
+     *
+     * customerAdd = Address.fromJson(command, "customer_officeAddress"); this.addressRepository.save(customerAdd);
+     * addressid = customerAdd.getId(); Address customerOfficeAdd = this.addressRepository.getOne(addressid);
+     *
+     * // createcustomerdetails final CustomerDetails customerDetails = CustomerDetails.fromJson(command,
+     * customerCommunicationAdd, customerPermanentAdd, customerOfficeAdd); System.out.println("customerDetails");
+     * this.customerDetailsRepository.save(customerDetails); System.out.println("customerDetailsRepository");
+     *
+     * final Long customerDetailsId = customerDetails.getId(); System.out.println("customerDetailsId"); final
+     * CustomerDetails customerDetailsObj = this.customerDetailsRepository.getOne(customerDetailsId);
+     * System.out.println("customerDetailsObj");
+     *
+     * // createVehicleDetails final VehicleDetails vehicleDetails = VehicleDetails.fromJson(command);
+     * System.out.println("vehicleDetails"); this.vehicleDetailsRepository.save(vehicleDetails);
+     * System.out.println("vehicleDetailsRepository");
+     *
+     * final Long vehicleDetailsId = vehicleDetails.getId(); System.out.println("vehicleDetailsId"); final
+     * VehicleDetails vehicleDetailsObj = this.vehicleDetailsRepository.getOne(vehicleDetailsId);
+     * System.out.println("vehicleDetailsObj");
+     *
+     * Address add = Address.fromJson(command, "guarantor_commucationAddress"); this.addressRepository.save(add);
+     * addressid = add.getId(); Address guarantorCommunicationAdd = this.addressRepository.getOne(addressid);
+     *
+     * add = Address.fromJson(command, "guarantor_permanentAddress"); this.addressRepository.save(add); addressid =
+     * add.getId(); Address guarantorPermanentAdd = this.addressRepository.getOne(addressid);
+     *
+     * add = Address.fromJson(command, "guarantor_officeAddress"); this.addressRepository.save(add); addressid =
+     * add.getId(); Address guarantorOfficeAdd = this.addressRepository.getOne(addressid);
+     *
+     * // createguarantordetails
+     *
+     * final CustomerGuarantor customerGuarantor = CustomerGuarantor.fromJson(command, guarantorCommunicationAdd,
+     * guarantorPermanentAdd, guarantorOfficeAdd); System.out.println("customerGuarantor");
+     * this.customerGuarantorRepository.save(customerGuarantor); System.out.println("customerGuarantorRepository");
+     *
+     * final Long customerGuarantorId = customerGuarantor.getId(); System.out.println("customerGuarantorId"); final
+     * CustomerGuarantor customerGuarantorObj = this.customerGuarantorRepository.getOne(customerGuarantorId);
+     * System.out.println("customerGuarantorObj");
+     *
+     * // createbankdetails final BankDetails bankDetails = BankDetails.fromJson(command);
+     * System.out.println("bankDetails"); this.bankDetailsRepository.save(bankDetails);
+     * System.out.println("bankDetailsRepository");
+     *
+     * final Long bankDetailsId = bankDetails.getId(); System.out.println("bankDetailsId"); final BankDetails
+     * bankDetailsObj = this.bankDetailsRepository.getOne(bankDetailsId); System.out.println("bankDetailsObj");
+     *
+     * // store all in usedvehicle like addresswriteplatformservice
+     *
+     * final UsedVehicleLoan usedVehicleLoan = UsedVehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj,
+     * customerGuarantorObj, bankDetailsObj);
+     *
+     * this.usedVehicleLoanRepository.save(usedVehicleLoan);
+     *
+     * return new CommandProcessingResultBuilder() // .withCommandId(command.commandId()) //
+     * .withEntityId(usedVehicleLoan.getId()) // .withCustomerDetailsId(customerDetailsObj.getId()) //
+     * .withVehicleDetailsId(vehicleDetailsObj.getId()) //
+     * .withCustomerGuarantorId(customerGuarantorObj.getId()).withBankDetailsId(bankDetailsObj.getId())// //
+     * .withOfficeId(loan.getOfficeId()) // // .withClientId(loan.getClientId()) // // .withGroupId(loan.getGroupId())
+     * // // .withLoanId(loanId) // // .with(changes) // .build(); } catch (final JpaSystemException |
+     * DataIntegrityViolationException dve) { handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+     * return new CommandProcessingResultBuilder() // .withCommandId(command.commandId()) // .build(); } catch (final
+     * PersistenceException dve) { Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+     * handleDataIntegrityIssues(command, throwable, dve); return new CommandProcessingResultBuilder() //
+     * .withCommandId(command.commandId()) // .build(); }
+     *
+     * }
+     */
     private void handleDataIntegrityIssues(final JsonCommand command, final Throwable realCause, final Exception dve) {
 
         if (realCause.getMessage().contains("mobile_no")) {

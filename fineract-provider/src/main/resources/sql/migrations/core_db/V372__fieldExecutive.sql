@@ -19,7 +19,7 @@
 
 -- ALTER TABLE `m_appuser`
 
-CREATE TABLE `m_feEnquiry` (
+/*CREATE TABLE `m_feEnquiry` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `mobile_number` VARCHAR(50) NULL DEFAULT NULL,
     `customer_name` VARCHAR(50) NULL DEFAULT NULL,
@@ -34,22 +34,7 @@ AUTO_INCREMENT=1
 ;
 
 
-CREATE TABLE `m_feEnroll` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `customer_name` VARCHAR(50) NULL DEFAULT NULL,
-    `mobile_number` VARCHAR(50) NULL DEFAULT NULL,
-    `alternate_mobile_number` VARCHAR(50) NULL DEFAULT NULL,
-    `dob` DATE NULL DEFAULT NULL,
-    `father_name` VARCHAR(50) NULL DEFAULT NULL,
-    `gender` VARCHAR(50) NULL DEFAULT NULL,
-    `applicant_type` VARCHAR(50) NULL DEFAULT NULL,
-    `applicant_id` VARCHAR(50) NULL DEFAULT NULL,
-    INDEX `id` (`id`)
-)
-COLLATE='latin1_swedish_ci'
-ENGINE=InnoDB
-AUTO_INCREMENT=1
-;
+
 
 CREATE TABLE `m_fe_applicant_details` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
@@ -195,6 +180,24 @@ COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=1
 ;
+*/
+CREATE TABLE `m_feEnroll` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `customer_name` VARCHAR(50) NULL DEFAULT NULL,
+    `mobile_number` VARCHAR(50) NULL DEFAULT NULL,
+    `alternate_mobile_number` VARCHAR(50) NULL DEFAULT NULL,
+    `dob` DATE NULL DEFAULT NULL,
+    `father_name` VARCHAR(50) NULL DEFAULT NULL,
+    `gender` VARCHAR(50) NULL DEFAULT NULL,
+    `applicant_type` VARCHAR(50) NULL DEFAULT NULL,
+    `applicant_id` VARCHAR(50) NULL DEFAULT NULL,
+    INDEX `id` (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=1
+;
+
 
 CREATE TABLE `m_fe_task` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,

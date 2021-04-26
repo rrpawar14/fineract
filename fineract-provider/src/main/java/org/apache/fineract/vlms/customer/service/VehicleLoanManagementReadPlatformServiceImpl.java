@@ -33,18 +33,19 @@ import org.apache.fineract.vlms.customer.data.VehicleDetailsData;
 import org.apache.fineract.vlms.customer.data.VehicleLoanData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomerVehicleLoanReadPlatformServiceImpl implements CustomerVehicleLoanReadPlatformService {
+public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoanManagementReadPlatformService {
 
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
 
     @Autowired
-    public CustomerVehicleLoanReadPlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource) {
+    public VehicleLoanManagementReadPlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource) {
         this.context = context;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
@@ -109,89 +110,74 @@ public class CustomerVehicleLoanReadPlatformServiceImpl implements CustomerVehic
                     + " vd.engine_number as engineNumber, vd.chassis_number as chassisNumber, "
                     + " vd.insurance_company as insuranceCompany, vd.insurance_policy as insurancePolicy, "
                     + " vd.insurance_expiry as insuranceExpiry, vd.pollution_cert_expiry as pollutionCertExpiry, "
-                    + " vd.registration as registration, vd.live_km_reading as liveKmReading from  m_apply_new_vehicle_loan cnv "
+                    + " vd.registration as registration, vd.live_km_reading as liveKmReading  ";
 
-                    // customer new vehicle completed
+            // customer new vehicle completed
 
-                    ///////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////
 
-                    // customer used vehicle cuv
-                    /*
-                     * + " cnv.customer_name as customerName, cnv.vehicle_type as vehicleType, cnv.loan_id as loanId, "
-                     * + " cnv.loan_type as loanType, "
-                     *
-                     * // customer details uvcd +
-                     * " uvcd.name as customer_name, uvcd.gender as gender, uvcd.dob as dob, " +
-                     * " uvcd.maritalstatus as maritalstatus,  uvcd.spousename as spousename, uvcd.profession as profession, uvcd.proof_image_id as proofImageId, "
-                     *
-                     * // communicationaddress uvcadd of customerdetails +
-                     * " uvcadd.street as street, uvcadd.address_line_1 as addressline1, uvcadd.address_line_2 as addressline2, "
-                     * + " uvcadd.city as city, uvcadd.postal_code as postalcode, uvcadd.landmark as landmark, " +
-                     * " uvcadd.area as area, uvcadd.state as state, "
-                     *
-                     * // permanentaddress uvpadd +
-                     * " uvpadd.street as street, uvpadd.address_line_1 as addressline1, uvpadd.address_line_2 as addressline2, "
-                     * + " uvpadd.city as city, uvpadd.postal_code as postalcode, uvpadd.landmark as landmark, " +
-                     * " uvpadd.area as area, uvpadd.state as state, "
-                     *
-                     * // officeaddress uvoadd +
-                     * " uvoadd.street as street, uvoadd.address_line_1 as addressline1, uvoadd.address_line_2 as addressline2, "
-                     * + " uvoadd.city as city, uvoadd.postal_code as postalcode, uvoadd.landmark as landmark, " +
-                     * " uvoadd.area as area, uvoadd.state as state, "
-                     *
-                     * // guarantor details uvcg +
-                     * " uvcg.guarantor_name as guarantorName, uvcg.mobile_number as guarantorMobileNumber, uvcg.gender as gender, uvcg.dob as dob, "
-                     * +
-                     * " uvcg.marital_status as maritalStatus,  uvcg.spouse_name as spousename, uvcg.profession as profession, "
-                     *
-                     * // communicationaddress uvgcadd of guarantordetails +
-                     * " uvgcadd.street as street, uvgcadd.address_line_1 as addressline1, uvgcadd.address_line_2 as addressline2, "
-                     * + " uvgcadd.city as city, uvgcadd.postal_code as postalcode, uvgcadd.landmark as landmark, " +
-                     * " uvgcadd.area as area, uvgcadd.state as state, "
-                     *
-                     * // permanentaddress uvgpadd +
-                     * " uvgpadd.street as street, uvgpadd.address_line_1 as addressline1, uvgpadd.address_line_2 as addressline2, "
-                     * + " uvgpadd.city as city, uvgpadd.postal_code as postalcode, uvgpadd.landmark as landmark, " +
-                     * " uvgpadd.area as area, uvgpadd.state as state, "
-                     *
-                     * // officeaddress uvgoadd +
-                     * " uvgoadd.street as street, uvgoadd.address_line_1 as addressline1, uvgoadd.address_line_2 as addressline2, "
-                     * + " uvgoadd.city as city, uvgoadd.postal_code as postalcode, uvgoadd.landmark as landmark, " +
-                     * " uvgoadd.area as area, uvgoadd.state as state, "
-                     *
-                     * // bankdetails uvbd of customer new vehicle +
-                     * " uvbd.loan_eligible_amount as eligibleAmount, uvbd.account_type as accountType, " +
-                     * " uvbd.disbursal_type as disbursalType, uvbd.account_number as accountNumber, " +
-                     * " uvbd.account_holder_name as accountHolderName, uvbd.bank_name as bankName, " +
-                     * " uvbd.branch_name as branchName, uvbd.IFSC as IFSC, "
-                     *
-                     * // vehicledetails uvd of customer new vehicle +
-                     * " uvd.vehicle_number as vehicleNumber, uvd.maker as accountType, " +
-                     * " uvd.maker as maker, uvd.model as model, " + " uvd.color as color, uvd.mfg_year as mfgYear, " +
-                     * " uvd.engine_number as engineNumber, uvd.chassis_number as chassisNumber, " +
-                     * " uvd.insurance_company as insuranceCompany, uvd.insurance_policy as insurancePolicy, " +
-                     * " uvd.insurance_expiry as insuranceExpiry, uvd.pollution_cert_expiry as pollutionCertExpiry, " +
-                     * " uvd.registration as registration, uvd.live_km_reading as liveKmReading from m_apply_used_vehicle_loan cuv "
-                     */
+            // customer used vehicle cuv
+            /*
+             * + " cnv.customer_name as customerName, cnv.vehicle_type as vehicleType, cnv.loan_id as loanId, " +
+             * " cnv.loan_type as loanType, "
+             *
+             * // customer details uvcd + " uvcd.name as customer_name, uvcd.gender as gender, uvcd.dob as dob, " +
+             * " uvcd.maritalstatus as maritalstatus,  uvcd.spousename as spousename, uvcd.profession as profession, uvcd.proof_image_id as proofImageId, "
+             *
+             * // communicationaddress uvcadd of customerdetails +
+             * " uvcadd.street as street, uvcadd.address_line_1 as addressline1, uvcadd.address_line_2 as addressline2, "
+             * + " uvcadd.city as city, uvcadd.postal_code as postalcode, uvcadd.landmark as landmark, " +
+             * " uvcadd.area as area, uvcadd.state as state, "
+             *
+             * // permanentaddress uvpadd +
+             * " uvpadd.street as street, uvpadd.address_line_1 as addressline1, uvpadd.address_line_2 as addressline2, "
+             * + " uvpadd.city as city, uvpadd.postal_code as postalcode, uvpadd.landmark as landmark, " +
+             * " uvpadd.area as area, uvpadd.state as state, "
+             *
+             * // officeaddress uvoadd +
+             * " uvoadd.street as street, uvoadd.address_line_1 as addressline1, uvoadd.address_line_2 as addressline2, "
+             * + " uvoadd.city as city, uvoadd.postal_code as postalcode, uvoadd.landmark as landmark, " +
+             * " uvoadd.area as area, uvoadd.state as state, "
+             *
+             * // guarantor details uvcg +
+             * " uvcg.guarantor_name as guarantorName, uvcg.mobile_number as guarantorMobileNumber, uvcg.gender as gender, uvcg.dob as dob, "
+             * +
+             * " uvcg.marital_status as maritalStatus,  uvcg.spouse_name as spousename, uvcg.profession as profession, "
+             *
+             * // communicationaddress uvgcadd of guarantordetails +
+             * " uvgcadd.street as street, uvgcadd.address_line_1 as addressline1, uvgcadd.address_line_2 as addressline2, "
+             * + " uvgcadd.city as city, uvgcadd.postal_code as postalcode, uvgcadd.landmark as landmark, " +
+             * " uvgcadd.area as area, uvgcadd.state as state, "
+             *
+             * // permanentaddress uvgpadd +
+             * " uvgpadd.street as street, uvgpadd.address_line_1 as addressline1, uvgpadd.address_line_2 as addressline2, "
+             * + " uvgpadd.city as city, uvgpadd.postal_code as postalcode, uvgpadd.landmark as landmark, " +
+             * " uvgpadd.area as area, uvgpadd.state as state, "
+             *
+             * // officeaddress uvgoadd +
+             * " uvgoadd.street as street, uvgoadd.address_line_1 as addressline1, uvgoadd.address_line_2 as addressline2, "
+             * + " uvgoadd.city as city, uvgoadd.postal_code as postalcode, uvgoadd.landmark as landmark, " +
+             * " uvgoadd.area as area, uvgoadd.state as state, "
+             *
+             * // bankdetails uvbd of customer new vehicle +
+             * " uvbd.loan_eligible_amount as eligibleAmount, uvbd.account_type as accountType, " +
+             * " uvbd.disbursal_type as disbursalType, uvbd.account_number as accountNumber, " +
+             * " uvbd.account_holder_name as accountHolderName, uvbd.bank_name as bankName, " +
+             * " uvbd.branch_name as branchName, uvbd.IFSC as IFSC, "
+             *
+             * // vehicledetails uvd of customer new vehicle +
+             * " uvd.vehicle_number as vehicleNumber, uvd.maker as accountType, " +
+             * " uvd.maker as maker, uvd.model as model, " + " uvd.color as color, uvd.mfg_year as mfgYear, " +
+             * " uvd.engine_number as engineNumber, uvd.chassis_number as chassisNumber, " +
+             * " uvd.insurance_company as insuranceCompany, uvd.insurance_policy as insurancePolicy, " +
+             * " uvd.insurance_expiry as insuranceExpiry, uvd.pollution_cert_expiry as pollutionCertExpiry, " +
+             * " uvd.registration as registration, uvd.live_km_reading as liveKmReading from m_apply_used_vehicle_loan cuv "
+             */
 
-                    // customer used vehicle completed
+            // customer used vehicle completed
 
-                    // join the customer new vehicle
-                    // + " from m_appuser au join m_apply_new_vehicle_loan cnv on cnv.customer_id = au.customer_id "
-                    + " join m_customer_details cd on cnv.customerdetails_id = cd.id "
-                    + " join m_vehicle_details vd on cnv.vehicledetails_id = vd.id "
-                    + " left join m_customer_guarantor cg on cnv.guarantordetails_id = cg.id "
-                    + " left join m_customer_bank_details bd on cnv.bankdetails_id = cd.id "
-
-                    + " left join m_address cadd on cd.communicationadd_id = cadd.id  "
-
-                    + " left join m_address padd on cd.permanentadd_id = padd.id "
-                    + " left join m_address oadd on cd.officeadd_id = oadd.id "
-
-                    + " left join m_address gcadd on cg.communicationadd_id = gcadd.id  "
-
-                    + "  left join m_address gpadd on cg.permanentadd_id = gpadd.id "
-                    + " left join m_address goadd on cg.officeadd_id = goadd.id ";
+            // join the customer new vehicle
+            // + " from m_appuser au join m_apply_new_vehicle_loan cnv on cnv.customer_id = au.customer_id "
 
             // join the customer used vehicle
             /*
@@ -215,6 +201,23 @@ public class CustomerVehicleLoanReadPlatformServiceImpl implements CustomerVehic
              *
              * // + " join m_customer_details cd on nv.customerdetails_id = cd.id ";
              */
+        }
+
+        public String schemaJoin() {
+            return " join m_customer_details cd on cnv.customerdetails_id = cd.id "
+                    + " join m_vehicle_details vd on cnv.vehicledetails_id = vd.id "
+                    + " left join m_customer_guarantor cg on cnv.guarantordetails_id = cg.id "
+                    + " left join m_customer_bank_details bd on cnv.bankdetails_id = bd.id "
+
+                    + " left join m_address cadd on cd.communicationadd_id = cadd.id  "
+
+                    + " left join m_address padd on cd.permanentadd_id = padd.id "
+                    + " left join m_address oadd on cd.officeadd_id = oadd.id "
+
+                    + " left join m_address gcadd on cg.communicationadd_id = gcadd.id  "
+
+                    + "  left join m_address gpadd on cg.permanentadd_id = gpadd.id "
+                    + " left join m_address goadd on cg.officeadd_id = goadd.id ";
         }
 
         @Override
@@ -315,9 +318,26 @@ public class CustomerVehicleLoanReadPlatformServiceImpl implements CustomerVehic
         this.context.authenticatedUser();
 
         final VehicleLoanMapper rm = new VehicleLoanMapper();
-        final String sql = "select " + rm.schema() + " order by cnv.customer_name";
+        final String sql = "select " + rm.schema() + " from m_apply_vehicle_loan cnv " + rm.schemaJoin() + " order by cnv.customer_name ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
+    @Override
+    @Cacheable(value = "VehicleLoanData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public VehicleLoanData retrieveVehicleLoanByUserId(final Long userId) {
+        try {
+            this.context.authenticatedUser();
+
+            final VehicleLoanMapper rm = new VehicleLoanMapper();
+            final String sql = "select au.id as id, au.customer_id as customerId, " + rm.schema()
+                    + " from  m_apply_vehicle_loan cnv left join m_appuser au  on cnv.customer_id = au.customer_id " + rm.schemaJoin()
+                    + " where cnv.customer_id=? order by cnv.customer_name";
+
+            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { userId });
+        } catch (final EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
 }

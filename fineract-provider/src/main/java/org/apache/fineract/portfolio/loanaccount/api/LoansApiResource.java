@@ -138,7 +138,7 @@ import org.apache.fineract.portfolio.rate.service.RateReadService;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountStatusType;
 import org.apache.fineract.vlms.customer.data.CustomerDetailsData;
-import org.apache.fineract.vlms.customer.service.CustomerVehicleLoanReadPlatformService;
+import org.apache.fineract.vlms.customer.service.VehicleLoanManagementReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -259,7 +259,7 @@ public class LoansApiResource {
     private final ConfigurationDomainService configurationDomainService;
     private final DefaultToApiJsonSerializer<GlimRepaymentTemplate> glimTemplateToApiJsonSerializer;
     private final GLIMAccountInfoReadPlatformService glimAccountInfoReadPlatformService;
-    private final CustomerVehicleLoanReadPlatformService customerVehicleLoanReadPlatformService;
+    private final VehicleLoanManagementReadPlatformService customerVehicleLoanReadPlatformService;
 
     @Autowired
     public LoansApiResource(final PlatformSecurityContext context, final LoanReadPlatformService loanReadPlatformService,
@@ -286,7 +286,7 @@ public class LoansApiResource {
             final ConfigurationDomainService configurationDomainService,
             final DefaultToApiJsonSerializer<GlimRepaymentTemplate> glimTemplateToApiJsonSerializer,
             final GLIMAccountInfoReadPlatformService glimAccountInfoReadPlatformService,
-            final CustomerVehicleLoanReadPlatformService customerVehicleLoanReadPlatformService,
+            final VehicleLoanManagementReadPlatformService customerVehicleLoanReadPlatformService,
             final DefaultToApiJsonSerializer<CustomerDetailsData> toCustomerApiJsonSerializer) {
         this.context = context;
         this.loanReadPlatformService = loanReadPlatformService;

@@ -40,8 +40,6 @@ import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantor;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantorRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoan;
 import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoanRepositoryWrapper;
-import org.apache.fineract.portfolio.loanaccount.domain.UsedVehicleLoan;
-import org.apache.fineract.portfolio.loanaccount.domain.UsedVehicleLoanRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetailsRepositoryWrapper;
 import org.apache.fineract.useradministration.domain.AppUser;
@@ -63,7 +61,6 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
     private final DocumentImageRepository documentImageRepository;
     private final BankDetailsRepositoryWrapper bankDetailsRepositoryWrapper;
     private final CustomerGuarantorRepositoryWrapper customerGuarantorRepositoryWrapper;
-    private final UsedVehicleLoanRepositoryWrapper usedVehicleLoanRepositoryWrapper;
     private final NewVehicleLoanRepositoryWrapper newVehicleLoanRepositoryWrapper;
     private final VehicleDetailsRepositoryWrapper vehicleDetailsRepositoryWrapper;
 
@@ -73,8 +70,7 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
             final AppUserRepositoryWrapper appUserRepositoryWrapper, final BankDetailsRepositoryWrapper bankDetailsRepositoryWrapper,
             final VehicleDetailsRepositoryWrapper vehicleDetailsRepositoryWrapper,
             final CustomerGuarantorRepositoryWrapper customerGuarantorRepositoryWrapper,
-            final UsedVehicleLoanRepositoryWrapper usedVehicleLoanRepositoryWrapper, final DocumentImageRepository documentImageRepository,
-            final NewVehicleLoanRepositoryWrapper newVehicleLoanRepositoryWrapper) {
+            final DocumentImageRepository documentImageRepository, final NewVehicleLoanRepositoryWrapper newVehicleLoanRepositoryWrapper) {
         this.staffRepositoryWrapper = staffRepositoryWrapper;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.contentRepositoryFactory = documentStoreFactory;
@@ -83,7 +79,6 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
         this.bankDetailsRepositoryWrapper = bankDetailsRepositoryWrapper;
         this.vehicleDetailsRepositoryWrapper = vehicleDetailsRepositoryWrapper;
         this.customerGuarantorRepositoryWrapper = customerGuarantorRepositoryWrapper;
-        this.usedVehicleLoanRepositoryWrapper = usedVehicleLoanRepositoryWrapper;
         this.documentImageRepository = documentImageRepository;
         this.newVehicleLoanRepositoryWrapper = newVehicleLoanRepositoryWrapper;
     }
@@ -154,10 +149,8 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
                 displayName = owner.getFirstname();
             } else if (EntityTypeForImages.ADHARPHOTO.toString().equals(entityType)
                     || EntityTypeForImages.GOVERNMENTDOCUMENT.toString().equals(entityType)
-                    || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityType)) {
-                UsedVehicleLoan owner = this.usedVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
-                displayName = owner.getName();
-            } else if (EntityTypeForImages.INVOICEIMAGE.toString().equalsIgnoreCase(entityType)) {
+                    || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityType)
+                    || EntityTypeForImages.INVOICEIMAGE.toString().equalsIgnoreCase(entityType)) {
                 NewVehicleLoan owner = this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
                 displayName = owner.getName();
             } else if (EntityTypeForImages.ENGINE.toString().equals(entityType) || EntityTypeForImages.CHASSIS.toString().equals(entityType)

@@ -19,6 +19,7 @@
 package org.apache.fineract.vlms.customer.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -38,7 +40,7 @@ import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSeria
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.vlms.customer.data.VehicleLoanData;
-import org.apache.fineract.vlms.customer.service.CustomerVehicleLoanReadPlatformService;
+import org.apache.fineract.vlms.customer.service.VehicleLoanManagementReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -49,7 +51,7 @@ import org.springframework.stereotype.Component;
 public class CustomerLoansApiResource {
 
     private final PlatformSecurityContext context;
-    private final CustomerVehicleLoanReadPlatformService readPlatformService;
+    private final VehicleLoanManagementReadPlatformService readPlatformService;
     private final DefaultToApiJsonSerializer<VehicleLoanData> toApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
@@ -57,7 +59,8 @@ public class CustomerLoansApiResource {
     private final String resourceNameForPermissions = "CUSTOMERS";
 
     @Autowired
-    public CustomerLoansApiResource(final PlatformSecurityContext context, final CustomerVehicleLoanReadPlatformService readPlatformService,
+    public CustomerLoansApiResource(final PlatformSecurityContext context,
+            final VehicleLoanManagementReadPlatformService readPlatformService,
             final DefaultToApiJsonSerializer<VehicleLoanData> toApiJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
@@ -72,8 +75,8 @@ public class CustomerLoansApiResource {
     @Path("allCustomerLoanDetails")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Retrieve Document_Type", description = "Returns the list of Vehicle Loan Data.\n" + "\n" + "Example Requests:\n"
-            + "\n" + "documents")
+    @Operation(summary = "Retrieve All Vehicle Loan Data", description = "Returns the list of Vehicle Loan Data.\n" + "\n"
+            + "Example Requests:\n" + "\n" + "documents")
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
                                                                               // @ArraySchema(schema =
                                                                               // @Schema(implementation =
@@ -84,6 +87,28 @@ public class CustomerLoansApiResource {
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
         final Collection<VehicleLoanData> vehicleLoanData = this.readPlatformService.retrieveAllCustomerVehicleLoan();
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiJsonSerializer.serialize(settings, vehicleLoanData, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
+    @Path("customerLoan/{userId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Vehicle Loan Data", description = "Returns the Vehicle Loan Data Based on UserId/CustomerId.\n" + "\n"
+            + "Example Requests:\n" + "\n" + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveVehicleLoanData(@Context final UriInfo uriInfo,
+            @PathParam("userId") @Parameter(description = "userId") final Long userId) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final VehicleLoanData vehicleLoanData = this.readPlatformService.retrieveVehicleLoanByUserId(userId);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, vehicleLoanData, RESPONSE_DATA_PARAMETERS);

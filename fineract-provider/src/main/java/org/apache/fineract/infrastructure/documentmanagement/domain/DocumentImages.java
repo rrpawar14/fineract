@@ -28,7 +28,6 @@ import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.portfolio.loanaccount.domain.BankDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantor;
 import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoan;
-import org.apache.fineract.portfolio.loanaccount.domain.UsedVehicleLoan;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnroll;
 import org.apache.fineract.vlms.fieldexecutive.domain.NewLoan;
 
@@ -58,10 +57,6 @@ public final class DocumentImages extends AbstractPersistableCustom {
     private NewVehicleLoan newVehicleImage;
 
     @OneToOne(optional = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "used_vehicle_id", nullable = true)
-    private UsedVehicleLoan usedVehicleImage;
-
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "feEnroll_id", nullable = true)
     private FEEnroll feEnroll;
 
@@ -71,13 +66,12 @@ public final class DocumentImages extends AbstractPersistableCustom {
 
     public DocumentImages(final String location, final String documentNumber, final StorageType storageType,
             final BankDetails bankDetailsImage, final CustomerGuarantor customerGuarantor, final NewVehicleLoan newVehicleImage,
-            final UsedVehicleLoan usedVehicleImage, final FEEnroll feEnroll, final NewLoan newLoan) {
+            final FEEnroll feEnroll, final NewLoan newLoan) {
         this.location = location;
         this.storageType = storageType.getValue();
         this.bankImage = bankDetailsImage;
         this.customerGuarantor = customerGuarantor;
         this.newVehicleImage = newVehicleImage;
-        this.usedVehicleImage = usedVehicleImage;
         this.feEnroll = feEnroll;
         this.newLoan = newLoan;
         this.documentNumber = documentNumber;

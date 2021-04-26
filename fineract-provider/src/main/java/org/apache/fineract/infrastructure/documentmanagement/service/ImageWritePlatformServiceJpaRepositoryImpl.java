@@ -42,10 +42,8 @@ import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantor;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantorRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantorRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoan;
+import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoanRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoanRepositoryWrapper;
-import org.apache.fineract.portfolio.loanaccount.domain.UsedVehicleLoan;
-import org.apache.fineract.portfolio.loanaccount.domain.UsedVehicleLoanRepository;
-import org.apache.fineract.portfolio.loanaccount.domain.UsedVehicleLoanRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetailsRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetailsRepositoryWrapper;
@@ -71,7 +69,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
     private final StaffRepositoryWrapper staffRepositoryWrapper;
     private final NewVehicleLoanRepositoryWrapper newVehicleLoanRepositoryWrapper;
     private final VehicleDetailsRepositoryWrapper vehicleDetailsRepositoryWrapper;
-    private final UsedVehicleLoanRepository usedVehicleLoanRepository;
+    private final NewVehicleLoanRepository usedVehicleLoanRepository;
     private final VehicleDetailsRepository vehicleDetailsRepository;
     private final CustomerGuarantorRepository customerGuarantorRepository;
     private final BankDetailsRepository bankDetailsRepository;
@@ -81,7 +79,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
     private final FEEnrollRepositoryWrapper feEnrollRepositoryWrapper;
     private final FEEnrollRepository feEnrollRepository;
     private final CustomerGuarantorRepositoryWrapper customerGuarantorRepositoryWrapper;
-    private final UsedVehicleLoanRepositoryWrapper usedVehicleLoanRepositoryWrapper;
+    private final NewVehicleLoanRepositoryWrapper usedVehicleLoanRepositoryWrapper;
     private final AppUserRepositoryWrapper appUserRepositoryWrapper;
     private final AppUserRepository appUserRepository;
     private final NewLoanRepository newLoanRepository;
@@ -91,16 +89,16 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
     public ImageWritePlatformServiceJpaRepositoryImpl(final ContentRepositoryFactory documentStoreFactory,
             final ClientRepositoryWrapper clientRepositoryWrapper, final ImageRepository imageRepository,
             StaffRepositoryWrapper staffRepositoryWrapper, final NewVehicleLoanRepositoryWrapper newVehicleLoanRepositoryWrapper,
-            final UsedVehicleLoanRepository usedVehicleLoanRepository, final VehicleDetailsRepository vehicleDetailsRepository,
+            final NewVehicleLoanRepository usedVehicleLoanRepository, final VehicleDetailsRepository vehicleDetailsRepository,
             final VehicleImageRepository vehicleImageRepository, DocumentImageRepository documentImageRepository,
             final CustomerGuarantorRepository customerGuarantorRepository, final BankDetailsRepository bankDetailsRepository,
             final BankDetailsRepositoryWrapper bankDetailsRepositoryWrapper,
             final VehicleDetailsRepositoryWrapper vehicleDetailsRepositoryWrapper,
             final CustomerGuarantorRepositoryWrapper customerGuarantorRepositoryWrapper,
-            final UsedVehicleLoanRepositoryWrapper usedVehicleLoanRepositoryWrapper,
-            final AppUserRepositoryWrapper appUserRepositoryWrapper, final AppUserRepository appUserRepository,
-            final FEEnrollRepositoryWrapper feEnrollRepositoryWrapper, final FEEnrollRepository feEnrollRepository,
-            final NewLoanRepository newLoanRepository, final NewLoanRepositoryWrapper newLoanRepositoryWrapper) {
+            final NewVehicleLoanRepositoryWrapper usedVehicleLoanRepositoryWrapper, final AppUserRepositoryWrapper appUserRepositoryWrapper,
+            final AppUserRepository appUserRepository, final FEEnrollRepositoryWrapper feEnrollRepositoryWrapper,
+            final FEEnrollRepository feEnrollRepository, final NewLoanRepository newLoanRepository,
+            final NewLoanRepositoryWrapper newLoanRepositoryWrapper) {
         this.contentRepositoryFactory = documentStoreFactory;
         this.clientRepositoryWrapper = clientRepositoryWrapper;
         this.imageRepository = imageRepository;
@@ -208,7 +206,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
         // CustomerImage, AdharPhoto, GovermentDocument, InvoiceImage, Engine, Chassis, Vehicle, GuarantorImage,
         // GuarantorDocument, Bank
         System.out.println("Object creation");
-        if (EntityTypeForImages.PROFILEIMAGE.toString().equals(entityName)) {
+        if (EntityTypeForImages.PROFILEIMAGE.toString().equals(entityName) || entityName.equals("CustomerImage")) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
             System.out.println("--PROFILEIMAGE--");
             AppUser appuser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(entityId);
@@ -220,7 +218,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
         /*
          * if (EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityName)) { // if
          * (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) { System.out.println("--CustomerImage--");
-         * UsedVehicleLoan usedVehicleLoan =
+         * NewVehicleLoan usedVehicleLoan =
          * this.usedVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId); // image =
          * usedVehicleLoan.getCustomerImage(); owner = usedVehicleLoan; // } }
          */
@@ -230,7 +228,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
             System.out.println("--AdharPhoto GovernmentDocument--");
-            UsedVehicleLoan usedVehicleLoan = this.usedVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+            NewVehicleLoan usedVehicleLoan = this.usedVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
             // documentImage = usedVehicleLoan.getDocumentImage();
             owner = usedVehicleLoan;
             // }
@@ -304,7 +302,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
     private CommandProcessingResult updateImage(String entityName, final Object owner, final String imageLocation, String documentNumber,
             final StorageType storageType) {
         System.out.println("documentnumberWrite2: " + documentNumber);
-        Image image = null; // NewVehicleLoan, UsedVehicleLoan, VehicleDetails, CustomerGuarantor, BankDetails
+        Image image = null; // NewVehicleLoan, NewVehicleLoan, VehicleDetails, CustomerGuarantor, BankDetails
         DocumentImages documentImage = null;
         VehicleImages vehicleImage = null;
         Long clientId = null;
@@ -337,30 +335,24 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             // documentImage = newVehicleLoan.getInvoiceImage();
             clientId = newVehicleLoan.getId(); // get the id of the table to make change in the specific table
             documentImage = createDocumentImage(documentImage, imageLocation, documentNumber, storageType, null, null, newVehicleLoan, null,
-                    null, null);
+                    null);
             this.documentImageRepository.saveAndFlush(documentImage);
             // newVehicleLoan.setImage(documentImage);
             // newVehicleLoan.setInvoiceImage(documentImage);
             this.newVehicleLoanRepositoryWrapper.save(newVehicleLoan);
-        } else if (owner instanceof UsedVehicleLoan) {
-            System.out.println("--UsedVehicleLoan--");
-            UsedVehicleLoan usedVehicleLoan = (UsedVehicleLoan) owner;
-            clientId = usedVehicleLoan.getId();
-            if (entityName.equals("CustomerImage")) {
-                System.out.println("--CustomerImage--");
-                // image = usedVehicleLoan.getCustomerImage(); // usedvehicle has customerimage
-                image = createImage(image, imageLocation, storageType, usedVehicleLoan, null);
-                // usedVehicleLoan.setCustomerImage(image);
-                this.usedVehicleLoanRepository.save(usedVehicleLoan);
-            } else {// usedvehicle has document
-                // documentImage = usedVehicleLoan.getDocumentImage();
-                documentImage = createDocumentImage(documentImage, imageLocation, documentNumber, storageType, null, null, null,
-                        usedVehicleLoan, null, null);
-                this.documentImageRepository.saveAndFlush(documentImage);
-                // usedVehicleLoan.setDocumentImage(documentImage);
-                this.usedVehicleLoanRepository.save(usedVehicleLoan);
-            }
-        } else if (owner instanceof VehicleDetails) {
+        } /*
+           * else if (owner instanceof NewVehicleLoan) { System.out.println("--NewVehicleLoan--"); NewVehicleLoan
+           * usedVehicleLoan = (NewVehicleLoan) owner; clientId = usedVehicleLoan.getId(); if
+           * (entityName.equals("CustomerImage")) { System.out.println("--CustomerImage--"); // image =
+           * usedVehicleLoan.getCustomerImage(); // usedvehicle has customerimage image = createImage(image,
+           * imageLocation, storageType, usedVehicleLoan, null); // usedVehicleLoan.setCustomerImage(image);
+           * this.usedVehicleLoanRepository.save(usedVehicleLoan); } /*else {// usedvehicle has document //
+           * documentImage = usedVehicleLoan.getDocumentImage(); documentImage = createDocumentImage(documentImage,
+           * imageLocation, documentNumber, storageType, null, null, null, usedVehicleLoan, null, null);
+           * this.documentImageRepository.saveAndFlush(documentImage); //
+           * usedVehicleLoan.setDocumentImage(documentImage); this.usedVehicleLoanRepository.save(usedVehicleLoan); }
+           */
+        else if (owner instanceof VehicleDetails) {
             System.out.println("--VehicleDetails--");
             VehicleDetails vehicleDetails = (VehicleDetails) owner;
             // vehicleImage = vehicleDetails.getImage();
@@ -385,7 +377,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 // documentImage = customerGuarantor.getDocumentImage();
                 System.out.println("--NotGuarantorImage--");
                 documentImage = createDocumentImage(documentImage, imageLocation, documentNumber, storageType, null, customerGuarantor,
-                        null, null, null, null);
+                        null, null, null);
                 // customerGuarantor.setDocumentImage(documentImage);
                 this.documentImageRepository.saveAndFlush(documentImage);
                 this.customerGuarantorRepository.save(customerGuarantor);
@@ -397,7 +389,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             clientId = bankDetails.getId();
             System.out.println("--clientId--:" + clientId);
             documentImage = createDocumentImage(documentImage, imageLocation, documentNumber, storageType, bankDetails, null, null, null,
-                    null, null);
+                    null);
             // bankDetails.setImage(documentImage);
             System.out.println("--setImage--" + bankDetails);
             this.documentImageRepository.saveAndFlush(documentImage);
@@ -410,7 +402,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             FEEnroll feEnroll = (FEEnroll) owner;
             clientId = feEnroll.getId();
 
-            documentImage = createDocumentImage(documentImage, imageLocation, documentNumber, storageType, null, null, null, null, feEnroll,
+            documentImage = createDocumentImage(documentImage, imageLocation, documentNumber, storageType, null, null, null, feEnroll,
                     null);
 
             this.documentImageRepository.saveAndFlush(documentImage);
@@ -423,8 +415,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             NewLoan newLoan = (NewLoan) owner;
             clientId = newLoan.getId();
 
-            documentImage = createDocumentImage(documentImage, imageLocation, documentNumber, storageType, null, null, null, null, null,
-                    newLoan);
+            documentImage = createDocumentImage(documentImage, imageLocation, documentNumber, storageType, null, null, null, null, newLoan);
 
             this.documentImageRepository.saveAndFlush(documentImage);
             System.out.println("--newLoanRepository--" + newLoan);
@@ -443,7 +434,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
         return new CommandProcessingResult(clientId);
     }
 
-    private Image createImage(Image image, final String imageLocation, final StorageType storageType, final UsedVehicleLoan usedVehicle,
+    private Image createImage(Image image, final String imageLocation, final StorageType storageType, final NewVehicleLoan usedVehicle,
             final CustomerGuarantor customerGuarantor) {
         if (image == null) {
             image = new Image(imageLocation, storageType, usedVehicle, customerGuarantor);
@@ -456,11 +447,11 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
 
     private DocumentImages createDocumentImage(DocumentImages documentImage, final String imageLocation, final String documentNumber,
             final StorageType storageType, final BankDetails bankDetails, final CustomerGuarantor customerGuarantor,
-            final NewVehicleLoan newVehicleImage, final UsedVehicleLoan usedVehicleImage, final FEEnroll feEnroll, final NewLoan newLoan) {
+            final NewVehicleLoan newVehicleImage, final FEEnroll feEnroll, final NewLoan newLoan) {
         if (documentImage == null) {
             System.out.println("documentnumberWrite3: " + documentNumber);
             documentImage = new DocumentImages(imageLocation, documentNumber, storageType, bankDetails, customerGuarantor, newVehicleImage,
-                    usedVehicleImage, feEnroll, newLoan);
+                    feEnroll, newLoan);
         } else {
             documentImage.setLocation(imageLocation);
             documentImage.setStorageType(storageType.getValue());

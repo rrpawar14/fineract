@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanaccount.domain;
+package org.apache.fineract.vlms.customer.service;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import java.util.Collection;
+import org.apache.fineract.vlms.customer.data.VehicleLoanData;
 
-public interface UsedVehicleLoanRepository extends JpaRepository<UsedVehicleLoan, Long>, JpaSpecificationExecutor<UsedVehicleLoan> {
+public interface VehicleLoanManagementReadPlatformService {
 
-    @Query("select usedVehicleLoan from UsedVehicleLoan usedVehicleLoan where usedVehicleLoan.id = :userid")
-    UsedVehicleLoan getLoanApplicationByuserId(@Param("userid") String userid);
+    Collection<VehicleLoanData> retrieveAllCustomerVehicleLoan();
+
+    VehicleLoanData retrieveVehicleLoanByUserId(final Long userId);
+
 }

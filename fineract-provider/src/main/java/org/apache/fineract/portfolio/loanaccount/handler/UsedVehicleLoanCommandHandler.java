@@ -43,7 +43,7 @@ public class UsedVehicleLoanCommandHandler implements NewCommandSourceHandler {
     @Override
     public CommandProcessingResult processCommand(final JsonCommand command) {
 
-        return this.writePlatformService.submitUsedVehicleLoanApplication(command);
+        return this.writePlatformService.submitNewVehicleLoanApplication(command);
     }
 
 }
