@@ -42,6 +42,7 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.apache.fineract.vlms.fieldexecutive.domain.DocumentsData;
 import org.apache.fineract.vlms.fieldexecutive.service.FEReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,7 @@ public class FELoansApiResource {
     private final PlatformSecurityContext context;
     private final FEReadPlatformService readPlatformService;
     private final DefaultToApiJsonSerializer<DocumentsData> toApiJsonSerializer;
+    private final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList("documents"));
@@ -63,11 +65,13 @@ public class FELoansApiResource {
 
     @Autowired
     public FELoansApiResource(final PlatformSecurityContext context, final FEReadPlatformService readPlatformService,
-            final DefaultToApiJsonSerializer<DocumentsData> toApiJsonSerializer, final ApiRequestParameterHelper apiRequestParameterHelper,
+            final DefaultToApiJsonSerializer<DocumentsData> toApiJsonSerializer,
+            final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer, final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
         this.readPlatformService = readPlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
+        this.toApiTaskJsonSerializer = toApiTaskJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
     }
@@ -186,6 +190,26 @@ public class FELoansApiResource {
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
         return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @GET
+    @Path("getTask")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Task", description = "Returns the list of Task.\n" + "\n" + "Example Requests:\n" + "\n" + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveTask(@Context final UriInfo uriInfo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final Collection<TaskData> documentsType = this.readPlatformService.retrieveAllTask();
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiTaskJsonSerializer.serialize(settings, documentsType, RESPONSE_DATA_PARAMETERS);
     }
 
 }
