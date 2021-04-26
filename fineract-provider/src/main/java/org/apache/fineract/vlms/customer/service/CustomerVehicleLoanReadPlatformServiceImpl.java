@@ -52,10 +52,11 @@ public class CustomerVehicleLoanReadPlatformServiceImpl implements CustomerVehic
     private static final class VehicleLoanMapper implements RowMapper<VehicleLoanData> {
 
         public String schema() {
-            return " au.id as id, au.customer_id as customerId, "
+            return // " au.id as id, au.customer_id as customerId, "
+            // " au.id as id, "
 
-                    // customer new vehicle
-                    + " cnv.customer_name as customerName,cnv.loan_type as loanType, cnv.vehicle_type as vehicleType, cnv.dealer as dealer, "
+            // customer new vehicle
+            " cnv.customer_name as customerName,cnv.loan_type as loanType, cnv.vehicle_type as vehicleType, cnv.dealer as dealer, "
                     + " cnv.invoice_number as invoicenumber, "
 
                     // customer details
@@ -108,7 +109,7 @@ public class CustomerVehicleLoanReadPlatformServiceImpl implements CustomerVehic
                     + " vd.engine_number as engineNumber, vd.chassis_number as chassisNumber, "
                     + " vd.insurance_company as insuranceCompany, vd.insurance_policy as insurancePolicy, "
                     + " vd.insurance_expiry as insuranceExpiry, vd.pollution_cert_expiry as pollutionCertExpiry, "
-                    + " vd.registration as registration, vd.live_km_reading as liveKmReading from m_appuser au "
+                    + " vd.registration as registration, vd.live_km_reading as liveKmReading from  m_apply_new_vehicle_loan cnv "
 
                     // customer new vehicle completed
 
@@ -176,7 +177,7 @@ public class CustomerVehicleLoanReadPlatformServiceImpl implements CustomerVehic
                     // customer used vehicle completed
 
                     // join the customer new vehicle
-                    + " join m_apply_new_vehicle_loan cnv on cnv.customer_id = au.customer_id "
+                    // + " from m_appuser au join m_apply_new_vehicle_loan cnv on cnv.customer_id = au.customer_id "
                     + " join m_customer_details cd on cnv.customerdetails_id = cd.id "
                     + " join m_vehicle_details vd on cnv.vehicledetails_id = vd.id "
                     + " left join m_customer_guarantor cg on cnv.guarantordetails_id = cg.id "
@@ -219,10 +220,10 @@ public class CustomerVehicleLoanReadPlatformServiceImpl implements CustomerVehic
         @Override
         public VehicleLoanData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
 
-            final Long id = rs.getLong("id");
-            final String customerId = rs.getString("customerId");
+            // final Long id = rs.getLong("id");
+            // final String customerId = rs.getString("customerId");
 
-            final Long detailsId = rs.getLong("id");
+            // final Long detailsId = rs.getLong("id");
             final String customerName = rs.getString("customerName");
             final String gender = rs.getString("gender");
 

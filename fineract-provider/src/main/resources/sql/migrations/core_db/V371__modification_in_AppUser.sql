@@ -27,6 +27,14 @@ ALTER TABLE m_appuser add column name VARCHAR(100) NULL after username;
 
 ALTER TABLE m_appuser ADD COLUMN image_id BIGINT(20) NULL;
 
+
+ ALTER table m_appuser
+ ADD customer_id BIGINT(100);
+
+ ALTER TABLE `m_appuser`
+ ADD INDEX `customer_id` (`customer_id`);
+
+
  ALTER TABLE m_appuser
  ADD CONSTRAINT fk_image_id
  FOREIGN KEY (image_id)
@@ -51,29 +59,29 @@ ENGINE=InnoDB
 AUTO_INCREMENT=1;
 
 CREATE TABLE `m_customer_guarantor` (
-	`id` INT(11) NOT NULL AUTO_INCREMENT,
-	`guarantor_name` VARCHAR(100) NULL DEFAULT 'NULL',
-	`mobile_number` BIGINT(20) NULL DEFAULT '0',
-	`gender` VARCHAR(100) NULL DEFAULT '0',
-	`dob` DATE NULL DEFAULT NULL,
-	`marital_status` VARCHAR(50) NULL DEFAULT '0',
-	`spouse_name` VARCHAR(100) NULL DEFAULT '0',
-	`profession` VARCHAR(50) NULL DEFAULT '0',
-	`applicant_type` VARCHAR(50) NULL DEFAULT '0',
-	`company_name` VARCHAR(50) NULL DEFAULT '0',
-	`net_income` BIGINT(20) NULL DEFAULT '0',
-	`salary_date` DATE NULL DEFAULT NULL,
-	`salary_type` VARCHAR(50) NULL DEFAULT NULL,
-	`communicationadd_id` BIGINT(11) NULL DEFAULT NULL,
-	`permanentadd_id` BIGINT(11) NULL DEFAULT NULL,
-	`officeadd_id` BIGINT(11) NULL DEFAULT NULL,
-	INDEX `id` (`id`),
-	INDEX `fk_guarantorcommunicationadd` (`communicationadd_id`),
-	INDEX `fk_guarantorpermenantadd` (`permanentadd_id`),
-	INDEX `fk_guarantorofficeadd` (`officeadd_id`),
-	CONSTRAINT `fk_guarantorcommunicationadd` FOREIGN KEY (`communicationadd_id`) REFERENCES `m_address` (`id`),
-	CONSTRAINT `fk_guarantorofficeadd` FOREIGN KEY (`officeadd_id`) REFERENCES `m_address` (`id`),
-	CONSTRAINT `fk_guarantorpermenantadd` FOREIGN KEY (`permanentadd_id`) REFERENCES `m_address` (`id`)
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `guarantor_name` VARCHAR(100) NULL DEFAULT 'NULL',
+    `mobile_number` BIGINT(20) NULL DEFAULT '0',
+    `gender` VARCHAR(100) NULL DEFAULT '0',
+    `dob` DATE NULL DEFAULT NULL,
+    `marital_status` VARCHAR(50) NULL DEFAULT '0',
+    `spouse_name` VARCHAR(100) NULL DEFAULT '0',
+    `profession` VARCHAR(50) NULL DEFAULT '0',
+    `applicant_type` VARCHAR(50) NULL DEFAULT '0',
+    `company_name` VARCHAR(50) NULL DEFAULT '0',
+    `net_income` BIGINT(20) NULL DEFAULT '0',
+    `salary_date` DATE NULL DEFAULT NULL,
+    `salary_type` VARCHAR(50) NULL DEFAULT NULL,
+    `communicationadd_id` BIGINT(11) NULL DEFAULT NULL,
+    `permanentadd_id` BIGINT(11) NULL DEFAULT NULL,
+    `officeadd_id` BIGINT(11) NULL DEFAULT NULL,
+    INDEX `id` (`id`),
+    INDEX `fk_guarantorcommunicationadd` (`communicationadd_id`),
+    INDEX `fk_guarantorpermenantadd` (`permanentadd_id`),
+    INDEX `fk_guarantorofficeadd` (`officeadd_id`),
+    CONSTRAINT `fk_guarantorcommunicationadd` FOREIGN KEY (`communicationadd_id`) REFERENCES `m_address` (`id`),
+    CONSTRAINT `fk_guarantorofficeadd` FOREIGN KEY (`officeadd_id`) REFERENCES `m_address` (`id`),
+    CONSTRAINT `fk_guarantorpermenantadd` FOREIGN KEY (`permanentadd_id`) REFERENCES `m_address` (`id`)
 )
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
@@ -165,20 +173,24 @@ CREATE TABLE `m_apply_new_vehicle_loan` (
     `vehicledetails_id` INT(50) NULL DEFAULT NULL,
     `guarantordetails_id` INT(50) NULL DEFAULT NULL,
     `bankdetails_id` INT(50) NULL DEFAULT NULL,
-     INDEX `id` (`id`),
+    `loan_type` VARCHAR(50) NULL DEFAULT NULL,
+    `customer_id` BIGINT(20) NULL DEFAULT NULL,
+    INDEX `id` (`id`),
     INDEX `FK_customer_details_id` (`customerdetails_id`),
     INDEX `FK_vehicle_details_id` (`vehicledetails_id`),
     INDEX `FK_guarantor_details_id` (`guarantordetails_id`),
     INDEX `FK_bank_details_id` (`bankdetails_id`),
+    INDEX `customer_id` (`customer_id`),
     CONSTRAINT `FK_bank_details_id` FOREIGN KEY (`bankdetails_id`) REFERENCES `m_customer_bank_details` (`id`),
     CONSTRAINT `FK_customer_details_id` FOREIGN KEY (`customerdetails_id`) REFERENCES `m_customer_details` (`id`),
     CONSTRAINT `FK_guarantor_details_id` FOREIGN KEY (`guarantordetails_id`) REFERENCES `m_customer_guarantor` (`id`),
-    CONSTRAINT `FK_vehicle_details_id` FOREIGN KEY (`vehicledetails_id`) REFERENCES `m_vehicle_details` (`id`)
+    CONSTRAINT `FK_vehicle_details_id` FOREIGN KEY (`vehicledetails_id`) REFERENCES `m_vehicle_details` (`id`),
+    CONSTRAINT `fK_used_vehicle_org` FOREIGN KEY (`customer_id`) REFERENCES `m_appuser` (`customer_id`)
 )
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
-AUTO_INCREMENT=1
 ;
+
 
 
 CREATE TABLE `m_apply_used_vehicle_loan` (

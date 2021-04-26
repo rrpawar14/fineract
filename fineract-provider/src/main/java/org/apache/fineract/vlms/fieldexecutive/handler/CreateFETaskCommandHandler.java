@@ -22,33 +22,26 @@ import org.apache.fineract.commands.annotation.CommandType;
 import org.apache.fineract.commands.handler.NewCommandSourceHandler;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.apache.fineract.portfolio.loanaccount.service.VehicleLoanManagementWritePlatformService;
+import org.apache.fineract.vlms.fieldexecutive.service.FEWritePlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@CommandType(entity = "NEWAPPLICANTLOAN", action = "CREATE")
-public class CreateNewApplicantLoanCommandHandler implements NewCommandSourceHandler {
+@CommandType(entity = "FETASK", action = "CREATE")
+public class CreateFETaskCommandHandler implements NewCommandSourceHandler {
 
-    // private final FEWritePlatformService writePlatformService;
-    private final VehicleLoanManagementWritePlatformService vehicleLoanManagementWritePlatformService;
-
-    /*
-     * @Autowired public CreateNewApplicantLoanCommandHandler(final FEWritePlatformService writePlatformService) {
-     * this.writePlatformService = writePlatformService; }
-     */
+    private final FEWritePlatformService writePlatformService;
 
     @Autowired
-    public CreateNewApplicantLoanCommandHandler(final VehicleLoanManagementWritePlatformService vehicleLoanManagementWritePlatformService) {
-        this.vehicleLoanManagementWritePlatformService = vehicleLoanManagementWritePlatformService;
+    public CreateFETaskCommandHandler(final FEWritePlatformService writePlatformService) {
+        this.writePlatformService = writePlatformService;
     }
 
     @Transactional
     @Override
     public CommandProcessingResult processCommand(final JsonCommand command) {
 
-        // return this.writePlatformService.createFEUsedVehicleLoan(command);
-        return this.vehicleLoanManagementWritePlatformService.submitNewVehicleLoanApplication(command);
+        return this.writePlatformService.createFETask(command);
     }
 }

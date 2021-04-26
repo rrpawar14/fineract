@@ -38,6 +38,8 @@ import org.apache.fineract.vlms.fieldexecutive.domain.FEEnroll;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnrollRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetailsRepository;
+import org.apache.fineract.vlms.fieldexecutive.domain.FETask;
+import org.apache.fineract.vlms.fieldexecutive.domain.FETaskRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FETransferDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.FETransferDetailsRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEUsedVehicleLoan;
@@ -72,6 +74,7 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
     private final FETransferDetailsRepository feTransferDetailsRepository;
     private final FEEnrollRepository feEnrollRepository;
     private final CodeCommandFromApiJsonDeserializer fromApiJsonDeserializer;
+    private final FETaskRepository feTaskRepository;
 
     @Autowired
     public FEWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context, final FEEnquiryRepository feEnquiryRepository,
@@ -80,7 +83,8 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
             final FEApplicantDetailsRepository feApplicantDetailsRepository,
             final FECoApplicantDetailsRepository feCoApplicantDetailsRepository,
             final FEVehicleDetailsRepository feVehicleDetailsRepository, final FELoanDetailsRepository feLoanDetailsRepository,
-            final FETransferDetailsRepository feTransferDetailsRepository, final FEEnrollRepository feEnrollRepository) {
+            final FETransferDetailsRepository feTransferDetailsRepository, final FEEnrollRepository feEnrollRepository,
+            final FETaskRepository feTaskRepository) {
         this.context = context;
         this.feEnquiryRepository = feEnquiryRepository;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
@@ -93,6 +97,7 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
         this.feLoanDetailsRepository = feLoanDetailsRepository;
         this.feTransferDetailsRepository = feTransferDetailsRepository;
         this.feEnrollRepository = feEnrollRepository;
+        this.feTaskRepository = feTaskRepository;
     }
 
     @Transactional
@@ -161,6 +166,32 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
             this.newLoanRepository.save(newLoan);
 
             return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(newLoan.getId()).build();
+            // .withEntityId(code.getId())
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException ee) {
+            Throwable throwable = ExceptionUtils.getRootCause(ee.getCause());
+            handleDataIntegrityIssues(command, throwable, ee);
+            return CommandProcessingResult.empty();
+        }
+
+    }
+
+    @Transactional
+    @Override
+    @CacheEvict(value = "fetask", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult createFETask(final JsonCommand command) {
+
+        try {
+            this.context.authenticatedUser();
+
+            // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+            final FETask feTask = FETask.fromJson(command);
+            this.feTaskRepository.save(feTask);
+
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(feTask.getId()).build();
             // .withEntityId(code.getId())
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);

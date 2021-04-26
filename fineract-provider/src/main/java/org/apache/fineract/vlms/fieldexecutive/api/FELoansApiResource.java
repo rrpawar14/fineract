@@ -173,4 +173,19 @@ public class FELoansApiResource {
         return this.toApiJsonSerializer.serialize(settings, documentsType, RESPONSE_DATA_PARAMETERS);
     }
 
+    @POST
+    @Path("task")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Create a Task", description = "Creates a Field Executive Task. FE created through api are always 'user defined' and so system defined is marked as false.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String createFETask(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().createFETask().withJson(apiRequestBodyAsJson).build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
 }

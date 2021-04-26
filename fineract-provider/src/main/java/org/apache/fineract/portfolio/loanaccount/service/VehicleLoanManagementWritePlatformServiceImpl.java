@@ -297,6 +297,9 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withEntityId(usedVehicleLoan.getId()) //
+                    .withCustomerDetailsId(customerDetailsObj.getId()) //
+                    .withVehicleDetailsId(vehicleDetailsObj.getId()) //
+                    .withCustomerGuarantorId(customerGuarantorObj.getId()).withBankDetailsId(bankDetailsObj.getId())//
                     // .withOfficeId(loan.getOfficeId()) //
                     // .withClientId(loan.getClientId()) //
                     // .withGroupId(loan.getGroupId()) //

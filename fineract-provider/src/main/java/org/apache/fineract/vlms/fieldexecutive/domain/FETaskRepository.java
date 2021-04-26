@@ -16,20 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.vlms.fieldexecutive.service;
+package org.apache.fineract.vlms.fieldexecutive.domain;
 
-import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface FEWritePlatformService {
+public interface FETaskRepository extends JpaRepository<FETask, Long>, JpaSpecificationExecutor<FETask> {
 
-    CommandProcessingResult createFEEnquiry(JsonCommand command);
-
-    CommandProcessingResult createFEEnroll(JsonCommand command);
-
-    CommandProcessingResult createNewLoan(JsonCommand command);
-
-    CommandProcessingResult createFEUsedVehicleLoan(JsonCommand command);
-
-    CommandProcessingResult createFETask(JsonCommand command);
 }

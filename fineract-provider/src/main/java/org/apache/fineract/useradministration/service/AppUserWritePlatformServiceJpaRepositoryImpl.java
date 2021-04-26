@@ -142,8 +142,10 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
              *
              * final Boolean sendPasswordToEmail = command.booleanObjectValueOfParameterNamed("sendPasswordToEmail");
              */
+            Long officeId = 1L;
+            final Office office = this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
             final Boolean sendPasswordToEmail = false;
-            AppUser appUser = AppUser.fromJson(command);
+            AppUser appUser = AppUser.fromJson(command, office);
             this.userDomainService.create(appUser, sendPasswordToEmail);
 
             // this.topicDomainService.subscribeUserToTopic(appUser);

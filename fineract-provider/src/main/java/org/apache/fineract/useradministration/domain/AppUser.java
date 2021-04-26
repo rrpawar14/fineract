@@ -166,7 +166,7 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
         return new AppUser(userOffice, user, allRoles, email, name, linkedStaff, passwordNeverExpire, isSelfServiceUser, clients);
     }
 
-    public static AppUser fromJson(final JsonCommand command) {
+    public static AppUser fromJson(final JsonCommand command, final Office office) {
         final String name = command.stringValueOfParameterNamed("name");
         final String mobileNo = command.stringValueOfParameterNamed("mobileNo");
         String password = command.stringValueOfParameterNamed("password");
@@ -174,11 +174,11 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
         boolean accountNonLocked = true;
         boolean credentialsNonExpired = true;
         boolean enabled = true;
-        return new AppUser(name, mobileNo, password, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled);
+        return new AppUser(name, mobileNo, password, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled, office);
     }
 
     public AppUser(final String name, final String mobileNo, final String password, final boolean accountNonExpired,
-            final boolean accountNonLocked, final boolean credentialsNonExpired, final boolean enabled) {
+            final boolean accountNonLocked, final boolean credentialsNonExpired, final boolean enabled, final Office office) {
         this.name = name;
         this.username = mobileNo;
         this.password = password;
@@ -186,6 +186,7 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
         this.accountNonLocked = accountNonLocked;
         this.credentialsNonExpired = credentialsNonExpired;
         this.enabled = enabled;
+        this.office = office;
     }
 
     protected AppUser() {

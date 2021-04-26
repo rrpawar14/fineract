@@ -957,6 +957,14 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createFETask() {
+        this.actionName = "CREATE";
+        this.entityName = "FETASK";
+        this.entityId = null;
+        this.href = "/task/template";
+        return this;
+    }
+
     public CommandWrapperBuilder updateLoanApplication(final Long loanId) {
         this.actionName = "UPDATE";
         this.entityName = "LOAN";
