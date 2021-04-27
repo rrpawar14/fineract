@@ -129,7 +129,7 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
 
             // createguarantordetails
 
-            Address add = Address.fromJson(command, "guarantor_commucationAddress");
+            Address add = Address.fromJson(command, "guarantor_communicationAddress");
             this.addressRepository.save(add);
             addressid = add.getId();
             Address guarantorCommunicationAdd = this.addressRepository.getOne(addressid);
@@ -167,7 +167,9 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             System.out.println("bankDetailsObj" + bankDetailsObj);
 
             final Long userId = command.longValueOfParameterNamed("userId");
+            System.out.println("userId" + userId);
             final AppUser appuser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
+            System.out.println("appuser" + appuser);
 
             final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj,
                     customerGuarantorObj, bankDetailsObj, appuser);
