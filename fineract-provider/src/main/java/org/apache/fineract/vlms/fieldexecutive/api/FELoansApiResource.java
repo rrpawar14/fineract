@@ -147,6 +147,8 @@ public class FELoansApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public String customerNewApplicantLoan(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
+        System.out.println("Applicant Loan data " + apiRequestBodyAsJson);
+
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .createNewApplicantLoan().withJson(apiRequestBodyAsJson) //
                 .build();
