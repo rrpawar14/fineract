@@ -166,8 +166,8 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             final BankDetails bankDetailsObj = this.bankDetailsRepository.getOne(bankDetailsId);
             System.out.println("bankDetailsObj" + bankDetailsObj);
 
-            final Long customerId = command.longValueOfParameterNamed("customerId");
-            final AppUser appuser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(customerId);
+            final Long userId = command.longValueOfParameterNamed("userId");
+            final AppUser appuser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
 
             final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj,
                     customerGuarantorObj, bankDetailsObj, appuser);

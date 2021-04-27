@@ -39,7 +39,7 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
     private String guarantorName;
 
     @Column(name = "mobile_number")
-    private Integer mobileNumber;
+    private String mobileNumber;
 
     @Column(name = "gender")
     private String gender;
@@ -96,7 +96,7 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
             final Address customerPermanentAdd, final Address customerOfficeAdd) {
 
         final String guarantorName = command.stringValueOfParameterNamed("guarantor_name");
-        final Integer mobileNumber = command.integerValueOfParameterNamed("guarantor_mobile_number");
+        final String mobileNumber = command.stringValueOfParameterNamed("guarantor_mobile_number");
         final String gender = command.stringValueOfParameterNamed("guarantor_gender");
         final Date dob = command.dateValueOfParameterNamed("guarantor_dob");
         final String maritalStatus = command.stringValueOfParameterNamed("guarantor_maritalStatus");
@@ -114,7 +114,7 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
 
     public CustomerGuarantor() {}
 
-    private CustomerGuarantor(final String guarantorName, final Integer mobileNumber, final String gender, final Date dob,
+    private CustomerGuarantor(final String guarantorName, final String mobileNumber, final String gender, final Date dob,
             final String maritalStatus, final String spouseName, final String profession, final String salaryType,
             final String applicantType, final Integer netIncome, final String companyName, final Date salaryDate,
             final Address customerCommunicationAdd, final Address customerPermanentAdd, final Address customerOfficeAdd) {
