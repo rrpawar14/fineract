@@ -93,7 +93,7 @@ public class CustomerLoansApiResource {
     }
 
     @GET
-    @Path("customerLoan/{userId}")
+    @Path("loanByUserId/{userId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Vehicle Loan Data", description = "Returns the Vehicle Loan Data Based on UserId/CustomerId.\n" + "\n"
@@ -103,12 +103,34 @@ public class CustomerLoansApiResource {
                                                                               // @Schema(implementation =
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
-    public String retrieveVehicleLoanData(@Context final UriInfo uriInfo,
+    public String retrieveVehicleLoanDataByUserId(@Context final UriInfo uriInfo,
             @PathParam("userId") @Parameter(description = "userId") final Long userId) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
         final VehicleLoanData vehicleLoanData = this.readPlatformService.retrieveVehicleLoanByUserId(userId);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiJsonSerializer.serialize(settings, vehicleLoanData, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
+    @Path("loanByLoanId/{loanId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Vehicle Loan Data", description = "Returns the Vehicle Loan Data Based on UserId/CustomerId.\n" + "\n"
+            + "Example Requests:\n" + "\n" + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveVehicleLoanDataByLoanId(@Context final UriInfo uriInfo,
+            @PathParam("loanId") @Parameter(description = "loanId") final Long loanId) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final VehicleLoanData vehicleLoanData = this.readPlatformService.retrieveVehicleLoanByLoanId(loanId);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, vehicleLoanData, RESPONSE_DATA_PARAMETERS);

@@ -24,6 +24,8 @@ package org.apache.fineract.vlms.customer.data;
 @SuppressWarnings("unused")
 public class VehicleLoanData {
 
+    private Long id;
+
     private String customerName;
 
     private String vehicleType;
@@ -38,16 +40,20 @@ public class VehicleLoanData {
 
     private BankDetailsData bankDetails;
 
-    public static VehicleLoanData instance(final String customerName, final String vehicleType, final String loanType,
+    public static VehicleLoanData instance(final Long id, final String customerName, final String vehicleType, final String loanType,
             final CustomerDetailsData customerDetails, final GuarantorDetailsData customerGuarantor,
             final VehicleDetailsData vehicleDetails, final BankDetailsData bankDetails) {
 
-        return new VehicleLoanData(customerName, vehicleType, loanType, customerDetails, customerGuarantor, vehicleDetails, bankDetails);
+        return new VehicleLoanData(id, customerName, vehicleType, loanType, customerDetails, customerGuarantor, vehicleDetails,
+                bankDetails);
     }
 
-    public VehicleLoanData(final String customerName, final String vehicleType, final String loanType,
+    public VehicleLoanData(final Long id, final String customerName, final String vehicleType, final String loanType,
             final CustomerDetailsData customerDetails, final GuarantorDetailsData customerGuarantor,
             final VehicleDetailsData vehicleDetails, final BankDetailsData bankDetails) {
+
+        this.id = id;
+
         this.customerName = customerName;
 
         this.vehicleType = vehicleType;

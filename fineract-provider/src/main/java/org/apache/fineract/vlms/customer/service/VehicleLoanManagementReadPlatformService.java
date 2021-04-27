@@ -27,4 +27,6 @@ public interface VehicleLoanManagementReadPlatformService {
 
     VehicleLoanData retrieveVehicleLoanByUserId(final Long userId);
 
+    VehicleLoanData retrieveVehicleLoanByLoanId(final Long loanId);
+
 }

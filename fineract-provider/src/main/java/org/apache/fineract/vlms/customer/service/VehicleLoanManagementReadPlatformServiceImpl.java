@@ -57,7 +57,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             // " au.id as id, "
 
             // customer new vehicle
-            " cnv.customer_name as customerName,cnv.loan_type as loanType, cnv.vehicle_type as vehicleType, cnv.dealer as dealer, "
+            " cnv.id as loanId, cnv.customer_name as customerName,cnv.loan_type as loanType, cnv.vehicle_type as vehicleType, cnv.dealer as dealer, "
                     + " cnv.invoice_number as invoicenumber, "
 
                     // customer details
@@ -227,6 +227,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             // final String customerId = rs.getString("customerId");
 
             // final Long detailsId = rs.getLong("id");
+            final Long loanId = rs.getLong("loanId");
             final String customerName = rs.getString("customerName");
             final String gender = rs.getString("gender");
 
@@ -306,7 +307,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             final String vehicleType = rs.getString("vehicleType");
             final String loanType = rs.getString("loanType");
 
-            return VehicleLoanData.instance(customerName, vehicleType, loanType, customerDetailsData, guarantorDetailsData,
+            return VehicleLoanData.instance(loanId, customerName, vehicleType, loanType, customerDetailsData, guarantorDetailsData,
                     vehicleDetailsData, bankDetailsData);
 
         }
@@ -335,6 +336,23 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
                     + " where cnv.customer_id=? order by cnv.customer_name";
 
             return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { userId });
+        } catch (final EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    @Cacheable(value = "VehicleLoanData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public VehicleLoanData retrieveVehicleLoanByLoanId(final Long loanId) {
+        try {
+            this.context.authenticatedUser();
+
+            final VehicleLoanMapper rm = new VehicleLoanMapper();
+            final String sql = "select au.id as id, au.customer_id as customerId, " + rm.schema()
+                    + " from  m_apply_vehicle_loan cnv left join m_appuser au  on cnv.customer_id = au.customer_id " + rm.schemaJoin()
+                    + " where cnv.id=? order by cnv.customer_name";
+
+            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { loanId });
         } catch (final EmptyResultDataAccessException e) {
             return null;
         }
