@@ -26,6 +26,7 @@ import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.useradministration.domain.AppUser;
+import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetails;
 
 @Entity
 @Table(name = "m_apply_vehicle_loan")
@@ -75,6 +76,10 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
     private CustomerGuarantor customerGuarantor;
 
     @OneToOne(optional = true)
+    @JoinColumn(name = "loandetails_id", nullable = true)
+    private FELoanDetails loanDetails;
+
+    @OneToOne(optional = true)
     @JoinColumn(name = "bankdetails_id", nullable = true)
     private BankDetails bankDetails;
 
@@ -85,8 +90,8 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
     public NewVehicleLoan() {}
 
     public static NewVehicleLoan fromJson(final JsonCommand command, final CustomerDetails customerDetails,
-            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final BankDetails bankDetails,
-            final AppUser appuser) {
+            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final FELoanDetails loanDetails,
+            final BankDetails bankDetails, final AppUser appuser) {
 
         final String customerName = command.stringValueOfParameterNamed("customerName");
         final String vehicleType = command.stringValueOfParameterNamed("vehicleType");
@@ -96,13 +101,13 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
         // final Integer image = command.stringValueOfParameterNamed("invoiceImageId");
 
         return new NewVehicleLoan(customerName, vehicleType, dealer, invoiceNumber, customerDetails, vehicleDetails, customerGuarantor,
-                bankDetails, appuser);
+                loanDetails, bankDetails, appuser);
 
     }
 
     private NewVehicleLoan(final String customerName, final String vehicleType, final String dealer, final String invoiceNumber,
             final CustomerDetails customerDetails, final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor,
-            final BankDetails bankDetails, final AppUser appuser) {
+            final FELoanDetails loanDetails, final BankDetails bankDetails, final AppUser appuser) {
         this.customerName = customerName;
         this.vehicleType = vehicleType;
         this.dealer = dealer;
@@ -110,6 +115,7 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
         this.customerDetails = customerDetails;
         this.vehicleDetails = vehicleDetails;
         this.customerGuarantor = customerGuarantor;
+        this.loanDetails = loanDetails;
         this.bankDetails = bankDetails;
         this.appuser = appuser;
     }

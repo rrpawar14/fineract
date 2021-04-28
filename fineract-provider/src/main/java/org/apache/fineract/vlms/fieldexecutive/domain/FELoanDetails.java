@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.vlms.fieldexecutive.domain;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,7 +27,7 @@ import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
 @Entity
-@Table(name = "m_fe_loan_details")
+@Table(name = "m_loan_details")
 public class FELoanDetails extends AbstractPersistableCustom {
 
     @Column(name = "loan_amount")
@@ -36,7 +37,7 @@ public class FELoanDetails extends AbstractPersistableCustom {
     private Integer loanTerm;
 
     @Column(name = "loan_interest")
-    private Integer loanInterest;
+    private BigDecimal loanInterest;
 
     @Column(name = "emi")
     private Integer emi;
@@ -57,7 +58,7 @@ public class FELoanDetails extends AbstractPersistableCustom {
 
         final Integer loanAmount = command.integerValueOfParameterNamed("loanAmount");
         final Integer loanTerm = command.integerValueOfParameterNamed("loanTerm");
-        final Integer loanInterest = command.integerValueOfParameterNamed("loanInterest");
+        final BigDecimal loanInterest = command.bigDecimalValueOfParameterNamed("loanInterest");
         final Integer emi = command.integerValueOfParameterNamed("emi");
         final Integer interestINR = command.integerValueOfParameterNamed("interestINR");
         final Date dueDate = command.dateValueOfParameterNamed("dueDate");
@@ -68,7 +69,7 @@ public class FELoanDetails extends AbstractPersistableCustom {
 
     public FELoanDetails() {}
 
-    private FELoanDetails(final Integer loanAmount, final Integer loanTerm, final Integer loanInterest, final Integer emi,
+    private FELoanDetails(final Integer loanAmount, final Integer loanTerm, final BigDecimal loanInterest, final Integer emi,
             final Integer interestINR, final Date dueDate) {
         this.loanAmount = loanAmount;
         this.loanTerm = loanTerm;
