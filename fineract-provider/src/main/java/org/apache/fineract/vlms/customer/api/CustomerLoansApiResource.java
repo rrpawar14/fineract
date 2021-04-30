@@ -108,7 +108,7 @@ public class CustomerLoansApiResource {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
-        final VehicleLoanData vehicleLoanData = this.readPlatformService.retrieveVehicleLoanByUserId(userId);
+        final Collection<VehicleLoanData> vehicleLoanData = this.readPlatformService.retrieveVehicleLoanByUserId(userId);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, vehicleLoanData, RESPONSE_DATA_PARAMETERS);

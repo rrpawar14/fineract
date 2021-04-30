@@ -326,7 +326,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
 
     @Override
     @Cacheable(value = "VehicleLoanData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
-    public VehicleLoanData retrieveVehicleLoanByUserId(final Long userId) {
+    public Collection<VehicleLoanData> retrieveVehicleLoanByUserId(final Long userId) {
         try {
             this.context.authenticatedUser();
 
@@ -335,7 +335,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
                     + " from  m_apply_vehicle_loan cnv left join m_appuser au  on cnv.customer_id = au.customer_id " + rm.schemaJoin()
                     + " where cnv.customer_id=? order by cnv.customer_name";
 
-            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { userId });
+            return this.jdbcTemplate.query(sql, rm, new Object[] { userId });
         } catch (final EmptyResultDataAccessException e) {
             return null;
         }

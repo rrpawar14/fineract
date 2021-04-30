@@ -182,21 +182,6 @@ AUTO_INCREMENT=1
 ;
 */
 
-CREATE TABLE `m_loan_details` (
-    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-    `loan_amount` BIGINT(20) NULL DEFAULT NULL,
-    `loan_term` BIGINT(20) NULL DEFAULT NULL,
-    `loan_interest` DECIMAL(10,0) NULL DEFAULT NULL,
-    `emi` BIGINT(20) NULL DEFAULT NULL,
-    `interest_inr` BIGINT(20) NULL DEFAULT NULL,
-    `due_date` DATE NULL DEFAULT NULL,
-    INDEX `id` (`id`)
-)
-COLLATE='latin1_swedish_ci'
-ENGINE=InnoDB
-AUTO_INCREMENT=1
-;
-
 CREATE TABLE `m_feEnroll` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `customer_name` VARCHAR(50) NULL DEFAULT NULL,

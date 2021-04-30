@@ -16,17 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.vlms.customer.service;
+package org.apache.fineract.vlms.branchmodule.domain;
 
-import java.util.Collection;
-import org.apache.fineract.vlms.customer.data.VehicleLoanData;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface VehicleLoanManagementReadPlatformService {
-
-    Collection<VehicleLoanData> retrieveAllCustomerVehicleLoan();
-
-    Collection<VehicleLoanData> retrieveVehicleLoanByUserId(final Long userId);
-
-    VehicleLoanData retrieveVehicleLoanByLoanId(final Long loanId);
+public interface InsuranceRepository extends JpaRepository<InsuranceDetails, Long>, JpaSpecificationExecutor<InsuranceDetails> {
 
 }

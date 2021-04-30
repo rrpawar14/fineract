@@ -930,6 +930,15 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createEmployee() {
+        this.actionName = "CREATE";
+        this.entityName = "EMPLOYEE";
+        this.entityId = null;
+        this.loanId = null;
+        this.href = "/loans/employee";
+        return this;
+    }
+
     public CommandWrapperBuilder createFEEnroll() {
         this.actionName = "CREATE";
         this.entityName = "FEENROLL";

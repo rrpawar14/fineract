@@ -16,17 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.vlms.customer.service;
+package org.apache.fineract.vlms.branchmodule.service;
 
-import java.util.Collection;
-import org.apache.fineract.vlms.customer.data.VehicleLoanData;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
-public interface VehicleLoanManagementReadPlatformService {
+public interface BranchModuleWritePlatformService {
 
-    Collection<VehicleLoanData> retrieveAllCustomerVehicleLoan();
-
-    Collection<VehicleLoanData> retrieveVehicleLoanByUserId(final Long userId);
-
-    VehicleLoanData retrieveVehicleLoanByLoanId(final Long loanId);
+    CommandProcessingResult createEmployee(JsonCommand command);
 
 }

@@ -228,9 +228,9 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
             System.out.println("--AdharPhoto GovernmentDocument--");
-            NewVehicleLoan usedVehicleLoan = this.usedVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+            NewVehicleLoan newVehicleLoan = this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
             // documentImage = usedVehicleLoan.getDocumentImage();
-            owner = usedVehicleLoan;
+            owner = newVehicleLoan;
             // }
         }
         if (EntityTypeForImages.INVOICEIMAGE.toString().equals(entityName)) {
@@ -274,7 +274,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
 
         else if (EntityTypeForImages.FENEWLOAN.toString().equals(entityName)) {
             System.out.println("--FENEWLOAN--");
-            NewLoan newLoan = this.newLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+            NewVehicleLoan newLoan = this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
             // documentImage = bankDetails.getImage();
             owner = newLoan;
         }
