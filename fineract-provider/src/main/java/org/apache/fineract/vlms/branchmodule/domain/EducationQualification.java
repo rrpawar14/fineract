@@ -18,6 +18,10 @@
  */
 package org.apache.fineract.vlms.branchmodule.domain;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -40,12 +44,41 @@ public class EducationQualification extends AbstractPersistableCustom {
     @Column(name = "passingyear")
     private String passingyear;
 
-    public static EducationQualification fromJson(final JsonCommand command) {
+    public static EducationQualification fromJson(final JsonCommand command, final String paramName) {
 
-        final String university = command.stringValueOfParameterNamed("university");
-        final String qualification = command.stringValueOfParameterNamed("qualification");
-        final String percentage = command.stringValueOfParameterNamed("percentage");
-        final String passingyear = command.stringValueOfParameterNamed("passingyear");
+        JsonObject addressObject = command.parsedJson().getAsJsonObject();
+        JsonElement guarantorObject = addressObject.get(paramName);
+        System.out.println("guarantorObject: " + guarantorObject);
+
+        if (!(guarantorObject instanceof JsonNull)) { // NOTE : "element instanceof JsonNull" is for handling empty
+                                                      // values (and
+            // assigning null) while fetching data from results
+            addressObject = (JsonObject) guarantorObject;
+        }
+
+        JsonObject borrowerInfos = null;
+        String borrowerInfo = null;
+
+        Gson gson = new Gson();
+
+        guarantorObject = addressObject.get("university");
+        final String university = gson.toJson(guarantorObject);
+
+        guarantorObject = addressObject.get("qualification");
+        final String qualification = gson.toJson(guarantorObject);
+
+        guarantorObject = addressObject.get("percentage");
+        final String percentage = gson.toJson(guarantorObject);
+
+        guarantorObject = addressObject.get("passingyear");
+        final String passingyear = gson.toJson(guarantorObject);
+
+        /*
+         * final String university = command.stringValueOfParameterNamed("university"); final String qualification =
+         * command.stringValueOfParameterNamed("qualification"); final String percentage =
+         * command.stringValueOfParameterNamed("percentage"); final String passingyear =
+         * command.stringValueOfParameterNamed("passingyear");
+         */
 
         return new EducationQualification(university, qualification, percentage, passingyear);
 

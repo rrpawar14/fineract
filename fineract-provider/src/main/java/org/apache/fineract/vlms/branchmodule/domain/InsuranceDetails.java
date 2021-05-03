@@ -18,6 +18,10 @@
  */
 package org.apache.fineract.vlms.branchmodule.domain;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -37,11 +41,40 @@ public class InsuranceDetails extends AbstractPersistableCustom {
     @Column(name = "policycoverage")
     private String policyCoverage;
 
-    public static InsuranceDetails fromJson(final JsonCommand command) {
+    public static InsuranceDetails fromJson(final JsonCommand command, final String paramName) {
 
-        final String policyNumber = command.stringValueOfParameterNamed("policyNumber");
-        final String companyCoverage = command.stringValueOfParameterNamed("companyCoverage");
-        final String policyCoverage = command.stringValueOfParameterNamed("policyCoverage");
+        JsonObject addressObject = command.parsedJson().getAsJsonObject();
+        JsonElement guarantorObject = addressObject.get(paramName);
+        System.out.println("InsuranceDetails: " + guarantorObject);
+
+        if (!(guarantorObject instanceof JsonNull)) { // NOTE : "element instanceof JsonNull" is for handling empty
+                                                      // values (and
+            // assigning null) while fetching data from results
+            addressObject = (JsonObject) guarantorObject;
+        }
+
+        JsonObject borrowerInfos = null;
+        String borrowerInfo = null;
+
+        Gson gson = new Gson();
+
+        guarantorObject = addressObject.get("policyNumber");
+        System.out.println("addressLine1: " + guarantorObject);
+        final String policyNumber = gson.toJson(guarantorObject);
+
+        guarantorObject = addressObject.get("companyCoverage");
+        System.out.println("addressLine2: " + guarantorObject);
+        final String companyCoverage = gson.toJson(guarantorObject);
+
+        guarantorObject = addressObject.get("policyCoverage");
+        System.out.println("addressLine2: " + guarantorObject);
+        final String policyCoverage = gson.toJson(guarantorObject);
+
+        /*
+         * final String policyNumber = command.stringValueOfParameterNamed("policyNumber"); final String companyCoverage
+         * = command.stringValueOfParameterNamed("companyCoverage"); final String policyCoverage =
+         * command.stringValueOfParameterNamed("policyCoverage");
+         */
 
         return new InsuranceDetails(policyNumber, companyCoverage, policyCoverage);
 

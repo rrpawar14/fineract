@@ -18,12 +18,17 @@
  */
 package org.apache.fineract.vlms.fieldexecutive.domain;
 
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
+import org.apache.fineract.infrastructure.core.service.DateUtils;
 
 @Entity
 @Table(name = "m_fe_task")
@@ -70,6 +75,64 @@ public class FETask extends AbstractPersistableCustom {
         this.dueDate = dueDate;
         this.assignTo = assignTo;
         this.description = description;
+    }
+
+    public Map<String, Object> update(final JsonCommand command) {
+
+        final Map<String, Object> actualChanges = new LinkedHashMap<>(1);
+
+        final String taskTypeParamName = "taskType";
+        if (command.isChangeInStringParameterNamed(taskTypeParamName, this.taskType)) {
+            final String newValue = command.stringValueOfParameterNamed(taskTypeParamName);
+            actualChanges.put(taskTypeParamName, newValue);
+            this.taskType = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String customerRegNoParamName = "customerRegNo";
+        if (command.isChangeInStringParameterNamed(customerRegNoParamName, this.customerRegNo)) {
+            final String newValue = command.stringValueOfParameterNamed(customerRegNoParamName);
+            actualChanges.put(customerRegNoParamName, newValue);
+            this.customerRegNo = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String vehicleNumberParamName = "vehicleNumber";
+        if (command.isChangeInStringParameterNamed(vehicleNumberParamName, this.vehicleNumber)) {
+            final String newValue = command.stringValueOfParameterNamed(vehicleNumberParamName);
+            actualChanges.put(vehicleNumberParamName, newValue);
+            this.vehicleNumber = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String dateFormatAsInput = command.dateFormat();
+        final String localeAsInput = command.locale();
+
+        final String dueDateParamName = "dueDate";
+        final String localeParamName = "locale";
+        final String dateFormatParamName = "dateFormat";
+        if (command.isChangeInDateParameterNamed(dueDateParamName, this.dueDate)) {
+            final String valueAsInput = command.stringValueOfParameterNamed(dueDateParamName);
+            actualChanges.put(dueDateParamName, valueAsInput);
+            actualChanges.put(dateFormatParamName, dateFormatAsInput);
+            actualChanges.put(localeParamName, localeAsInput);
+
+            final LocalDate newValue = command.localDateValueOfParameterNamed(dueDateParamName);
+            this.dueDate = Date.from(newValue.atStartOfDay(DateUtils.getDateTimeZoneOfTenant()).toInstant());
+        }
+
+        final String assignToParamName = "assignTo";
+        if (command.isChangeInStringParameterNamed(assignToParamName, this.assignTo)) {
+            final String newValue = command.stringValueOfParameterNamed(assignToParamName);
+            actualChanges.put(assignToParamName, newValue);
+            this.assignTo = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String descriptionParamName = "description";
+        if (command.isChangeInStringParameterNamed(descriptionParamName, this.description)) {
+            final String newValue = command.stringValueOfParameterNamed(descriptionParamName);
+            actualChanges.put(descriptionParamName, newValue);
+            this.description = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        return actualChanges;
     }
 
 }

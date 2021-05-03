@@ -128,22 +128,22 @@ public class BranchModuleWritePlatformServiceImpl implements BranchModuleWritePl
             Address permanentAdd = Address.fromJson(command, "employee_permanentAddress");
             this.addressRepository.save(permanentAdd);
 
-            final InsuranceDetails insuranceDetails = InsuranceDetails.fromJson(command);
+            final InsuranceDetails insuranceDetails = InsuranceDetails.fromJson(command, "general_insurance");
             this.insuranceRepository.save(insuranceDetails);
 
-            final InsuranceDetails accidentalInsuranceDetails = InsuranceDetails.fromJson(command);
+            final InsuranceDetails accidentalInsuranceDetails = InsuranceDetails.fromJson(command, "accidental_insurance");
             this.insuranceRepository.save(accidentalInsuranceDetails);
 
-            final EducationQualification schoolQualification = EducationQualification.fromJson(command);
+            final EducationQualification schoolQualification = EducationQualification.fromJson(command, "school_qualification");
             this.educationQualificationRepository.save(schoolQualification);
 
-            final EducationQualification collegeQualification = EducationQualification.fromJson(command);
+            final EducationQualification collegeQualification = EducationQualification.fromJson(command, "college_qualification");
             this.educationQualificationRepository.save(collegeQualification);
 
-            final EducationQualification graduateQualification = EducationQualification.fromJson(command);
+            final EducationQualification graduateQualification = EducationQualification.fromJson(command, "graduate_qualification");
             this.educationQualificationRepository.save(graduateQualification);
 
-            final EducationQualification postGraduateQualification = EducationQualification.fromJson(command);
+            final EducationQualification postGraduateQualification = EducationQualification.fromJson(command, "postgraduate_qualification");
             this.educationQualificationRepository.save(postGraduateQualification);
 
             final Employee employee = Employee.fromJson(command, customerAdd, permanentAdd, bankDetails, insuranceDetails,

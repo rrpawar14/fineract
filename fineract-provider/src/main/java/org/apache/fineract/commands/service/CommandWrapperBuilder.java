@@ -974,6 +974,22 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder editFETask(Long taskId) {
+        this.actionName = "EDIT";
+        this.entityName = "FETASK";
+        this.entityId = taskId;
+        this.href = "/task/template";
+        return this;
+    }
+
+    public CommandWrapperBuilder deleteFETask(Long taskId) {
+        this.actionName = "DELETE";
+        this.entityName = "FETASK";
+        this.entityId = taskId;
+        this.href = "/task/template";
+        return this;
+    }
+
     public CommandWrapperBuilder updateLoanApplication(final Long loanId) {
         this.actionName = "UPDATE";
         this.entityName = "LOAN";

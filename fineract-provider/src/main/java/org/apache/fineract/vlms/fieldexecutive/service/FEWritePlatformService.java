@@ -32,4 +32,8 @@ public interface FEWritePlatformService {
     CommandProcessingResult createFEUsedVehicleLoan(JsonCommand command);
 
     CommandProcessingResult createFETask(JsonCommand command);
+
+    CommandProcessingResult editFETask(Long taskId, JsonCommand command);
+
+    CommandProcessingResult deleteFETask(Long taskId, JsonCommand command);
 }

@@ -28,7 +28,7 @@ COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 ;
 
-CREATE TABLE `m_insurance_details` (
+CREATE TABLE `m_insurancedetails` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `policynumber` VARCHAR(50) NOT NULL DEFAULT '0',
     `companycoverage` VARCHAR(50) NOT NULL DEFAULT '0',
@@ -79,11 +79,11 @@ CREATE TABLE `m_employee` (
     INDEX `fk_collegequalification_org` (`collegequalification_id`),
     INDEX `fk_graduatequalification_org` (`graduatequalification_id`),
     INDEX `fk_postgraduatequalification_org` (`postgraduatequalification_id`),
-    CONSTRAINT `fk_accidentalinsurance_org` FOREIGN KEY (`accidentalinsurancedetails_id`) REFERENCES `m_insurance_details` (`id`),
+    CONSTRAINT `fk_accidentalinsurance_org` FOREIGN KEY (`accidentalinsurancedetails_id`) REFERENCES `m_insurancedetails` (`id`),
     CONSTRAINT `fk_bankdetails_org` FOREIGN KEY (`bankdetails_id`) REFERENCES `m_customer_bank_details` (`id`),
     CONSTRAINT `fk_collegequalification_org` FOREIGN KEY (`collegequalification_id`) REFERENCES `m_education_qualification` (`id`),
     CONSTRAINT `fk_commaddress_org` FOREIGN KEY (`communicationadd_id`) REFERENCES `m_address` (`id`),
-    CONSTRAINT `fk_generalinsurance_org` FOREIGN KEY (`insurancedetails_id`) REFERENCES `m_insurance_details` (`id`),
+    CONSTRAINT `fk_generalinsurance_org` FOREIGN KEY (`insurancedetails_id`) REFERENCES `m_insurancedetails` (`id`),
     CONSTRAINT `fk_graduatequalification_org` FOREIGN KEY (`graduatequalification_id`) REFERENCES `m_education_qualification` (`id`),
     CONSTRAINT `fk_permanentaddress_org` FOREIGN KEY (`permanentadd_id`) REFERENCES `m_address` (`id`),
     CONSTRAINT `fk_postgraduatequalification_org` FOREIGN KEY (`postgraduatequalification_id`) REFERENCES `m_education_qualification` (`id`),
@@ -92,3 +92,7 @@ CREATE TABLE `m_employee` (
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 ;
+
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'CREATE_EMPLOYEE', 'EMPLOYEE', 'CREATE', 0);
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'EDIT_FETASK', 'FETASK', 'EDIT', 0);
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'DELETE_FETASK', 'FETASK', 'DELETE', 0);

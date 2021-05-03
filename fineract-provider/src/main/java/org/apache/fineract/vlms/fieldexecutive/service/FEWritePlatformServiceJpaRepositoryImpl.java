@@ -18,8 +18,10 @@
  */
 package org.apache.fineract.vlms.fieldexecutive.service;
 
+import java.util.Map;
 import javax.persistence.PersistenceException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.fineract.infrastructure.codes.exception.CodeNotFoundException;
 import org.apache.fineract.infrastructure.codes.serialization.CodeCommandFromApiJsonDeserializer;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
@@ -201,6 +203,82 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
             handleDataIntegrityIssues(command, throwable, ee);
             return CommandProcessingResult.empty();
         }
+
+    }
+
+    @Transactional
+    @Override
+    @CacheEvict(value = "fetask", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult editFETask(final Long taskId, final JsonCommand command) {
+
+        try {
+            this.context.authenticatedUser();
+
+            // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+            /*
+             * final Code code = retrieveCodeBy(codeId); final Map<String, Object> changes = code.update(command);
+             */
+
+            final FETask feTask = retrieveTaskBy(taskId);
+            final Map<String, Object> changes = feTask.update(command);
+
+            if (!changes.isEmpty()) {
+                this.feTaskRepository.save(feTask);
+            }
+
+            /*
+             * final FETask feTask = FETask.fromJson(command); this.feTaskRepository.save(feTask);
+             */
+
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(taskId).build();
+            // .withEntityId(code.getId())
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException ee) {
+            Throwable throwable = ExceptionUtils.getRootCause(ee.getCause());
+            handleDataIntegrityIssues(command, throwable, ee);
+            return CommandProcessingResult.empty();
+        }
+
+    }
+
+    private FETask retrieveTaskBy(final Long taskId) {
+        return this.feTaskRepository.findById(taskId).orElseThrow(() -> new CodeNotFoundException(taskId.toString()));
+    }
+
+    @Transactional
+    @Override
+    @CacheEvict(value = "fetask", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult deleteFETask(Long taskId, final JsonCommand command) {
+
+        this.context.authenticatedUser();
+
+        // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+        final FETask feTask = retrieveTaskBy(taskId);
+
+        try {
+            this.feTaskRepository.delete(feTask);
+            this.feTaskRepository.flush();
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            throw new PlatformDataIntegrityException("error.msg.cund.unknown.data.integrity.issue",
+                    "Unknown data integrity issue with resource: " + dve.getMostSpecificCause(), dve);
+        }
+
+        // return new
+        // CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(feTask.getId()).build();
+
+        return new CommandProcessingResultBuilder().withEntityId(taskId).build();
+
+        // .withEntityId(code.getId())
+        /*
+         * } catch (final JpaSystemException | DataIntegrityViolationException dve) { handleDataIntegrityIssues(command,
+         * dve.getMostSpecificCause(), dve); return CommandProcessingResult.empty(); } catch (final PersistenceException
+         * ee) { Throwable throwable = ExceptionUtils.getRootCause(ee.getCause()); handleDataIntegrityIssues(command,
+         * throwable, ee); return CommandProcessingResult.empty(); }
+         */
 
     }
 
