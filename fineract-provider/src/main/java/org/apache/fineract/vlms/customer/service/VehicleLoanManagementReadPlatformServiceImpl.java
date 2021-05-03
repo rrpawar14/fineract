@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
+import org.apache.fineract.infrastructure.codes.data.CodeData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
@@ -341,6 +342,23 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
         }
     }
 
+    private static final class MobileNumberMapper implements RowMapper<CodeData> {
+
+        public String schema() {
+            return " au.id as id, au.username as mobileNo, au.enabled as enabled ";
+        }
+
+        @Override
+        public CodeData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final String mobileNumber = rs.getString("mobileNo");
+            final boolean enabled = rs.getBoolean("enabled");
+
+            return CodeData.instance(id, mobileNumber, enabled);
+        }
+    }
+
     @Override
     @Cacheable(value = "VehicleLoanData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
     public VehicleLoanData retrieveVehicleLoanByLoanId(final Long loanId) {
@@ -353,6 +371,21 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
                     + " where cnv.id=? order by cnv.customer_name";
 
             return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { loanId });
+        } catch (final EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    @Cacheable(value = "VehicleLoanData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public CodeData checkMobileNumberStatus(final Long mobileNo) {
+        try {
+            this.context.authenticatedUser();
+
+            final MobileNumberMapper rm = new MobileNumberMapper();
+            final String sql = "select " + rm.schema() + " from m_appuser au where username = ?";
+
+            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { mobileNo });
         } catch (final EmptyResultDataAccessException e) {
             return null;
         }

@@ -38,6 +38,9 @@ public final class Image extends AbstractPersistableCustom {
     @Column(name = "storage_type_enum")
     private Integer storageType;
 
+    @Column(name = "entity_name")
+    private String entityName;
+
     @OneToOne(optional = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_image", nullable = true)
     private NewVehicleLoan customerImage;
@@ -52,12 +55,13 @@ public final class Image extends AbstractPersistableCustom {
      * @JoinColumn(name = "profile_image", nullable = true) private AppUser appUser;
      */
 
-    public Image(final String location, final StorageType storageType, final NewVehicleLoan customerImage,
+    public Image(final String location, final String entityName, final StorageType storageType, final NewVehicleLoan customerImage,
             final CustomerGuarantor guarantorImage) {
         this.location = location;
         this.storageType = storageType.getValue();
         this.customerImage = customerImage;
         this.guarantorImage = guarantorImage;
+        this.entityName = entityName;
         // this.appUser = appUser;
     }
 

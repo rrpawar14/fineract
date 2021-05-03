@@ -41,6 +41,9 @@ public final class DocumentImages extends AbstractPersistableCustom {
     @Column(name = "storage_type_enum")
     private Integer storageType;
 
+    @Column(name = "entity_name")
+    private String entityName;
+
     @Column(name = "document_number")
     private String documentNumber;
 
@@ -64,10 +67,11 @@ public final class DocumentImages extends AbstractPersistableCustom {
     @JoinColumn(name = "newLoan_id", nullable = true)
     private NewLoan newLoan;
 
-    public DocumentImages(final String location, final String documentNumber, final StorageType storageType,
+    public DocumentImages(final String location, final String entityName, final String documentNumber, final StorageType storageType,
             final BankDetails bankDetailsImage, final CustomerGuarantor customerGuarantor, final NewVehicleLoan newVehicleImage,
             final FEEnroll feEnroll, final NewLoan newLoan) {
         this.location = location;
+        this.entityName = entityName;
         this.storageType = storageType.getValue();
         this.bankImage = bankDetailsImage;
         this.customerGuarantor = customerGuarantor;

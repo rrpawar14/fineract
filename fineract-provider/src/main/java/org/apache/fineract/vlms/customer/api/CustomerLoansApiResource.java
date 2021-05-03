@@ -35,6 +35,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
+import org.apache.fineract.infrastructure.codes.data.CodeData;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
@@ -53,6 +54,7 @@ public class CustomerLoansApiResource {
     private final PlatformSecurityContext context;
     private final VehicleLoanManagementReadPlatformService readPlatformService;
     private final DefaultToApiJsonSerializer<VehicleLoanData> toApiJsonSerializer;
+    private final DefaultToApiJsonSerializer<CodeData> toCodeDataApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList("customers"));
@@ -62,13 +64,37 @@ public class CustomerLoansApiResource {
     public CustomerLoansApiResource(final PlatformSecurityContext context,
             final VehicleLoanManagementReadPlatformService readPlatformService,
             final DefaultToApiJsonSerializer<VehicleLoanData> toApiJsonSerializer,
+            final DefaultToApiJsonSerializer<CodeData> toCodeDataApiJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
         this.readPlatformService = readPlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
+        this.toCodeDataApiJsonSerializer = toCodeDataApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
+    }
+
+    @GET
+    @Path("mobileNumber/{mobileNo}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve All Vehicle Loan Data", description = "Returns the list of Vehicle Loan Data.\n" + "\n"
+            + "Example Requests:\n" + "\n" + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveVehicleLoanData(@Context final UriInfo uriInfo,
+            @PathParam("mobileNo") @Parameter(description = "mobileNo") final Long mobileNo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final CodeData mobileNumberStatus = this.readPlatformService.checkMobileNumberStatus(mobileNo);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toCodeDataApiJsonSerializer.serialize(settings, mobileNumberStatus, RESPONSE_DATA_PARAMETERS);
     }
 
     @GET

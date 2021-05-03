@@ -34,6 +34,9 @@ public final class VehicleImages extends AbstractPersistableCustom {
     @Column(name = "location", length = 500)
     private String location;
 
+    @Column(name = "entity_name")
+    private String entityName;
+
     @Column(name = "storage_type_enum")
     private Integer storageType;
 
@@ -41,8 +44,10 @@ public final class VehicleImages extends AbstractPersistableCustom {
     @JoinColumn(name = "vehicle_id", nullable = true)
     private VehicleDetails vehicleDetails;
 
-    public VehicleImages(final String location, final StorageType storageType, final VehicleDetails vehicleDetails) {
+    public VehicleImages(final String location, final String entityName, final StorageType storageType,
+            final VehicleDetails vehicleDetails) {
         this.location = location;
+        this.entityName = entityName;
         this.storageType = storageType.getValue();
         this.vehicleDetails = vehicleDetails;
     }

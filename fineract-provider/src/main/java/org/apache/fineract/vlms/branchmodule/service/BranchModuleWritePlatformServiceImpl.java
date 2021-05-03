@@ -122,10 +122,10 @@ public class BranchModuleWritePlatformServiceImpl implements BranchModuleWritePl
             System.out.println("bankDetails" + bankDetails);
             this.bankDetailsRepository.save(bankDetails);
 
-            Address customerAdd = Address.fromJson(command, "applicant_communicationAddress");
+            Address customerAdd = Address.fromJson(command, "employee_communicationAddress");
             this.addressRepository.save(customerAdd);
 
-            Address permanentAdd = Address.fromJson(command, "applicant_permanentAddress");
+            Address permanentAdd = Address.fromJson(command, "employee_permanentAddress");
             this.addressRepository.save(permanentAdd);
 
             final InsuranceDetails insuranceDetails = InsuranceDetails.fromJson(command);
