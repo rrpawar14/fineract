@@ -24,6 +24,8 @@ package org.apache.fineract.vlms.customer.data;
 @SuppressWarnings("unused")
 public class AddressData {
 
+    private final Long id;
+
     private final String addressLine1;
 
     private final String addressLine2;
@@ -38,14 +40,15 @@ public class AddressData {
 
     private final String state;
 
-    public static AddressData instance(final String addressLine1, final String addressLine2, final String city, final String postalCode,
-            final String landmark, final String area, final String state) {
+    public static AddressData instance(final Long id, final String addressLine1, final String addressLine2, final String city,
+            final String postalCode, final String landmark, final String area, final String state) {
 
-        return new AddressData(addressLine1, addressLine2, city, postalCode, landmark, area, state);
+        return new AddressData(id, addressLine1, addressLine2, city, postalCode, landmark, area, state);
     }
 
-    public AddressData(final String addressLine1, final String addressLine2, final String city, final String postalCode,
+    public AddressData(final Long id, final String addressLine1, final String addressLine2, final String city, final String postalCode,
             final String landmark, final String area, final String state) {
+        this.id = id;
         this.addressLine1 = addressLine1;
         this.addressLine2 = addressLine2;
         this.city = city;

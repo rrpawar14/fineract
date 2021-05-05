@@ -25,7 +25,7 @@ import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
 @Entity
-@Table(name = "m_feEnquiry")
+@Table(name = "m_customerloanenquiry")
 public class FEEnquiry extends AbstractPersistableCustom {
 
     @Column(name = "mobile_number", nullable = false, length = 100)

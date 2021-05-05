@@ -230,6 +230,7 @@ CREATE TABLE `m_fe_task` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `taskType` VARCHAR(50) NULL DEFAULT NULL,
     `customer_reg_no` VARCHAR(50) NULL DEFAULT NULL,
+    `customer_mobile_no` VARCHAR(50) NULL DEFAULT NULL,
     `vehicle_number` VARCHAR(50) NULL DEFAULT NULL,
     `due_date` DATE NULL DEFAULT NULL,
     `assign_to` VARCHAR(50) NULL DEFAULT NULL,

@@ -26,6 +26,8 @@ import java.time.LocalDate;
 @SuppressWarnings("unused")
 public class GuarantorDetailsData {
 
+    private final Long id;
+
     private final String guarantorName;
 
     private final String mobileNumber;
@@ -46,17 +48,18 @@ public class GuarantorDetailsData {
 
     private final AddressData officeAdd;
 
-    public static GuarantorDetailsData instance(final String name, final String mobileNumber, final String gender, final LocalDate dob,
-            final String maritalStatus, final String spouseName, final String profession, final AddressData communicationAdd,
-            final AddressData permanentAdd, final AddressData officeAdd) {
+    public static GuarantorDetailsData instance(final Long id, final String name, final String mobileNumber, final String gender,
+            final LocalDate dob, final String maritalStatus, final String spouseName, final String profession,
+            final AddressData communicationAdd, final AddressData permanentAdd, final AddressData officeAdd) {
 
-        return new GuarantorDetailsData(name, mobileNumber, gender, dob, maritalStatus, spouseName, profession, communicationAdd,
+        return new GuarantorDetailsData(id, name, mobileNumber, gender, dob, maritalStatus, spouseName, profession, communicationAdd,
                 permanentAdd, officeAdd);
     }
 
-    public GuarantorDetailsData(final String name, final String mobileNumber, final String gender, final LocalDate dob,
+    public GuarantorDetailsData(final Long id, final String name, final String mobileNumber, final String gender, final LocalDate dob,
             final String maritalStatus, final String spouseName, final String profession, final AddressData communicationAdd,
             final AddressData permanentAdd, final AddressData officeAdd) {
+        this.id = id;
         this.guarantorName = name;
         this.mobileNumber = mobileNumber;
         this.gender = gender;

@@ -26,6 +26,8 @@ import java.time.LocalDate;
 @SuppressWarnings("unused")
 public class CustomerDetailsData {
 
+    private final Long id;
+
     private final String name;
 
     private final String gender;
@@ -44,16 +46,18 @@ public class CustomerDetailsData {
 
     private final AddressData officeAdd;
 
-    public static CustomerDetailsData instance(final String name, final String gender, final LocalDate dob, final String maritalStatus,
-            final String spouseName, final String profession, final AddressData communicationAdd, final AddressData permanentAdd,
-            final AddressData officeAdd) {
+    public static CustomerDetailsData instance(final Long id, final String name, final String gender, final LocalDate dob,
+            final String maritalStatus, final String spouseName, final String profession, final AddressData communicationAdd,
+            final AddressData permanentAdd, final AddressData officeAdd) {
 
-        return new CustomerDetailsData(name, gender, dob, maritalStatus, spouseName, profession, communicationAdd, permanentAdd, officeAdd);
+        return new CustomerDetailsData(id, name, gender, dob, maritalStatus, spouseName, profession, communicationAdd, permanentAdd,
+                officeAdd);
     }
 
-    public CustomerDetailsData(final String name, final String gender, final LocalDate dob, final String maritalStatus,
+    public CustomerDetailsData(final Long id, final String name, final String gender, final LocalDate dob, final String maritalStatus,
             final String spouseName, final String profession, final AddressData communicationAdd, final AddressData permanentAdd,
             final AddressData officeAdd) {
+        this.id = id;
         this.name = name;
         this.gender = gender;
         this.dob = dob;

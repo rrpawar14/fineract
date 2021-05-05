@@ -18,14 +18,19 @@
  */
 package org.apache.fineract.portfolio.loanaccount.domain;
 
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
+import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.portfolio.address.domain.Address;
 
 @Entity
@@ -129,10 +134,8 @@ public class CustomerDetails extends AbstractPersistableCustom {
         this.officeAdd = customerOfficeAdd;
 
     }
-    
+
     public Map<String, Object> update(final JsonCommand command) {
-    	
-    	
 
         final Map<String, Object> actualChanges = new LinkedHashMap<>(1);
 
@@ -172,7 +175,7 @@ public class CustomerDetails extends AbstractPersistableCustom {
             final LocalDate newValue = command.localDateValueOfParameterNamed(salaryDateParamName);
             this.salaryDate = Date.from(newValue.atStartOfDay(DateUtils.getDateTimeZoneOfTenant()).toInstant());
         }
-        
+
         final String dobParamName = "dob";
         if (command.isChangeInDateParameterNamed(dobParamName, this.dob)) {
             final String valueAsInput = command.stringValueOfParameterNamed(dobParamName);
@@ -181,89 +184,81 @@ public class CustomerDetails extends AbstractPersistableCustom {
             final LocalDate newValue = command.localDateValueOfParameterNamed(dobParamName);
             this.dob = Date.from(newValue.atStartOfDay(DateUtils.getDateTimeZoneOfTenant()).toInstant());
         }
-        
-        
-       
-       
 
-        final String mobileNoParamName = "mobileNo";
-        if (command.isChangeInStringParameterNamed(mobileNoParamName, this.mobileNo)) {
-            final String newValue = command.stringValueOfParameterNamed(mobileNoParamName);
-            actualChanges.put(mobileNoParamName, newValue);
-            this.mobileNo = StringUtils.defaultIfEmpty(newValue, null);
-        }
-
+        /*
+         * final String mobileNoParamName = "mobileNo"; if (command.isChangeInStringParameterNamed(mobileNoParamName,
+         * this.mobileNo)) { final String newValue = command.stringValueOfParameterNamed(mobileNoParamName);
+         * actualChanges.put(mobileNoParamName, newValue); this.mobileNo = StringUtils.defaultIfEmpty(newValue, null); }
+         */
         final String altNumberParamName = "altNumber";
         if (command.isChangeInStringParameterNamed(altNumberParamName, this.altNumber)) {
             final String newValue = command.stringValueOfParameterNamed(altNumberParamName);
             actualChanges.put(altNumberParamName, newValue);
             this.altNumber = StringUtils.defaultIfEmpty(newValue, null);
         }
-        
+
         final String fatherNameParamName = "fatherName";
         if (command.isChangeInStringParameterNamed(fatherNameParamName, this.fatherName)) {
             final String newValue = command.stringValueOfParameterNamed(fatherNameParamName);
             actualChanges.put(fatherNameParamName, newValue);
             this.fatherName = StringUtils.defaultIfEmpty(newValue, null);
         }
-        
+
         final String applicantTypeParamName = "applicantType";
         if (command.isChangeInStringParameterNamed(applicantTypeParamName, this.applicantType)) {
             final String newValue = command.stringValueOfParameterNamed(applicantTypeParamName);
             actualChanges.put(applicantTypeParamName, newValue);
             this.applicantType = StringUtils.defaultIfEmpty(newValue, null);
         }
-        
+
         final String referByParamName = "refBy";
         if (command.isChangeInStringParameterNamed(referByParamName, this.referBy)) {
             final String newValue = command.stringValueOfParameterNamed(referByParamName);
             actualChanges.put(referByParamName, newValue);
             this.referBy = StringUtils.defaultIfEmpty(newValue, null);
         }
-        
+
         final String companyNameParamName = "companyName";
         if (command.isChangeInStringParameterNamed(companyNameParamName, this.companyName)) {
             final String newValue = command.stringValueOfParameterNamed(companyNameParamName);
             actualChanges.put(companyNameParamName, newValue);
             this.companyName = StringUtils.defaultIfEmpty(newValue, null);
         }
-        
+
         final String monthlyIncomeParamName = "monthlyIncome";
         if (command.isChangeInStringParameterNamed(monthlyIncomeParamName, this.monthlyIncome)) {
             final String newValue = command.stringValueOfParameterNamed(monthlyIncomeParamName);
             actualChanges.put(monthlyIncomeParamName, newValue);
             this.monthlyIncome = StringUtils.defaultIfEmpty(newValue, null);
         }
-        
+
         final String salaryPeriodParamName = "salaryPeriod";
         if (command.isChangeInStringParameterNamed(monthlyIncomeParamName, this.salaryPeriod)) {
             final String newValue = command.stringValueOfParameterNamed(salaryPeriodParamName);
             actualChanges.put(salaryPeriodParamName, newValue);
             this.salaryPeriod = StringUtils.defaultIfEmpty(newValue, null);
         }
-        
+
         final String maritalStatusParamName = "maritalStatus";
         if (command.isChangeInStringParameterNamed(maritalStatusParamName, this.maritalStatus)) {
             final String newValue = command.stringValueOfParameterNamed(maritalStatusParamName);
             actualChanges.put(maritalStatusParamName, newValue);
             this.maritalStatus = StringUtils.defaultIfEmpty(newValue, null);
         }
-        
-        
+
         final String spousenameParamName = "spouseName";
         if (command.isChangeInStringParameterNamed(spousenameParamName, this.spousename)) {
             final String newValue = command.stringValueOfParameterNamed(spousenameParamName);
             actualChanges.put(spousenameParamName, newValue);
             this.spousename = StringUtils.defaultIfEmpty(newValue, null);
         }
-        
+
         final String professionParamName = "profession";
         if (command.isChangeInStringParameterNamed(professionParamName, this.profession)) {
             final String newValue = command.stringValueOfParameterNamed(professionParamName);
             actualChanges.put(professionParamName, newValue);
             this.profession = StringUtils.defaultIfEmpty(newValue, null);
         }
-       
 
         return actualChanges;
     }

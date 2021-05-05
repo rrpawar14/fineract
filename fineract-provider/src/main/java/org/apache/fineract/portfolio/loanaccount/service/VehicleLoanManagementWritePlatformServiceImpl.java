@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.loanaccount.service;
 
+import java.util.Map;
 import javax.persistence.PersistenceException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
@@ -228,71 +229,68 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
              * if (!changes.isEmpty()) { this.feTaskRepository.save(feTask); }
              */
 
-           
             // createcustomerdetails
-            CustomerDetails customerDetails =  this.customerDetailsRepository.getOne(customerDetailsId);
-            final Map<String, Object> changes  = customerDetails.update(command);
-            
-            if (!changes.isEmpty()) { this.customerDetailsRepository.save(customerDetails); }
-           
-            final Long customerDetailsId = customerDetails.getId();
+            CustomerDetails customerDetails = this.customerDetailsRepository.getOne(customerDetailsId);
+            final Map<String, Object> changes = customerDetails.update(command);
+
+            if (!changes.isEmpty()) {
+                this.customerDetailsRepository.save(customerDetails);
+            }
+
+            // final Long customerDetailsId = customerDetails.getId();
             System.out.println("customerDetailsId" + customerDetailsId);
             final CustomerDetails customerDetailsObj = this.customerDetailsRepository.getOne(customerDetailsId);
             System.out.println("customerDetailsObj" + customerDetailsObj);
 
             // createVehicleDetails
-            final VehicleDetails vehicleDetails = VehicleDetails.fromJson(command);
-            System.out.println("vehicleDetails " + vehicleDetails);
-            this.vehicleDetailsRepository.save(vehicleDetails);
-            System.out.println("vehicleDetailsRepository" + vehicleDetailsRepository);
-
-            final Long vehicleDetailsId = vehicleDetails.getId();
-            System.out.println("vehicleDetailsId" + vehicleDetailsId);
-            final VehicleDetails vehicleDetailsObj = this.vehicleDetailsRepository.getOne(vehicleDetailsId);
-            System.out.println("vehicleDetailsObj" + vehicleDetailsObj);
-
-            // createguarantordetails
-
-         
-            final CustomerGuarantor customerGuarantor = CustomerGuarantor.fromJson(command, guarantorCommunicationAdd,
-                    guarantorPermanentAdd, guarantorOfficeAdd); // add 3 address object
-            System.out.println("customerGuarantor" + customerGuarantor);
-            this.customerGuarantorRepository.save(customerGuarantor);
-            System.out.println("customerGuarantorRepository" + customerGuarantorRepository);
-
-            final Long customerGuarantorId = customerGuarantor.getId();
-            System.out.println("customerGuarantorId" + customerGuarantorId);
-            final CustomerGuarantor customerGuarantorObj = this.customerGuarantorRepository.getOne(customerGuarantorId);
-            System.out.println("customerGuarantorObj" + customerGuarantorObj);
-
-            // createbankdetails
-            final BankDetails bankDetails = BankDetails.fromJson(command);
-            System.out.println("bankDetails" + bankDetails);
-            this.bankDetailsRepository.save(bankDetails);
-            System.out.println("bankDetailsRepository" + bankDetailsRepository);
-
-            final Long bankDetailsId = bankDetails.getId();
-            System.out.println("bankDetailsId" + bankDetailsId);
-            final BankDetails bankDetailsObj = this.bankDetailsRepository.getOne(bankDetailsId);
-            System.out.println("bankDetailsObj" + bankDetailsObj);
-
-            final FELoanDetails loanDetails = FELoanDetails.fromJson(command);
-            System.out.println("loanDetails" + loanDetails);
-            this.feLoanDetailsRepository.save(loanDetails);
-
-            final Long userId = command.longValueOfParameterNamed("userId");
-            System.out.println("userId" + userId);
-            final AppUser appuser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
-            System.out.println("appuser" + appuser);
-
-            final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj,
-                    customerGuarantorObj, loanDetails, bankDetailsObj, appuser);
-            System.out.println("newVehicleLoan" + newVehicleLoan);
-
-            // final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command);
-
-            this.newVehicleLoanRepository.save(newVehicleLoan);
-            System.out.println("newVehicleLoanRepository" + newVehicleLoanRepository);
+            /*
+             * final VehicleDetails vehicleDetails = VehicleDetails.fromJson(command);
+             * System.out.println("vehicleDetails " + vehicleDetails);
+             * this.vehicleDetailsRepository.save(vehicleDetails); System.out.println("vehicleDetailsRepository" +
+             * vehicleDetailsRepository);
+             *
+             * final Long vehicleDetailsId = vehicleDetails.getId(); System.out.println("vehicleDetailsId" +
+             * vehicleDetailsId); final VehicleDetails vehicleDetailsObj =
+             * this.vehicleDetailsRepository.getOne(vehicleDetailsId); System.out.println("vehicleDetailsObj" +
+             * vehicleDetailsObj);
+             *
+             * // createguarantordetails
+             *
+             * final CustomerGuarantor customerGuarantor = CustomerGuarantor.fromJson(command,
+             * guarantorCommunicationAdd, guarantorPermanentAdd, guarantorOfficeAdd); // add 3 address object
+             * System.out.println("customerGuarantor" + customerGuarantor);
+             * this.customerGuarantorRepository.save(customerGuarantor);
+             * System.out.println("customerGuarantorRepository" + customerGuarantorRepository);
+             *
+             * final Long customerGuarantorId = customerGuarantor.getId(); System.out.println("customerGuarantorId" +
+             * customerGuarantorId); final CustomerGuarantor customerGuarantorObj =
+             * this.customerGuarantorRepository.getOne(customerGuarantorId); System.out.println("customerGuarantorObj" +
+             * customerGuarantorObj);
+             *
+             * // createbankdetails final BankDetails bankDetails = BankDetails.fromJson(command);
+             * System.out.println("bankDetails" + bankDetails); this.bankDetailsRepository.save(bankDetails);
+             * System.out.println("bankDetailsRepository" + bankDetailsRepository);
+             *
+             * final Long bankDetailsId = bankDetails.getId(); System.out.println("bankDetailsId" + bankDetailsId);
+             * final BankDetails bankDetailsObj = this.bankDetailsRepository.getOne(bankDetailsId);
+             * System.out.println("bankDetailsObj" + bankDetailsObj);
+             *
+             * final FELoanDetails loanDetails = FELoanDetails.fromJson(command); System.out.println("loanDetails" +
+             * loanDetails); this.feLoanDetailsRepository.save(loanDetails);
+             *
+             * final Long userId = command.longValueOfParameterNamed("userId"); System.out.println("userId" + userId);
+             * final AppUser appuser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
+             * System.out.println("appuser" + appuser);
+             *
+             * final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command, customerDetailsObj,
+             * vehicleDetailsObj, customerGuarantorObj, loanDetails, bankDetailsObj, appuser);
+             * System.out.println("newVehicleLoan" + newVehicleLoan);
+             *
+             * // final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command);
+             *
+             * this.newVehicleLoanRepository.save(newVehicleLoan); System.out.println("newVehicleLoanRepository" +
+             * newVehicleLoanRepository);
+             */
 
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //

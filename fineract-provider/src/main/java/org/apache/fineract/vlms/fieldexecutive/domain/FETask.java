@@ -40,6 +40,9 @@ public class FETask extends AbstractPersistableCustom {
     @Column(name = "customer_reg_no", nullable = false, length = 100)
     private String customerRegNo;
 
+    @Column(name = "customer_mobile_no", nullable = false, length = 100)
+    private String customerMobileNo;
+
     @Column(name = "vehicle_number", nullable = false, length = 100)
     private String vehicleNumber;
 
@@ -56,21 +59,23 @@ public class FETask extends AbstractPersistableCustom {
 
         final String taskType = command.stringValueOfParameterNamed("taskType");
         final String customerRegNo = command.stringValueOfParameterNamed("customerRegNo");
+        final String customerMobileNo = command.stringValueOfParameterNamed("customerMobileNo");
         final String vehicleNumber = command.stringValueOfParameterNamed("vehicleNumber");
         final Date dueDate = command.dateValueOfParameterNamed("dueDate");
         final String assignTo = command.stringValueOfParameterNamed("assignTo");
         final String description = command.stringValueOfParameterNamed("description");
 
-        return new FETask(taskType, customerRegNo, vehicleNumber, dueDate, assignTo, description);
+        return new FETask(taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, description);
 
     }
 
     public FETask() {}
 
-    private FETask(final String taskType, final String customerRegNo, final String vehicleNumber, final Date dueDate, final String assignTo,
-            final String description) {
+    private FETask(final String taskType, final String customerRegNo, final String customerMobileNo, final String vehicleNumber,
+            final Date dueDate, final String assignTo, final String description) {
         this.taskType = taskType;
         this.customerRegNo = customerRegNo;
+        this.customerMobileNo = customerMobileNo;
         this.vehicleNumber = vehicleNumber;
         this.dueDate = dueDate;
         this.assignTo = assignTo;
@@ -93,6 +98,13 @@ public class FETask extends AbstractPersistableCustom {
             final String newValue = command.stringValueOfParameterNamed(customerRegNoParamName);
             actualChanges.put(customerRegNoParamName, newValue);
             this.customerRegNo = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String customerMobileNoParamName = "customerMobileNo";
+        if (command.isChangeInStringParameterNamed(customerMobileNoParamName, this.customerMobileNo)) {
+            final String newValue = command.stringValueOfParameterNamed(customerMobileNoParamName);
+            actualChanges.put(customerMobileNoParamName, newValue);
+            this.customerMobileNo = StringUtils.defaultIfEmpty(newValue, null);
         }
 
         final String vehicleNumberParamName = "vehicleNumber";

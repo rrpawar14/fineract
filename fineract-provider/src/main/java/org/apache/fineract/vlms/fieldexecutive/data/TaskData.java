@@ -36,6 +36,9 @@ public class TaskData implements Serializable {
     private final String customerRegNo;
 
     @SuppressWarnings("unused")
+    private final String customerMobileNo;
+
+    @SuppressWarnings("unused")
     private final String vehicleNumber;
 
     @SuppressWarnings("unused")
@@ -49,16 +52,17 @@ public class TaskData implements Serializable {
     // @SuppressWarnings("unused")
     // private final boolean status;
 
-    public static TaskData instance(final Long id, final String taskType, final String customerRegNo, final String vehicleNumber,
-            final LocalDate dueDate, final String assignTo, final String description) {
-        return new TaskData(id, taskType, customerRegNo, vehicleNumber, dueDate, assignTo, description);
+    public static TaskData instance(final Long id, final String taskType, final String customerRegNo, final String customerMobileNo,
+            final String vehicleNumber, final LocalDate dueDate, final String assignTo, final String description) {
+        return new TaskData(id, taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, description);
     }
 
-    private TaskData(final Long id, final String taskType, final String customerRegNo, final String vehicleNumber, final LocalDate dueDate,
-            final String assignTo, final String description) {
+    private TaskData(final Long id, final String taskType, final String customerRegNo, final String customerMobileNo,
+            final String vehicleNumber, final LocalDate dueDate, final String assignTo, final String description) {
         this.id = id;
         this.taskType = taskType;
         this.customerRegNo = customerRegNo;
+        this.customerMobileNo = customerMobileNo;
         this.vehicleNumber = vehicleNumber;
         this.dueDate = dueDate;
         this.assignTo = assignTo;

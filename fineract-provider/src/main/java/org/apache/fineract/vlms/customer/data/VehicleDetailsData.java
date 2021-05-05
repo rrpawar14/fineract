@@ -26,6 +26,8 @@ import java.time.LocalDate;
 @SuppressWarnings("unused")
 public class VehicleDetailsData {
 
+    private Long id;
+
     private String vehicleNumber;
 
     private String maker;
@@ -52,18 +54,20 @@ public class VehicleDetailsData {
 
     private Long kmReading;
 
-    public static VehicleDetailsData instance(final String vehicleNumber, final String maker, final String model, final String color,
-            final String mfgYear, final String engineNumber, final String chassisNumber, final String insuranceCompany,
+    public static VehicleDetailsData instance(final Long id, final String vehicleNumber, final String maker, final String model,
+            final String color, final String mfgYear, final String engineNumber, final String chassisNumber, final String insuranceCompany,
             final String insurancePolicy, final LocalDate insuranceExpiry, final LocalDate pollutionCertExpiry,
             final LocalDate registration, final Long kmReading) {
 
-        return new VehicleDetailsData(vehicleNumber, maker, model, color, mfgYear, engineNumber, chassisNumber, insuranceCompany,
+        return new VehicleDetailsData(id, vehicleNumber, maker, model, color, mfgYear, engineNumber, chassisNumber, insuranceCompany,
                 insurancePolicy, insuranceExpiry, pollutionCertExpiry, registration, kmReading);
     }
 
-    public VehicleDetailsData(final String vehicleNumber, final String maker, final String model, final String color, final String mfgYear,
-            final String engineNumber, final String chassisNumber, final String insuranceCompany, final String insurancePolicy,
-            final LocalDate insuranceExpiry, final LocalDate pollutionCertExpiry, final LocalDate registration, final Long kmReading) {
+    public VehicleDetailsData(final Long id, final String vehicleNumber, final String maker, final String model, final String color,
+            final String mfgYear, final String engineNumber, final String chassisNumber, final String insuranceCompany,
+            final String insurancePolicy, final LocalDate insuranceExpiry, final LocalDate pollutionCertExpiry,
+            final LocalDate registration, final Long kmReading) {
+        this.id = id;
         this.vehicleNumber = vehicleNumber;
         this.maker = maker;
         this.model = model;

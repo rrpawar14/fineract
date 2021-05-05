@@ -24,6 +24,8 @@ package org.apache.fineract.vlms.customer.data;
 @SuppressWarnings("unused")
 public class BankDetailsData {
 
+    private final Long id;
+
     private final Long loanEligibleAmount;
 
     private final String accountType;
@@ -40,15 +42,17 @@ public class BankDetailsData {
 
     private final String IFSC;
 
-    public static BankDetailsData instance(final Long loanEligibleAmount, final String accountType, final String disbursalType,
-            final String accountNumber, final String accountHolderName, final String bankName, final String branchName, final String IFSC) {
+    public static BankDetailsData instance(final Long id, final Long loanEligibleAmount, final String accountType,
+            final String disbursalType, final String accountNumber, final String accountHolderName, final String bankName,
+            final String branchName, final String IFSC) {
 
-        return new BankDetailsData(loanEligibleAmount, accountType, disbursalType, accountNumber, accountHolderName, bankName, branchName,
-                IFSC);
+        return new BankDetailsData(id, loanEligibleAmount, accountType, disbursalType, accountNumber, accountHolderName, bankName,
+                branchName, IFSC);
     }
 
-    public BankDetailsData(final Long loanEligibleAmount, final String accountType, final String disbursalType, final String accountNumber,
-            final String accountHolderName, final String bankName, final String branchName, final String IFSC) {
+    public BankDetailsData(final Long id, final Long loanEligibleAmount, final String accountType, final String disbursalType,
+            final String accountNumber, final String accountHolderName, final String bankName, final String branchName, final String IFSC) {
+        this.id = id;
         this.loanEligibleAmount = loanEligibleAmount;
         this.accountType = accountType;
         this.disbursalType = disbursalType;

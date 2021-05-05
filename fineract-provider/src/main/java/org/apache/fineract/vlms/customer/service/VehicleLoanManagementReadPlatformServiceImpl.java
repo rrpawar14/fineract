@@ -62,11 +62,11 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
                     + " cnv.invoice_number as invoicenumber, "
 
                     // customer details
-                    + " cd.name as customer_name, cd.gender as gender, cd.dob as dob, "
-                    + " cd.maritalstatus as maritalstatus,  cd.spousename as spouseName, cd.profession as profession, cd.proof_image_id as proofImageId, "
+                    + " cd.id as customerDetailsId, cd.name as customer_name, cd.gender as gender, cd.dob as dob, "
+                    + " cd.marital_status as maritalstatus,  cd.spousename as spouseName, cd.profession as profession, cd.proof_image_id as proofImageId, "
 
                     // communicationaddress cadd of customerdetails
-                    + " cadd.street as street, cadd.address_line_1 as addressline1, cadd.address_line_2 as addressline2, "
+                    + " cadd.id as addId, cadd.street as street, cadd.address_line_1 as addressline1, cadd.address_line_2 as addressline2, "
                     + " cadd.city as city, cadd.postal_code as postalcode, cadd.landmark as landmark, "
                     + " cadd.area as area, cadd.state as state, "
 
@@ -81,7 +81,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
                     + " oadd.area as area, oadd.state as state, "
 
                     // guarantor details
-                    + " cg.guarantor_name as guarantorName, cg.gender as gender, cg.dob as dob, cg.mobile_number as guarantorMobileNumber, "
+                    + " cg.id as guarantorDetailsId, cg.guarantor_name as guarantorName, cg.gender as gender, cg.dob as dob, cg.mobile_number as guarantorMobileNumber, "
                     + " cg.marital_status as maritalstatus,  cg.spouse_name as spousename, cg.profession as profession, "
 
                     // communicationaddress gcadd of guarantordetails
@@ -100,13 +100,13 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
                     + " goadd.area as area, goadd.state as state, "
 
                     // bankdetails bd of customer new vehicle
-                    + " bd.loan_eligible_amount as eligibleAmount, bd.account_type as accountType, "
+                    + " bd.id as bankDetailsId, bd.loan_eligible_amount as eligibleAmount, bd.account_type as accountType, "
                     + " bd.disbursal_type as disbursalType, bd.account_number as accountNumber, "
                     + " bd.account_holder_name as accountHolderName, bd.bank_name as bankName, "
                     + " bd.branch_name as branchName, bd.IFSC as IFSC, "
 
                     // vehicledetails vd of customer new vehicle
-                    + " vd.vehicle_number as vehicleNumber," + " vd.maker as maker, vd.model as model, "
+                    + " vd.id as vehicleId, vd.vehicle_number as vehicleNumber," + " vd.maker as maker, vd.model as model, "
                     + " vd.color as color, vd.mfg_year as mfgYear, "
                     + " vd.engine_number as engineNumber, vd.chassis_number as chassisNumber, "
                     + " vd.insurance_company as insuranceCompany, vd.insurance_policy as insurancePolicy, "
@@ -229,6 +229,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
 
             // final Long detailsId = rs.getLong("id");
             final Long loanId = rs.getLong("loanId");
+            final Long customerDetailsId = rs.getLong("customerDetailsId");
             final String customerName = rs.getString("customerName");
             final String gender = rs.getString("gender");
 
@@ -242,6 +243,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             // final Long officeAdd = rs.getLong("officeadd_id");
 
             // fetched addresses and create address objects and inject in customerDetailsData
+            final Long addId = rs.getLong("addId");
             final String street = rs.getString("street");
             final String addressLine1 = rs.getString("addressLine1");
             final String addressLine2 = rs.getString("addressLine2");
@@ -252,15 +254,18 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             final String area = rs.getString("area");
             final String state = rs.getString("state");
 
-            final AddressData communicationAddressData = new AddressData(addressLine1, addressLine2, city, pincode, landmark, area, state);
+            final AddressData communicationAddressData = new AddressData(addId, addressLine1, addressLine2, city, pincode, landmark, area,
+                    state);
 
-            final AddressData permanentAddressData = new AddressData(addressLine1, addressLine2, city, pincode, landmark, area, state);
+            final AddressData permanentAddressData = new AddressData(addId, addressLine1, addressLine2, city, pincode, landmark, area,
+                    state);
 
-            final AddressData officeAddressData = new AddressData(addressLine1, addressLine2, city, pincode, landmark, area, state);
+            final AddressData officeAddressData = new AddressData(addId, addressLine1, addressLine2, city, pincode, landmark, area, state);
 
-            CustomerDetailsData customerDetailsData = new CustomerDetailsData(customerName, gender, dob, maritalStatus, null, profession,
-                    communicationAddressData, permanentAddressData, officeAddressData);
+            CustomerDetailsData customerDetailsData = new CustomerDetailsData(customerDetailsId, customerName, gender, dob, maritalStatus,
+                    null, profession, communicationAddressData, permanentAddressData, officeAddressData);
 
+            final Long guarantorDetailsId = rs.getLong("guarantorDetailsId");
             final String guarantorName = rs.getString("guarantorName");
             final String guarantorMobileNumber = rs.getString("guarantorMobileNumber");
             // final String gender = rs.getString("gender");
@@ -271,9 +276,10 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             // final String profession = rs.getString("profession");
             // final String state = rs.getString("state");
 
-            GuarantorDetailsData guarantorDetailsData = new GuarantorDetailsData(guarantorName, guarantorMobileNumber, gender, dob,
-                    maritalStatus, spouseName, profession, communicationAddressData, permanentAddressData, officeAddressData);
+            GuarantorDetailsData guarantorDetailsData = new GuarantorDetailsData(guarantorDetailsId, guarantorName, guarantorMobileNumber,
+                    gender, dob, maritalStatus, spouseName, profession, communicationAddressData, permanentAddressData, officeAddressData);
 
+            final Long bankDetailsId = rs.getLong("bankDetailsId");
             final Long eligibleAmount = rs.getLong("eligibleAmount");
             final String accountType = rs.getString("accountType");
             final String disbursalType = rs.getString("disbursalType");
@@ -284,9 +290,10 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             final String branchName = rs.getString("branchName");
             final String IFSC = rs.getString("IFSC");
 
-            BankDetailsData bankDetailsData = new BankDetailsData(eligibleAmount, accountType, disbursalType, accountNumber,
+            BankDetailsData bankDetailsData = new BankDetailsData(bankDetailsId, eligibleAmount, accountType, disbursalType, accountNumber,
                     accountHolderName, bankName, branchName, IFSC);
 
+            final Long vehicleId = rs.getLong("vehicleId");
             final String vehicleNumber = rs.getString("vehicleNumber");
             final String maker = rs.getString("maker");
             final String color = rs.getString("color");
@@ -302,8 +309,9 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             final LocalDate registration = JdbcSupport.getLocalDate(rs, "registration");
             final Long liveKmReading = rs.getLong("liveKmReading");
 
-            VehicleDetailsData vehicleDetailsData = new VehicleDetailsData(vehicleNumber, maker, model, color, mfgYear, engineNumber,
-                    chassisNumber, insuranceCompany, insurancePolicy, insuranceExpiry, pollutionCertExpiry, registration, liveKmReading);
+            VehicleDetailsData vehicleDetailsData = new VehicleDetailsData(vehicleId, vehicleNumber, maker, model, color, mfgYear,
+                    engineNumber, chassisNumber, insuranceCompany, insurancePolicy, insuranceExpiry, pollutionCertExpiry, registration,
+                    liveKmReading);
 
             final String vehicleType = rs.getString("vehicleType");
             final String loanType = rs.getString("loanType");
