@@ -281,4 +281,150 @@ public class AddressWritePlatformServiceImpl implements AddressWritePlatformServ
 
         return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(clientAddressObj.getId()).build();
     }
+
+    @Override
+    public CommandProcessingResult updateAddress(final Long addressId, final JsonCommand command) {
+        this.context.authenticatedUser();
+
+        long stateId;
+
+        long countryId;
+
+        CodeValue stateIdobj;
+
+        CodeValue countryIdObj;
+
+        boolean is_address_update = false;
+
+        // this.fromApiJsonDeserializer.validateForUpdate(command.json());
+
+        // final long addressId = command.longValueOfParameterNamed("addressId");
+
+        // final ClientAddress clientAddressObj =
+        // this.clientAddressRepositoryWrapper.findOneByClientIdAndAddressId(clientId, addressId);
+
+        final Address addobj = this.addressRepository.getOne(addressId);
+
+        if (addobj == null) {
+            throw new AddressNotFoundException(addressId);
+        }
+
+        // final Address addobj = this.addressRepository.getOne(addressId);
+
+        if (!command.stringValueOfParameterNamed("addressLine1").isEmpty()) {
+
+            is_address_update = true;
+            final String addressLine1 = command.stringValueOfParameterNamed("addressLine1");
+            addobj.setAddressLine1(addressLine1);
+
+        }
+
+        if (!command.stringValueOfParameterNamed("addressLine2").isEmpty()) {
+
+            is_address_update = true;
+            final String addressLine2 = command.stringValueOfParameterNamed("addressLine2");
+            addobj.setAddressLine2(addressLine2);
+
+        }
+
+        if (!command.stringValueOfParameterNamed("addressLine3").isEmpty()) {
+            is_address_update = true;
+            final String addressLine3 = command.stringValueOfParameterNamed("addressLine3");
+            addobj.setAddressLine3(addressLine3);
+
+        }
+
+        if (!command.stringValueOfParameterNamed("townVillage").isEmpty()) {
+
+            is_address_update = true;
+            final String townVillage = command.stringValueOfParameterNamed("townVillage");
+            addobj.setTownVillage(townVillage);
+        }
+
+        if (!command.stringValueOfParameterNamed("city").isEmpty()) {
+            is_address_update = true;
+            final String city = command.stringValueOfParameterNamed("city");
+            addobj.setCity(city);
+        }
+
+        if (!command.stringValueOfParameterNamed("countyDistrict").isEmpty()) {
+            is_address_update = true;
+            final String countyDistrict = command.stringValueOfParameterNamed("countyDistrict");
+            addobj.setCountyDistrict(countyDistrict);
+        }
+
+        if (command.longValueOfParameterNamed("stateProvinceId") != null) {
+            if (command.longValueOfParameterNamed("stateProvinceId") != 0) {
+                is_address_update = true;
+                stateId = command.longValueOfParameterNamed("stateProvinceId");
+                stateIdobj = this.codeValueRepository.getOne(stateId);
+                addobj.setStateProvince(stateIdobj);
+            }
+
+        }
+        if (command.longValueOfParameterNamed("countryId") != null) {
+            if (command.longValueOfParameterNamed("countryId") != 0) {
+                is_address_update = true;
+                countryId = command.longValueOfParameterNamed("countryId");
+                countryIdObj = this.codeValueRepository.getOne(countryId);
+                addobj.setCountry(countryIdObj);
+            }
+
+        }
+
+        if (!command.stringValueOfParameterNamed("postalCode").isEmpty()) {
+            is_address_update = true;
+            final String postalCode = command.stringValueOfParameterNamed("postalCode");
+            addobj.setPostalCode(postalCode);
+        }
+
+        if (command.bigDecimalValueOfParameterNamed("latitude") != null) {
+
+            is_address_update = true;
+            final BigDecimal latitude = command.bigDecimalValueOfParameterNamed("latitude");
+
+            addobj.setLatitude(latitude);
+        }
+        if (command.bigDecimalValueOfParameterNamed("longitude") != null) {
+            is_address_update = true;
+            final BigDecimal longitude = command.bigDecimalValueOfParameterNamed("longitude");
+            addobj.setLongitude(longitude);
+
+        }
+
+        if (command.stringValueOfParameterNamed("landmark") != null) {
+            is_address_update = true;
+            final String landmark = command.stringValueOfParameterNamed("landmark");
+            addobj.setLandmark(landmark);
+
+        }
+
+        if (command.stringValueOfParameterNamed("area") != null) {
+            is_address_update = true;
+            final String area = command.stringValueOfParameterNamed("area");
+            addobj.setArea(area);
+
+        }
+
+        if (command.stringValueOfParameterNamed("state") != null) {
+            is_address_update = true;
+            final String state = command.stringValueOfParameterNamed("state");
+            addobj.setState(state);
+
+        }
+
+        if (is_address_update) {
+            addobj.setUpdatedOn(LocalDate.now(DateUtils.getDateTimeZoneOfTenant()));
+            this.addressRepository.save(addobj);
+
+        }
+
+        /*
+         * final Boolean testActive = command.booleanPrimitiveValueOfParameterNamed("isActive"); if (testActive != null)
+         * { final boolean active = command.booleanPrimitiveValueOfParameterNamed("isActive");
+         * clientAddressObj.setIs_active(active); }
+         **/
+
+        return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(addobj.getId()).build();
+    }
 }

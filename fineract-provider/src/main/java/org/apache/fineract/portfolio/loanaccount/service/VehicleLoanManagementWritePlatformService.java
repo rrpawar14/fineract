@@ -25,6 +25,8 @@ public interface VehicleLoanManagementWritePlatformService {
 
     CommandProcessingResult submitNewVehicleLoanApplication(JsonCommand command);
 
+    CommandProcessingResult updateCustomerDetails(Long customerDetailsId, JsonCommand command);
+
     // CommandProcessingResult submitUsedVehicleLoanApplication(JsonCommand command);
 
 }

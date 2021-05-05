@@ -96,3 +96,5 @@ ENGINE=InnoDB
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'CREATE_EMPLOYEE', 'EMPLOYEE', 'CREATE', 0);
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'EDIT_FETASK', 'FETASK', 'EDIT', 0);
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'DELETE_FETASK', 'FETASK', 'DELETE', 0);
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'UPDATE_FEENQUIRYLOAN', 'FEENQUIRYLOAN', 'UPDATE', 0);
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'UPDATE_CUSTOMERADDRESS', 'CUSTOMERADDRESS', 'UPDATE', 0);

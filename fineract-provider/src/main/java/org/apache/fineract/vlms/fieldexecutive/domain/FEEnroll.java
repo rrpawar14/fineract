@@ -27,7 +27,7 @@ import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
 @Entity
-@Table(name = "m_feEnroll", uniqueConstraints = { @UniqueConstraint(columnNames = { "mobile_number" }, name = "mobile_number") })
+@Table(name = "m_feenroll", uniqueConstraints = { @UniqueConstraint(columnNames = { "mobile_number" }, name = "mobile_number") })
 public class FEEnroll extends AbstractPersistableCustom {
 
     @Column(name = "customer_name", nullable = false, length = 100)

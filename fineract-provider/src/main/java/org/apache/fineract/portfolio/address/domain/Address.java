@@ -422,6 +422,18 @@ public class Address extends AbstractPersistableCustom {
         this.longitude = longitude;
     }
 
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public void setLandmark(String landmark) {
+        this.landmark = landmark;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
     public String getCreatedBy() {
         return this.createdBy;
     }

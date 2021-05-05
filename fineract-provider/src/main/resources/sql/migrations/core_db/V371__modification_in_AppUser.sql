@@ -66,6 +66,7 @@ CREATE TABLE `m_customer_guarantor` (
     `dob` DATE NULL DEFAULT NULL,
     `marital_status` VARCHAR(50) NULL DEFAULT '0',
     `spouse_name` VARCHAR(100) NULL DEFAULT '0',
+    `father_name` VARCHAR(100) NULL DEFAULT '0',
     `profession` VARCHAR(50) NULL DEFAULT '0',
     `applicant_type` VARCHAR(50) NULL DEFAULT '0',
     `company_name` VARCHAR(50) NULL DEFAULT '0',
@@ -98,8 +99,17 @@ CREATE TABLE `m_customer_details` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(100) NULL DEFAULT '0',
     `gender` VARCHAR(20) NULL DEFAULT '0',
+    `mobile_number` VARCHAR(20) NULL DEFAULT '0',
+    `father_name` VARCHAR(20) NULL DEFAULT '0',
+    `alternate_number` VARCHAR(20) NULL DEFAULT '0',
+    `applicant_type` VARCHAR(20) NULL DEFAULT '0',
+    `refer_by` VARCHAR(20) NULL DEFAULT '0',
+    `company_name` VARCHAR(20) NULL DEFAULT '0',
+    `monthly_income` VARCHAR(20) NULL DEFAULT '0',
+    `salary_date` DATE NULL DEFAULT NULL,
+    `salary_period` VARCHAR(50) NULL DEFAULT '0',
     `dob` DATE NULL DEFAULT NULL,
-    `maritalstatus` VARCHAR(50) NULL DEFAULT NULL,
+    `marital_status` VARCHAR(50) NULL DEFAULT NULL,
     `spousename` VARCHAR(100) NULL DEFAULT NULL,
     `profession` VARCHAR(100) NULL DEFAULT NULL,
     `proof_image_id` BIGINT(11) NULL DEFAULT NULL,
@@ -120,6 +130,8 @@ COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=9
 ;
+
+
 
 
 

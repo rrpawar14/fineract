@@ -29,4 +29,6 @@ public interface AddressWritePlatformService {
     CommandProcessingResult addNewClientAddress(Client client, JsonCommand command);
 
     CommandProcessingResult updateClientAddress(Long clientId, JsonCommand command);
+
+    CommandProcessingResult updateAddress(Long addressId, JsonCommand command);
 }

@@ -53,6 +53,9 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
     @Column(name = "spouse_name")
     private String spouseName;
 
+    @Column(name = "father_name") //
+    private String fatherName;
+
     @Column(name = "profession")
     private String profession;
 
@@ -101,6 +104,7 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
         final Date dob = command.dateValueOfParameterNamed("guarantor_dob");
         final String maritalStatus = command.stringValueOfParameterNamed("guarantor_maritalStatus");
         final String spouseName = command.stringValueOfParameterNamed("guarantor_spouseName");
+        final String fatherName = command.stringValueOfParameterNamed("guarantor_fatherName");
         final String profession = command.stringValueOfParameterNamed("guarantor_profession");
         final String salaryType = command.stringValueOfParameterNamed("guarantor_salaryType");
         final String applicantType = command.stringValueOfParameterNamed("guarantor_applicantType");
@@ -108,14 +112,15 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
         final String companyName = command.stringValueOfParameterNamed("guarantor_companyName");
         final Date salaryDate = command.dateValueOfParameterNamed("guarantor_salaryDate");
 
-        return new CustomerGuarantor(guarantorName, mobileNumber, gender, dob, maritalStatus, spouseName, profession, salaryType,
-                applicantType, netIncome, companyName, salaryDate, customerCommunicationAdd, customerPermanentAdd, customerOfficeAdd);
+        return new CustomerGuarantor(guarantorName, mobileNumber, gender, dob, maritalStatus, spouseName, fatherName, profession,
+                salaryType, applicantType, netIncome, companyName, salaryDate, customerCommunicationAdd, customerPermanentAdd,
+                customerOfficeAdd);
     }
 
     public CustomerGuarantor() {}
 
     private CustomerGuarantor(final String guarantorName, final String mobileNumber, final String gender, final Date dob,
-            final String maritalStatus, final String spouseName, final String profession, final String salaryType,
+            final String maritalStatus, final String spouseName, final String fatherName, final String profession, final String salaryType,
             final String applicantType, final Integer netIncome, final String companyName, final Date salaryDate,
             final Address customerCommunicationAdd, final Address customerPermanentAdd, final Address customerOfficeAdd) {
         this.guarantorName = guarantorName;
@@ -124,6 +129,7 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
         this.dob = dob;
         this.maritalStatus = maritalStatus;
         this.spouseName = spouseName;
+        this.fatherName = fatherName;
         this.profession = profession;
         this.salaryType = salaryType;
         this.applicantType = applicantType;

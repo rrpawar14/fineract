@@ -19,10 +19,16 @@
 package org.apache.fineract.vlms.fieldexecutive.service;
 
 import java.util.Collection;
+import org.apache.fineract.vlms.fieldexecutive.data.EnquiryData;
+import org.apache.fineract.vlms.fieldexecutive.data.EnrollData;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.apache.fineract.vlms.fieldexecutive.domain.DocumentsData;
 
 public interface FEReadPlatformService {
+
+    Collection<EnquiryData> retrieveAllEnquires();
+
+    Collection<EnrollData> retrieveAllEnroll();
 
     Collection<DocumentsData> retrieveAllDocumentsType();
 

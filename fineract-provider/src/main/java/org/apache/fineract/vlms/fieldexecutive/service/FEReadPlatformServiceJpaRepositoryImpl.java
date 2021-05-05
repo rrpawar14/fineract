@@ -25,6 +25,8 @@ import java.util.Collection;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.vlms.fieldexecutive.data.EnquiryData;
+import org.apache.fineract.vlms.fieldexecutive.data.EnrollData;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.apache.fineract.vlms.fieldexecutive.domain.DocumentsData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,4 +126,78 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
      * return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { codeName }); } catch (final
      * EmptyResultDataAccessException e) { throw new CodeNotFoundException(codeName, e); } }
      */
+
+    private static final class EnquiryDataMapper implements RowMapper<EnquiryData> {
+
+        public String schema() {
+            return " cln.id as id, cln.customer_name as customerName, cln.mobile_number as mobileNumber,	cln.vehicle_number as vehicleNumber, "
+                    + "	cln.email as email, " + "	cln.pincode as pincode, " + "	cln.enquiry_id as enquiryId, " + "	cln.notes as notes";
+        }
+
+        @Override
+        public EnquiryData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final String mobileNumber = rs.getString("mobileNumber");
+            final String customerName = rs.getString("customerName");
+            final String vehicleNumber = rs.getString("vehicleNumber");
+            final String pincode = rs.getString("pincode");
+            final String email = rs.getString("email");
+            final String enquiryId = rs.getString("enquiryId");
+            final String notes = rs.getString("notes");
+            // final boolean status = rs.getBoolean("status");
+
+            return EnquiryData.instance(id, mobileNumber, customerName, vehicleNumber, pincode, email, enquiryId, notes);
+        }
+    }
+
+    @Override
+    @Cacheable(value = "taskdata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<EnquiryData> retrieveAllEnquires() {
+        this.context.authenticatedUser();
+
+        final EnquiryDataMapper rm = new EnquiryDataMapper();
+        final String sql = "select " + rm.schema() + " from m_customerloanenquiry cln ";
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
+    private static final class EnrollDataMapper implements RowMapper<EnrollData> {
+
+        public String schema() {
+            return " erl.id as id, erl.customer_name as customerName, erl.mobile_number as mobileNumber, "
+                    + "	erl.alternate_mobile_number as alternateMobileNumber , erl.dob as dob, erl.father_name as fatherName, "
+                    + "	erl.gender as gender, erl.applicant_type as applicantType, erl.applicant_id as applicantId ";
+
+        }
+
+        @Override
+        public EnrollData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final String customerName = rs.getString("customerName");
+            final String mobileNumber = rs.getString("mobileNumber");
+            final String alternateMobileNumber = rs.getString("alternateMobileNumber");
+            final LocalDate dob = JdbcSupport.getLocalDate(rs, "dob");
+            final String fatherName = rs.getString("fatherName");
+            final String gender = rs.getString("gender");
+            final String applicantType = rs.getString("applicantType");
+            final String applicantId = rs.getString("applicantId");
+
+            return EnrollData.instance(id, customerName, mobileNumber, alternateMobileNumber, dob, fatherName, gender, applicantType,
+                    applicantId);
+        }
+    }
+
+    @Override
+    @Cacheable(value = "taskdata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<EnrollData> retrieveAllEnroll() {
+        this.context.authenticatedUser();
+
+        final EnrollDataMapper rm = new EnrollDataMapper();
+        final String sql = "select " + rm.schema() + " from m_feenroll erl ";
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
 }

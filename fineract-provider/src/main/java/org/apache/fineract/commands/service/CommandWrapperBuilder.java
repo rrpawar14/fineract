@@ -143,6 +143,14 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder updateCustomerAddress(final long addressId) {
+        this.actionName = "UPDATE";
+        this.entityName = "CUSTOMERADDRESS";
+        this.href = "updateCustomerAddress";
+        this.entityId = addressId;
+        return this;
+    }
+
     public CommandWrapperBuilder addFamilyMembers(final long clientId) {
         this.actionName = "CREATE";
         this.entityName = "FAMILYMEMBERS";
@@ -963,6 +971,14 @@ public class CommandWrapperBuilder {
         this.entityId = null;
         this.loanId = null;
         this.href = "/loans/newApplicantloan";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateCustomerDetail(Long customerDetailsId) {
+        this.actionName = "UPDATE";
+        this.entityName = "CUSTOMERDETAIL";
+        this.entityId = customerDetailsId;
+        this.href = "/loans/updateApplicantloan";
         return this;
     }
 

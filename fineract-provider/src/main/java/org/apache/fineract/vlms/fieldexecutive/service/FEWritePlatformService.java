@@ -25,6 +25,8 @@ public interface FEWritePlatformService {
 
     CommandProcessingResult createFEEnquiry(JsonCommand command);
 
+    // CommandProcessingResult updateFEEnquiry(JsonCommand command);
+
     CommandProcessingResult createFEEnroll(JsonCommand command);
 
     CommandProcessingResult createNewLoan(JsonCommand command);
