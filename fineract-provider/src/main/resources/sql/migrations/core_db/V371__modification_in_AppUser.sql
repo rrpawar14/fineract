@@ -47,6 +47,7 @@ CREATE TABLE `m_customerloanenquiry` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `user_id` VARCHAR(50) NOT NULL DEFAULT '0',
     `customer_name` VARCHAR(50) NOT NULL DEFAULT '0',
+    `mobile_number` VARCHAR(50) NULL DEFAULT NULL,
     `vehicle_number` VARCHAR(50) NULL DEFAULT '0',
     `email` VARCHAR(50) NULL DEFAULT '0',
     `pincode` VARCHAR(50) NULL DEFAULT '0',

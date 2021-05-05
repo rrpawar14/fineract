@@ -26,10 +26,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.portfolio.loanaccount.domain.BankDetails;
+import org.apache.fineract.portfolio.loanaccount.domain.CustomerDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantor;
-import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoan;
+import org.apache.fineract.portfolio.loanaccount.domain.VehicleLoan;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnroll;
-import org.apache.fineract.vlms.fieldexecutive.domain.NewLoan;
 
 @Entity
 @Table(name = "m_documents_images")
@@ -56,28 +56,28 @@ public final class DocumentImages extends AbstractPersistableCustom {
     private CustomerGuarantor customerGuarantor;
 
     @OneToOne(optional = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "new_vehicle_id", nullable = true)
-    private NewVehicleLoan newVehicleImage;
+    @JoinColumn(name = "loan_id", nullable = true)
+    private VehicleLoan vehicleLoan;
 
     @OneToOne(optional = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "feEnroll_id", nullable = true)
     private FEEnroll feEnroll;
 
     @OneToOne(optional = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "newLoan_id", nullable = true)
-    private NewLoan newLoan;
+    @JoinColumn(name = "customerdetails_id", nullable = true)
+    private CustomerDetails customerDetails;
 
     public DocumentImages(final String location, final String entityName, final String documentNumber, final StorageType storageType,
-            final BankDetails bankDetailsImage, final CustomerGuarantor customerGuarantor, final NewVehicleLoan newVehicleImage,
-            final FEEnroll feEnroll, final NewLoan newLoan) {
+            final BankDetails bankDetailsImage, final CustomerGuarantor customerGuarantor, final VehicleLoan vehicleLoan,
+            final FEEnroll feEnroll, final CustomerDetails customerDetails) {
         this.location = location;
         this.entityName = entityName;
         this.storageType = storageType.getValue();
         this.bankImage = bankDetailsImage;
         this.customerGuarantor = customerGuarantor;
-        this.newVehicleImage = newVehicleImage;
+        this.vehicleLoan = vehicleLoan;
         this.feEnroll = feEnroll;
-        this.newLoan = newLoan;
+        this.customerDetails = customerDetails;
         this.documentNumber = documentNumber;
         System.out.println("documentNumberT: " + documentNumber);
     }

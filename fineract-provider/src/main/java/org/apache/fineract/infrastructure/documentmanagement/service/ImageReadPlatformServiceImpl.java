@@ -38,10 +38,10 @@ import org.apache.fineract.portfolio.loanaccount.domain.BankDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.BankDetailsRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantor;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantorRepositoryWrapper;
-import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoan;
 import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoanRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetailsRepositoryWrapper;
+import org.apache.fineract.portfolio.loanaccount.domain.VehicleLoan;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,27 +100,68 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
             } else if (EntityTypeForImages.STAFF.toString().equalsIgnoreCase(entityType)) {
                 System.out.println("STAFF-Entity");
                 builder.append("from m_image image , m_staff staff " + " where staff.image_id = image.id and staff.id=?");
-            } else if (EntityTypeForImages.CUSTOMERIMAGE.toString().equalsIgnoreCase(entityType)) {
-                System.out.println("CUSTOMERIMAGE-Entity");
-                builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
             } else if (EntityTypeForImages.PROFILEIMAGE.toString().equalsIgnoreCase(entityType)) {
                 System.out.println("profileimage");
                 builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
-            } else if (EntityTypeForImages.ADHARPHOTO.toString().equals(entityType)
-                    || EntityTypeForImages.GOVERNMENTDOCUMENT.toString().equals(entityType)
-                    || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityType)) {
-                builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
+            } else if (EntityTypeForImages.CUSTOMERIMAGE.toString().equalsIgnoreCase(entityType)) {
+                System.out.println("CUSTOMERIMAGE-Entity");
+                builder.append("from m_documents_images docim , m_customer_details cd "
+                        + " where cd.id = docim.customerdetails_id and cd.id=? where docim.entity_name = customerimage");
+            } else if (EntityTypeForImages.ADHARPHOTO.toString().equals(entityType)) {
+                builder.append("from m_documents_images docim , m_customer_details cd "
+                        + " where cd.id = docim.customerdetails_id and cd.id=? where docim.entity_name = adharphoto");
 
+            } else if (EntityTypeForImages.PANCARD.toString().equals(entityType)) {
+                builder.append("from m_documents_images docim , m_customer_details cd "
+                        + " where cd.id = docim.customerdetails_id and cd.id=? where docim.entity_name = pancard");
+
+            } else if (EntityTypeForImages.VEHICLE_LICENCE.toString().equals(entityType)) {
+                builder.append("from m_documents_images docim , m_customer_details cd "
+                        + " where docim.entity_name = vehicle_licence and cd.id = docim.customerdetails_id and cd.id=? ");
+
+            } else if (EntityTypeForImages.GUARANTORIMAGE.toString().equalsIgnoreCase(entityType)) {
+                System.out.println("CUSTOMERIMAGE-Entity");
+                builder.append("from m_documents_images docim , m_customer_guarantor gd "
+                        + " where gd.id = docim.guarantor_id and gd.id=? where docim.entity_name = guarantorimage");
+            } else if (EntityTypeForImages.G_ADHARPHOTO.toString().equals(entityType)) {
+                builder.append("from m_documents_images docim , m_customer_guarantor gd "
+                        + " where docim.entity_name = adharphoto and gd.id = docim.guarantor_id and gd.id=? ");
+
+            } else if (EntityTypeForImages.G_PANCARD.toString().equals(entityType)) {
+                builder.append("from m_documents_images docim , m_customer_guarantor gd "
+                        + " where gd.id = docim.guarantor_id and gd.id=? where docim.entity_name = pancard");
+
+            } else if (EntityTypeForImages.G_VEHICLE_LICENCE.toString().equals(entityType)) {
+                builder.append("from m_documents_images docim , m_customer_guarantor gd "
+                        + " where gd.id = docim.guarantor_id and gd.id=? where docim.entity_name = vehicle_licence");
             } else if (EntityTypeForImages.INVOICEIMAGE.toString().equalsIgnoreCase(entityType)) {
-                builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
+                builder.append("from m_documents_images docim , m_apply_vehicle_loan vl "
+                        + " where vl.id = docim.loan_id and vl.id=? where docim.entity_name = invoiceimage ");
 
-            } else if (EntityTypeForImages.ENGINE.toString().equals(entityType) || EntityTypeForImages.CHASSIS.toString().equals(entityType)
-                    || EntityTypeForImages.VEHICLE.toString().equals(entityType)) {
+            } else if (EntityTypeForImages.ENGINE.toString().equals(entityType)) {
+                builder.append(" from m_vehicle_images vm , m_vehicle_details vd "
+                        + " where vd.id = vm.vehicle_id and vd.id=? where docim.entity_name = engine ");
+            } else if (EntityTypeForImages.CHASSIS.toString().equals(entityType)) {
+                builder.append("from m_vehicle_images vm , m_vehicle_details vd "
+                        + " where vd.id = vm.vehicle_id and vd.id=? where docim.entity_name = chassis ");
+            } else if (EntityTypeForImages.VEHICLEINSURANCE.toString().equals(entityType)) {
+                builder.append("from m_vehicle_images vm , m_vehicle_details vd "
+                        + " where vd.id = vm.vehicle_id and vd.id=? where docim.entity_name = vehicleinsurance ");
+            } else if (EntityTypeForImages.KMREADING.toString().equals(entityType)) {
+                builder.append("from m_vehicle_images vm , m_vehicle_details vd "
+                        + " where vd.id = vm.vehicle_id and vd.id=? where docim.entity_name = kmreading ");
+            }
+
+            else if (EntityTypeForImages.RCBOOK.toString().equals(entityType)) {
+                builder.append("from m_vehicle_images vm , m_vehicle_details vd "
+                        + " where vd.id = vm.vehicle_id and vd.id=? where docim.entity_name = rcbook ");
+            } else if (EntityTypeForImages.VEHICLE.toString().equals(entityType)) {
                 builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
-            } else if (EntityTypeForImages.GUARANTORIMAGE.toString().equals(entityType)) {
-                builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
-            } else if (EntityTypeForImages.BANK.toString().equals(entityType)) {
-                builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
+            }
+
+            else if (EntityTypeForImages.BANK.toString().equals(entityType)) {
+                builder.append("from m_documents_images docim , m_customer_bank_details bd "
+                        + " where bd.id = docim.bank_id and bd.id=? where docim.entity_name = bank ");
             }
             return builder.toString();
         }
@@ -148,10 +189,9 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
                 AppUser owner = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(entityId);
                 displayName = owner.getFirstname();
             } else if (EntityTypeForImages.ADHARPHOTO.toString().equals(entityType)
-                    || EntityTypeForImages.GOVERNMENTDOCUMENT.toString().equals(entityType)
                     || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityType)
                     || EntityTypeForImages.INVOICEIMAGE.toString().equalsIgnoreCase(entityType)) {
-                NewVehicleLoan owner = this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                VehicleLoan owner = this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
                 displayName = owner.getName();
             } else if (EntityTypeForImages.ENGINE.toString().equals(entityType) || EntityTypeForImages.CHASSIS.toString().equals(entityType)
                     || EntityTypeForImages.VEHICLE.toString().equals(entityType)) {

@@ -19,12 +19,16 @@
 package org.apache.fineract.vlms.fieldexecutive.domain;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
+import org.apache.fineract.infrastructure.core.service.DateUtils;
 
 @Entity
 @Table(name = "m_loan_details")
@@ -78,4 +82,67 @@ public class FELoanDetails extends AbstractPersistableCustom {
         this.interestINR = interestINR;
         this.dueDate = dueDate;
     }
+
+    public Map<String, Object> update(final JsonCommand command) {
+
+        final Map<String, Object> actualChanges = new LinkedHashMap<>(1);
+
+        final String loanAmountParamName = "loanAmount";
+        if (command.isChangeInIntegerParameterNamed(loanAmountParamName, this.loanAmount)) {
+            final Integer newValue = command.integerValueOfParameterNamed(loanAmountParamName);
+            actualChanges.put(loanAmountParamName, newValue);
+            this.loanAmount = newValue;// StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String loanTermParamName = "loanTerm";
+        if (command.isChangeInIntegerParameterNamed(loanTermParamName, this.loanTerm)) {
+            final Integer newValue = command.integerValueOfParameterNamed(loanTermParamName);
+            actualChanges.put(loanTermParamName, newValue);
+            this.loanTerm = newValue;// StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String loanInterestParamName = "loanInterest";
+        if (command.isChangeInBigDecimalParameterNamed(loanInterestParamName, this.loanInterest)) {
+            final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(loanInterestParamName);
+            actualChanges.put(loanInterestParamName, newValue);
+            this.loanInterest = newValue;// StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String emiParamName = "emi";
+        if (command.isChangeInIntegerParameterNamed(emiParamName, this.emi)) {
+            final Integer newValue = command.integerValueOfParameterNamed(emiParamName);
+            actualChanges.put(emiParamName, newValue);
+            this.emi = newValue;// StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String interestINRParamName = "interestINR";
+        if (command.isChangeInIntegerParameterNamed(interestINRParamName, this.interestINR)) {
+            final Integer newValue = command.integerValueOfParameterNamed(interestINRParamName);
+            actualChanges.put(interestINRParamName, newValue);
+            this.interestINR = newValue;// StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        /*
+         * final String mobileNoParamName = "mobileNo"; if (command.isChangeInStringParameterNamed(mobileNoParamName,
+         * this.mobileNo)) { final String newValue = command.stringValueOfParameterNamed(mobileNoParamName);
+         * actualChanges.put(mobileNoParamName, newValue); this.mobileNo = StringUtils.defaultIfEmpty(newValue, null); }
+         */
+        final String dateFormatAsInput = command.dateFormat();
+        final String localeAsInput = command.locale();
+
+        final String dueDateParamName = "dueDate";
+        final String localeParamName = "locale";
+        final String dateFormatParamName = "dateFormat";
+        if (command.isChangeInDateParameterNamed(dueDateParamName, this.dueDate)) {
+            final String valueAsInput = command.stringValueOfParameterNamed(dueDateParamName);
+            actualChanges.put(dueDateParamName, valueAsInput);
+            actualChanges.put(dateFormatParamName, dateFormatAsInput);
+            actualChanges.put(localeParamName, localeAsInput);
+
+            final LocalDate newValue = command.localDateValueOfParameterNamed(dueDateParamName);
+            this.dueDate = Date.from(newValue.atStartOfDay(DateUtils.getDateTimeZoneOfTenant()).toInstant());
+        }
+        return actualChanges;
+    }
+
 }

@@ -38,14 +38,14 @@ public class NewVehicleLoanRepositoryWrapper {
         this.context = context;
     }
 
-    public NewVehicleLoan findOneWithNotFoundDetection(final Long id) {
+    public VehicleLoan findOneWithNotFoundDetection(final Long id) {
         return this.findOneWithNotFoundDetection(id, false);
     }
 
     @Transactional(readOnly = true)
-    public NewVehicleLoan findOneWithNotFoundDetection(final Long applicationId, final boolean loadLazyCollections) {
+    public VehicleLoan findOneWithNotFoundDetection(final Long applicationId, final boolean loadLazyCollections) {
 
-        final NewVehicleLoan newVehicleLoan = this.repository.findById(applicationId)
+        final VehicleLoan newVehicleLoan = this.repository.findById(applicationId)
                 .orElseThrow(() -> new LoanTransactionProcessingStrategyNotFoundException(applicationId));
         /*
          * if (loadLazyCollections) { NewVehicleLoan.loadLazyCollections(); }
@@ -53,19 +53,19 @@ public class NewVehicleLoanRepositoryWrapper {
         return newVehicleLoan;
     }
 
-    public List<NewVehicleLoan> findAll(final Collection<Long> vehicleLoanApplicationId) {
+    public List<VehicleLoan> findAll(final Collection<Long> vehicleLoanApplicationId) {
         return this.repository.findAllById(vehicleLoanApplicationId);
     }
 
-    public void save(final NewVehicleLoan newVehicleLoan) {
+    public void save(final VehicleLoan newVehicleLoan) {
         this.repository.save(newVehicleLoan);
     }
 
-    public void saveAndFlush(final NewVehicleLoan newVehicleLoan) {
+    public void saveAndFlush(final VehicleLoan newVehicleLoan) {
         this.repository.saveAndFlush(newVehicleLoan);
     }
 
-    public void delete(final NewVehicleLoan newVehicleLoan) {
+    public void delete(final VehicleLoan newVehicleLoan) {
         this.repository.delete(newVehicleLoan);
     }
 
@@ -80,9 +80,9 @@ public class NewVehicleLoanRepositoryWrapper {
      * this.context.validateAccessRights(NewVehicleLoan.getOffice().getHierarchy()); return NewVehicleLoan; }
      */
 
-    public NewVehicleLoan getLoanApplicationByuserId(String accountNumber) {
+    public VehicleLoan getLoanApplicationByuserId(String accountNumber) {
         Long loanApplicationNumber = Long.parseLong(accountNumber);
-        NewVehicleLoan newVehicleLoan = this.repository.getLoanApplicationByuserId(accountNumber);
+        VehicleLoan newVehicleLoan = this.repository.getLoanApplicationByuserId(accountNumber);
         if (newVehicleLoan == null) {
             throw new LoanTransactionProcessingStrategyNotFoundException(loanApplicationNumber);
         }

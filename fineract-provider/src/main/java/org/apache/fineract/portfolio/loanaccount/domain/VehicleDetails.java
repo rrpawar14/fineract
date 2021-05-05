@@ -18,12 +18,17 @@
  */
 package org.apache.fineract.portfolio.loanaccount.domain;
 
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
+import org.apache.fineract.infrastructure.core.service.DateUtils;
 
 @Entity
 @Table(name = "m_vehicle_details")
@@ -113,6 +118,126 @@ public class VehicleDetails extends AbstractPersistableCustom {
         this.pollutionCertExpiry = pollutionCertExpiry;
         this.registration = registration;
         this.kmReading = kmReading;
+    }
+
+    public Map<String, Object> update(final JsonCommand command) {
+
+        final Map<String, Object> actualChanges = new LinkedHashMap<>(1);
+
+        final String vehicleNumberParamName = "vehicleNumber";
+        if (command.isChangeInStringParameterNamed(vehicleNumberParamName, this.vehicleNumber)) {
+            final String newValue = command.stringValueOfParameterNamed(vehicleNumberParamName);
+            actualChanges.put(vehicleNumberParamName, newValue);
+            this.vehicleNumber = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String makerParamName = "maker";
+        if (command.isChangeInStringParameterNamed(makerParamName, this.maker)) {
+            final String newValue = command.stringValueOfParameterNamed(makerParamName);
+            actualChanges.put(makerParamName, newValue);
+            this.maker = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String modelParamName = "model";
+        if (command.isChangeInStringParameterNamed(modelParamName, this.model)) {
+            final String newValue = command.stringValueOfParameterNamed(modelParamName);
+            actualChanges.put(modelParamName, newValue);
+            this.model = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String colorParamName = "color";
+        if (command.isChangeInStringParameterNamed(colorParamName, this.color)) {
+            final String newValue = command.stringValueOfParameterNamed(colorParamName);
+            actualChanges.put(colorParamName, newValue);
+            this.color = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String mfgYearParamName = "mfgYear";
+        if (command.isChangeInStringParameterNamed(mfgYearParamName, this.mfgYear)) {
+            final String newValue = command.stringValueOfParameterNamed(mfgYearParamName);
+            actualChanges.put(mfgYearParamName, newValue);
+            this.mfgYear = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String engineNumberParamName = "engineNumber";
+        if (command.isChangeInStringParameterNamed(engineNumberParamName, this.engineNumber)) {
+            final String newValue = command.stringValueOfParameterNamed(engineNumberParamName);
+            actualChanges.put(engineNumberParamName, newValue);
+            this.engineNumber = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String chassisNumberParamName = "chassisNumber";
+        if (command.isChangeInStringParameterNamed(chassisNumberParamName, this.chassisNumber)) {
+            final String newValue = command.stringValueOfParameterNamed(chassisNumberParamName);
+            actualChanges.put(chassisNumberParamName, newValue);
+            this.chassisNumber = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String insuranceCompanyParamName = "insuranceCompany";
+        if (command.isChangeInStringParameterNamed(insuranceCompanyParamName, this.insuranceCompany)) {
+            final String newValue = command.stringValueOfParameterNamed(insuranceCompanyParamName);
+            actualChanges.put(insuranceCompanyParamName, newValue);
+            this.insuranceCompany = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String insurancePolicyParamName = "insurancePolicy";
+        if (command.isChangeInStringParameterNamed(insurancePolicyParamName, this.insurancePolicy)) {
+            final String newValue = command.stringValueOfParameterNamed(insurancePolicyParamName);
+            actualChanges.put(insurancePolicyParamName, newValue);
+            this.insurancePolicy = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        /*
+         * final String mobileNoParamName = "mobileNo"; if (command.isChangeInStringParameterNamed(mobileNoParamName,
+         * this.mobileNo)) { final String newValue = command.stringValueOfParameterNamed(mobileNoParamName);
+         * actualChanges.put(mobileNoParamName, newValue); this.mobileNo = StringUtils.defaultIfEmpty(newValue, null); }
+         */
+        final String dateFormatAsInput = command.dateFormat();
+        final String localeAsInput = command.locale();
+        final String localeParamName = "locale";
+        final String dateFormatParamName = "dateFormat";
+
+        final String insuranceExpiryParamName = "insuranceExpiry";
+
+        if (command.isChangeInDateParameterNamed(insuranceExpiryParamName, this.insuranceExpiry)) {
+            final String valueAsInsuranceInput = command.stringValueOfParameterNamed(insuranceExpiryParamName);
+
+            actualChanges.put(insuranceExpiryParamName, valueAsInsuranceInput);
+
+            final LocalDate newValue = command.localDateValueOfParameterNamed(insuranceExpiryParamName);
+            this.insuranceExpiry = Date.from(newValue.atStartOfDay(DateUtils.getDateTimeZoneOfTenant()).toInstant());
+
+        }
+
+        final String pollutionCertExpiryParamName = "pollutionCertExpiry";
+
+        if (command.isChangeInDateParameterNamed(pollutionCertExpiryParamName, this.pollutionCertExpiry)) {
+
+            final String valueAsExpiryInput = command.stringValueOfParameterNamed(pollutionCertExpiryParamName);
+
+            actualChanges.put(pollutionCertExpiryParamName, valueAsExpiryInput);
+
+            final LocalDate newValue = command.localDateValueOfParameterNamed(pollutionCertExpiryParamName);
+            this.pollutionCertExpiry = Date.from(newValue.atStartOfDay(DateUtils.getDateTimeZoneOfTenant()).toInstant());
+
+        }
+
+        final String registrationParamName = "registration";
+
+        if (command.isChangeInDateParameterNamed(registrationParamName, this.registration)) {
+
+            final String valueAsRegistrationInput = command.stringValueOfParameterNamed(registrationParamName);
+            actualChanges.put(registrationParamName, valueAsRegistrationInput);
+
+            final LocalDate newValue = command.localDateValueOfParameterNamed(registrationParamName);
+            this.registration = Date.from(newValue.atStartOfDay(DateUtils.getDateTimeZoneOfTenant()).toInstant());
+
+        }
+
+        actualChanges.put(dateFormatParamName, dateFormatAsInput);
+        actualChanges.put(localeParamName, localeAsInput);
+
+        return actualChanges;
     }
 
     /*

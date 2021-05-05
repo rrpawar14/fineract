@@ -231,6 +231,90 @@ public class FELoansApiResource {
         return this.toApiJsonSerializer.serialize(result);
     }
 
+    @PUT
+    @Path("modifyGuarantorDetails/{guarantorDetailsId}")
+    @Operation(summary = "Create a new applicant loan", description = "Removes the user and the associated roles and permissions.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(schema =
+                                                                              // @Schema(implementation =
+                                                                              // UsersApiResourceSwagger.DeleteUsersUserIdResponse.class)))
+                                                                              // })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String modifyGuarantorApplication(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("guarantorDetailsId") @Parameter(description = "guarantorDetailsId") final Long guarantorDetailsId) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .updateGuarantorDetail(guarantorDetailsId).withJson(apiRequestBodyAsJson) //
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @PUT
+    @Path("modifyVehicleDetails/{vehicleDetailsId}")
+    @Operation(summary = "Create a new applicant loan", description = "Removes the user and the associated roles and permissions.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(schema =
+                                                                              // @Schema(implementation =
+                                                                              // UsersApiResourceSwagger.DeleteUsersUserIdResponse.class)))
+                                                                              // })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String modifyVehicleDetailsApplication(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("vehicleDetailsId") @Parameter(description = "vehicleDetailsId") final Long vehicleDetailsId) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .updateVehicleDetail(vehicleDetailsId).withJson(apiRequestBodyAsJson) //
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @PUT
+    @Path("modifyBankDetails/{bankDetailsId}")
+    @Operation(summary = "Create a new applicant loan", description = "Removes the user and the associated roles and permissions.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(schema =
+                                                                              // @Schema(implementation =
+                                                                              // UsersApiResourceSwagger.DeleteUsersUserIdResponse.class)))
+                                                                              // })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String modifyBankApplication(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("bankDetailsId") @Parameter(description = "bankDetailsId") final Long bankDetailsId) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .updateBankDetail(bankDetailsId).withJson(apiRequestBodyAsJson) //
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @PUT
+    @Path("modifyLoanDetails/{loanDetailsId}")
+    @Operation(summary = "Create a new applicant loan", description = "Removes the user and the associated roles and permissions.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(schema =
+                                                                              // @Schema(implementation =
+                                                                              // UsersApiResourceSwagger.DeleteUsersUserIdResponse.class)))
+                                                                              // })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String modifyLoanDetailsApplication(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("loanDetailsId") @Parameter(description = "loanDetailsId") final Long loanDetailsId) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .updateLoanDetail(loanDetailsId).withJson(apiRequestBodyAsJson) //
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
     @GET
     @Path("getDocuments")
     @Consumes({ MediaType.APPLICATION_JSON })

@@ -982,6 +982,38 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder updateGuarantorDetail(Long guarantorDetailsId) {
+        this.actionName = "UPDATE";
+        this.entityName = "GUARANTORDETAIL";
+        this.entityId = guarantorDetailsId;
+        this.href = "/loans/updateGuarantorApplication";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateVehicleDetail(Long vehicleDetailsId) {
+        this.actionName = "UPDATE";
+        this.entityName = "VECHILEDETAIL";
+        this.entityId = vehicleDetailsId;
+        this.href = "/loans/updateApplicantloan";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateBankDetail(Long bankDetailsId) {
+        this.actionName = "UPDATE";
+        this.entityName = "BANKDETAIL";
+        this.entityId = bankDetailsId;
+        this.href = "/loans/updateBankApplication";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateLoanDetail(Long loanDetailsId) {
+        this.actionName = "UPDATE";
+        this.entityName = "LOANDETAIL";
+        this.entityId = loanDetailsId;
+        this.href = "/loans/updateApplicantloan";
+        return this;
+    }
+
     public CommandWrapperBuilder createFETask() {
         this.actionName = "CREATE";
         this.entityName = "FETASK";

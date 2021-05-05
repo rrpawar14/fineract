@@ -23,8 +23,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface NewVehicleLoanRepository extends JpaRepository<NewVehicleLoan, Long>, JpaSpecificationExecutor<NewVehicleLoan> {
+public interface NewVehicleLoanRepository extends JpaRepository<VehicleLoan, Long>, JpaSpecificationExecutor<VehicleLoan> {
 
-    @Query("select newVehicleLoan from NewVehicleLoan newVehicleLoan where newVehicleLoan.id = :userid")
-    NewVehicleLoan getLoanApplicationByuserId(@Param("userid") String userid);
+    @Query("select vehicleLoan from VehicleLoan vehicleLoan where vehicleLoan.id = :userid")
+    VehicleLoan getLoanApplicationByuserId(@Param("userid") String userid);
 }

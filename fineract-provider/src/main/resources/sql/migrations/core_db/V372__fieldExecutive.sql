@@ -202,29 +202,31 @@ AUTO_INCREMENT=1
  CREATE TABLE `m_documents_images` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `location` VARCHAR(500) NULL DEFAULT NULL,
-    `storage_type_enum` SMALLINT(6) NULL DEFAULT NULL,
-    `bank_id` INT(11) NULL DEFAULT NULL,
-    `guarantor_id` INT(11) NULL DEFAULT NULL,
-    `document_number` VARCHAR(50) NULL DEFAULT NULL,
     `entity_name` VARCHAR(50) NULL DEFAULT NULL,
+    `document_number` VARCHAR(50) NULL DEFAULT NULL,
+    `storage_type_enum` SMALLINT(6) NULL DEFAULT NULL,
+    `customerdetails_id` INT(11) NULL DEFAULT NULL,
+    `guarantor_id` INT(11) NULL DEFAULT NULL,
+    `bank_id` INT(11) NULL DEFAULT NULL,
+    `loan_id` INT(11) NULL DEFAULT NULL,
     `feEnroll_id` INT(11) NULL DEFAULT NULL,
-    `newLoan_id` INT(11) NULL DEFAULT NULL,
-    `new_vehicle_id` INT(11) NULL DEFAULT NULL,
-    `vehicle_id` INT(11) NULL DEFAULT NULL,
     PRIMARY KEY (`id`),
     INDEX `FK_document_bank_images` (`bank_id`),
     INDEX `FK_guarantor_id` (`guarantor_id`),
-    INDEX `FK_newvehicle_id` (`vehicle_id`),
+    INDEX `FK_newvehicle_id` (`loan_id`),
     INDEX `FK_enroll_id` (`feEnroll_id`),
+    INDEX `customerdetails_org` (`customerdetails_id`),
     CONSTRAINT `FK_document_bank_images` FOREIGN KEY (`bank_id`) REFERENCES `m_customer_bank_details` (`id`),
+    CONSTRAINT `FK_enroll_id` FOREIGN KEY (`feEnroll_id`) REFERENCES `m_feenroll` (`id`),
     CONSTRAINT `FK_guarantor_id` FOREIGN KEY (`guarantor_id`) REFERENCES `m_customer_guarantor` (`id`),
-    CONSTRAINT `m_documents_images_ibfk_1` FOREIGN KEY (`vehicle_id`) REFERENCES `m_apply_vehicle_loan` (`id`),
-    CONSTRAINT `FK_enroll_id` FOREIGN KEY (`feEnroll_id`) REFERENCES `m_feenroll` (`id`)
+    CONSTRAINT `customerdetails_org` FOREIGN KEY (`customerdetails_id`) REFERENCES `m_customer_details` (`id`),
+    CONSTRAINT `m_documents_images_ibfk_1` FOREIGN KEY (`loan_id`) REFERENCES `m_apply_vehicle_loan` (`id`)
 )
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=1
 ;
+
 
 CREATE TABLE `m_fe_task` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,

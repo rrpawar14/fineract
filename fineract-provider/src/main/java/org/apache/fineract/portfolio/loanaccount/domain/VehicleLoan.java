@@ -30,7 +30,7 @@ import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetails;
 
 @Entity
 @Table(name = "m_apply_vehicle_loan")
-public class NewVehicleLoan extends AbstractPersistableCustom {
+public class VehicleLoan extends AbstractPersistableCustom {
 
     @Column(name = "customer_name", nullable = true, length = 100)
     private String customerName;
@@ -87,9 +87,9 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
     @JoinColumn(name = "customer_id", nullable = true)
     private AppUser appuser;
 
-    public NewVehicleLoan() {}
+    public VehicleLoan() {}
 
-    public static NewVehicleLoan fromJson(final JsonCommand command, final CustomerDetails customerDetails,
+    public static VehicleLoan fromJson(final JsonCommand command, final CustomerDetails customerDetails,
             final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final FELoanDetails loanDetails,
             final BankDetails bankDetails, final AppUser appuser) {
 
@@ -97,15 +97,16 @@ public class NewVehicleLoan extends AbstractPersistableCustom {
         final String vehicleType = command.stringValueOfParameterNamed("vehicleType");
         final String dealer = command.stringValueOfParameterNamed("dealer");
         final String invoiceNumber = command.stringValueOfParameterNamed("invoiceNumber");
+        final String vehicleCondition = command.stringValueOfParameterNamed("vehicleCondition");//
 
         // final Integer image = command.stringValueOfParameterNamed("invoiceImageId");
 
-        return new NewVehicleLoan(customerName, vehicleType, dealer, invoiceNumber, customerDetails, vehicleDetails, customerGuarantor,
+        return new VehicleLoan(customerName, vehicleType, dealer, invoiceNumber, customerDetails, vehicleDetails, customerGuarantor,
                 loanDetails, bankDetails, appuser);
 
     }
 
-    private NewVehicleLoan(final String customerName, final String vehicleType, final String dealer, final String invoiceNumber,
+    private VehicleLoan(final String customerName, final String vehicleType, final String dealer, final String invoiceNumber,
             final CustomerDetails customerDetails, final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor,
             final FELoanDetails loanDetails, final BankDetails bankDetails, final AppUser appuser) {
         this.customerName = customerName;

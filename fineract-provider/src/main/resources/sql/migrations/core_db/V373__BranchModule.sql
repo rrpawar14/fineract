@@ -98,3 +98,8 @@ INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `c
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'DELETE_FETASK', 'FETASK', 'DELETE', 0);
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'UPDATE_FEENQUIRYLOAN', 'FEENQUIRYLOAN', 'UPDATE', 0);
 INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'UPDATE_CUSTOMERADDRESS', 'CUSTOMERADDRESS', 'UPDATE', 0);
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'UPDATE_BANKDETAIL', 'BANKDETAIL', 'UPDATE', 0);
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'UPDATE_CUSTOMERDETAIL', 'CUSTOMERDETAIL', 'UPDATE', 0);
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'UPDATE_GUARANTORDETAIL', 'GUARANTORDETAIL', 'UPDATE', 0);
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'UPDATE_LOANDETAIL', 'LOANDETAIL', 'UPDATE', 0);
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('vehicle', 'UPDATE_VECHILEDETAIL', 'VECHILEDETAIL', 'UPDATE', 0);

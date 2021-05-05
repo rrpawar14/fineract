@@ -18,9 +18,12 @@
  */
 package org.apache.fineract.portfolio.loanaccount.domain;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
@@ -89,6 +92,73 @@ public class BankDetails extends AbstractPersistableCustom {
 
     public String getAccountHolderName() {
         return this.accountHolderName;
+    }
+
+    public Map<String, Object> update(final JsonCommand command) {
+
+        final Map<String, Object> actualChanges = new LinkedHashMap<>(1);
+
+        final String loanEligibleAmountParamName = "loanEligibleAmount";
+        if (command.isChangeInIntegerParameterNamed(loanEligibleAmountParamName, this.loanEligibleAmount)) {
+            final Integer newValue = command.integerValueOfParameterNamed(loanEligibleAmountParamName);
+            actualChanges.put(loanEligibleAmountParamName, newValue);
+            this.loanEligibleAmount = newValue;// StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String accountTypeParamName = "accountType";
+        if (command.isChangeInStringParameterNamed(accountTypeParamName, this.accountType)) {
+            final String newValue = command.stringValueOfParameterNamed(accountTypeParamName);
+            actualChanges.put(accountTypeParamName, newValue);
+            this.accountType = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String disbursalTypeParamName = "disbursalType";
+        if (command.isChangeInStringParameterNamed(disbursalTypeParamName, this.disbursalType)) {
+            final String newValue = command.stringValueOfParameterNamed(disbursalTypeParamName);
+            actualChanges.put(disbursalTypeParamName, newValue);
+            this.disbursalType = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String accountNumberParamName = "accountNumber";
+        if (command.isChangeInStringParameterNamed(accountNumberParamName, this.accountNumber)) {
+            final String newValue = command.stringValueOfParameterNamed(accountNumberParamName);
+            actualChanges.put(accountNumberParamName, newValue);
+            this.accountNumber = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String accountHolderNameParamName = "accountHolderName";
+        if (command.isChangeInStringParameterNamed(accountHolderNameParamName, this.accountHolderName)) {
+            final String newValue = command.stringValueOfParameterNamed(accountHolderNameParamName);
+            actualChanges.put(accountHolderNameParamName, newValue);
+            this.accountHolderName = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        /*
+         * final String mobileNoParamName = "mobileNo"; if (command.isChangeInStringParameterNamed(mobileNoParamName,
+         * this.mobileNo)) { final String newValue = command.stringValueOfParameterNamed(mobileNoParamName);
+         * actualChanges.put(mobileNoParamName, newValue); this.mobileNo = StringUtils.defaultIfEmpty(newValue, null); }
+         */
+        final String bankNameParamName = "bankName";
+        if (command.isChangeInStringParameterNamed(bankNameParamName, this.bankName)) {
+            final String newValue = command.stringValueOfParameterNamed(bankNameParamName);
+            actualChanges.put(bankNameParamName, newValue);
+            this.bankName = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String branchNameParamName = "branchName";
+        if (command.isChangeInStringParameterNamed(branchNameParamName, this.branchName)) {
+            final String newValue = command.stringValueOfParameterNamed(branchNameParamName);
+            actualChanges.put(branchNameParamName, newValue);
+            this.branchName = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String IFSCParamName = "IFSC";
+        if (command.isChangeInStringParameterNamed(IFSCParamName, this.IFSC)) {
+            final String newValue = command.stringValueOfParameterNamed(IFSCParamName);
+            actualChanges.put(IFSCParamName, newValue);
+            this.IFSC = StringUtils.defaultIfEmpty(newValue, null);
+        }
+        return actualChanges;
     }
 
     /*

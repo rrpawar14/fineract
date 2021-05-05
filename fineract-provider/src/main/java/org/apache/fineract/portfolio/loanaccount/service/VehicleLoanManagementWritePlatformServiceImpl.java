@@ -35,10 +35,10 @@ import org.apache.fineract.portfolio.loanaccount.domain.CustomerDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerDetailsRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantor;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantorRepository;
-import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoan;
 import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoanRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetailsRepository;
+import org.apache.fineract.portfolio.loanaccount.domain.VehicleLoan;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
 import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetails;
@@ -180,8 +180,8 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             final AppUser appuser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
             System.out.println("appuser" + appuser);
 
-            final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj,
-                    customerGuarantorObj, loanDetails, bankDetailsObj, appuser);
+            final VehicleLoan newVehicleLoan = VehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj, customerGuarantorObj,
+                    loanDetails, bankDetailsObj, appuser);
             System.out.println("newVehicleLoan" + newVehicleLoan);
 
             // final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command);
@@ -238,9 +238,6 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             }
 
             // final Long customerDetailsId = customerDetails.getId();
-            System.out.println("customerDetailsId" + customerDetailsId);
-            final CustomerDetails customerDetailsObj = this.customerDetailsRepository.getOne(customerDetailsId);
-            System.out.println("customerDetailsObj" + customerDetailsObj);
 
             // createVehicleDetails
             /*
@@ -309,6 +306,147 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
                     .build();
         }
 
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult updateVehicleDetails(Long vehicleDetailsId, final JsonCommand command) {
+
+        // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+        try {
+            this.context.authenticatedUser();
+
+            final VehicleDetails vehicleDetails = this.vehicleDetailsRepository.getOne(vehicleDetailsId);
+
+            final Map<String, Object> changes = vehicleDetails.update(command);
+
+            if (!changes.isEmpty()) {
+                this.vehicleDetailsRepository.save(vehicleDetails);
+            }
+
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .withVehicleDetailsId(vehicleDetails.getId()) //
+                    .build();
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .build();
+        } catch (final PersistenceException dve) {
+            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+            handleDataIntegrityIssues(command, throwable, dve);
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .build();
+        }
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult updateGuarantorDetails(Long guarantorId, final JsonCommand command) {
+
+        // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+        try {
+            this.context.authenticatedUser();
+
+            CustomerGuarantor customerGuarantor = this.customerGuarantorRepository.getOne(guarantorId);
+
+            final Map<String, Object> changes = customerGuarantor.update(command);
+
+            if (!changes.isEmpty()) {
+                this.customerGuarantorRepository.save(customerGuarantor);
+            }
+
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .withCustomerGuarantorId(customerGuarantor.getId()) //
+                    .build();
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .build();
+        } catch (final PersistenceException dve) {
+            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+            handleDataIntegrityIssues(command, throwable, dve);
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .build();
+        }
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult updateBankDetails(Long bankDetailsId, final JsonCommand command) {
+
+        // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+        try {
+            this.context.authenticatedUser();
+
+            final BankDetails bankDetails = this.bankDetailsRepository.getOne(bankDetailsId);
+
+            final Map<String, Object> changes = bankDetails.update(command);
+
+            if (!changes.isEmpty()) {
+                this.bankDetailsRepository.save(bankDetails);
+            }
+
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .withBankDetailsId(bankDetails.getId()) //
+                    .build();
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .build();
+        } catch (final PersistenceException dve) {
+            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+            handleDataIntegrityIssues(command, throwable, dve);
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .build();
+        }
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult updateLoanDetails(Long loanDetailId, final JsonCommand command) {
+
+        // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+        try {
+            this.context.authenticatedUser();
+
+            final FELoanDetails loanDetails = this.feLoanDetailsRepository.getOne(loanDetailId);
+            // CustomerGuarantor customerGuarantor = this.customerGuarantorRepository.getOne(guarantorId);
+
+            final Map<String, Object> changes = loanDetails.update(command);
+
+            if (!changes.isEmpty()) {
+                this.feLoanDetailsRepository.save(loanDetails);
+            }
+
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .withLoanId(loanDetails.getId()) //
+                    .build();
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .build();
+        } catch (final PersistenceException dve) {
+            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+            handleDataIntegrityIssues(command, throwable, dve);
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .build();
+        }
     }
 
     /*
