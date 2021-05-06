@@ -125,6 +125,10 @@ public class VehicleLoan extends AbstractPersistableCustom {
         return this.customerName;
     }
 
+    public String getInvoiceNumber() {
+        return this.invoiceNumber;
+    }
+
     /*
      * public void setInvoiceImage(final DocumentImages invoiceImage) { this.image = invoiceImage; }
      *

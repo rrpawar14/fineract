@@ -269,4 +269,8 @@ public class CustomerDetails extends AbstractPersistableCustom {
      * public Image getImage() { return this.proof; }
      */
 
+    public String getName() {
+        return this.name;
+    }
+
 }

@@ -36,6 +36,8 @@ import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.portfolio.client.exception.ImageNotFoundException;
 import org.apache.fineract.portfolio.loanaccount.domain.BankDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.BankDetailsRepositoryWrapper;
+import org.apache.fineract.portfolio.loanaccount.domain.CustomerDetails;
+import org.apache.fineract.portfolio.loanaccount.domain.CustomerDetailsRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantor;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantorRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoanRepositoryWrapper;
@@ -60,6 +62,7 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
     private final AppUserRepositoryWrapper appUserRepositoryWrapper;
     private final DocumentImageRepository documentImageRepository;
     private final BankDetailsRepositoryWrapper bankDetailsRepositoryWrapper;
+    private final CustomerDetailsRepositoryWrapper customerDetailsRepositoryWrapper;
     private final CustomerGuarantorRepositoryWrapper customerGuarantorRepositoryWrapper;
     private final NewVehicleLoanRepositoryWrapper newVehicleLoanRepositoryWrapper;
     private final VehicleDetailsRepositoryWrapper vehicleDetailsRepositoryWrapper;
@@ -68,6 +71,7 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
     public ImageReadPlatformServiceImpl(final RoutingDataSource dataSource, final ContentRepositoryFactory documentStoreFactory,
             final ClientRepositoryWrapper clientRepositoryWrapper, StaffRepositoryWrapper staffRepositoryWrapper,
             final AppUserRepositoryWrapper appUserRepositoryWrapper, final BankDetailsRepositoryWrapper bankDetailsRepositoryWrapper,
+            final CustomerDetailsRepositoryWrapper customerDetailsRepositoryWrapper,
             final VehicleDetailsRepositoryWrapper vehicleDetailsRepositoryWrapper,
             final CustomerGuarantorRepositoryWrapper customerGuarantorRepositoryWrapper,
             final DocumentImageRepository documentImageRepository, final NewVehicleLoanRepositoryWrapper newVehicleLoanRepositoryWrapper) {
@@ -77,6 +81,7 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
         this.clientRepositoryWrapper = clientRepositoryWrapper;
         this.appUserRepositoryWrapper = appUserRepositoryWrapper;
         this.bankDetailsRepositoryWrapper = bankDetailsRepositoryWrapper;
+        this.customerDetailsRepositoryWrapper = customerDetailsRepositoryWrapper;
         this.vehicleDetailsRepositoryWrapper = vehicleDetailsRepositoryWrapper;
         this.customerGuarantorRepositoryWrapper = customerGuarantorRepositoryWrapper;
         this.documentImageRepository = documentImageRepository;
@@ -92,8 +97,8 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
         }
 
         public String schema(String entityType) {
-            StringBuilder builder = new StringBuilder(
-                    "image.id as id, image.location as location, image.storage_type_enum as storageType ");
+            StringBuilder builder = new StringBuilder(" ");
+            // "");
             if (EntityTypeForImages.CLIENTS.toString().equalsIgnoreCase(entityType)) {
                 System.out.println("CLIENTS-Entity");
                 builder.append(" from m_image image , m_client client " + " where client.image_id = image.id and client.id=?");
@@ -102,66 +107,86 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
                 builder.append("from m_image image , m_staff staff " + " where staff.image_id = image.id and staff.id=?");
             } else if (EntityTypeForImages.PROFILEIMAGE.toString().equalsIgnoreCase(entityType)) {
                 System.out.println("profileimage");
-                builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
+                builder.append(
+                        " image.id as id, image.location as location, image.storage_type_enum as storageType from m_image image , m_appuser appuser "
+                                + " where appuser.image_id = image.id and appuser.id=?");
             } else if (EntityTypeForImages.CUSTOMERIMAGE.toString().equalsIgnoreCase(entityType)) {
                 System.out.println("CUSTOMERIMAGE-Entity");
-                builder.append("from m_documents_images docim , m_customer_details cd "
-                        + " where cd.id = docim.customerdetails_id and cd.id=? where docim.entity_name = customerimage");
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_details cd "
+                                + " where cd.id = docim.customerdetails_id and docim.entity_name = 'customerimage'  and cd.id=? ");
             } else if (EntityTypeForImages.ADHARPHOTO.toString().equals(entityType)) {
-                builder.append("from m_documents_images docim , m_customer_details cd "
-                        + " where cd.id = docim.customerdetails_id and cd.id=? where docim.entity_name = adharphoto");
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_details cd "
+                                + " where cd.id = docim.customerdetails_id and docim.entity_name = 'adharphoto' and cd.id=? ");
 
             } else if (EntityTypeForImages.PANCARD.toString().equals(entityType)) {
-                builder.append("from m_documents_images docim , m_customer_details cd "
-                        + " where cd.id = docim.customerdetails_id and cd.id=? where docim.entity_name = pancard");
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_details cd "
+                                + " where cd.id = docim.customerdetails_id  and docim.entity_name = 'pancard' and cd.id=? ");
 
             } else if (EntityTypeForImages.VEHICLE_LICENCE.toString().equals(entityType)) {
-                builder.append("from m_documents_images docim , m_customer_details cd "
-                        + " where docim.entity_name = vehicle_licence and cd.id = docim.customerdetails_id and cd.id=? ");
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_details cd "
+                                + " where docim.entity_name = 'vehicle_licence' and cd.id = docim.customerdetails_id and cd.id=? ");
 
             } else if (EntityTypeForImages.GUARANTORIMAGE.toString().equalsIgnoreCase(entityType)) {
                 System.out.println("CUSTOMERIMAGE-Entity");
-                builder.append("from m_documents_images docim , m_customer_guarantor gd "
-                        + " where gd.id = docim.guarantor_id and gd.id=? where docim.entity_name = guarantorimage");
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_guarantor gd "
+                                + " where gd.id = docim.guarantor_id and docim.entity_name = 'guarantorimage' and gd.id=? ");
             } else if (EntityTypeForImages.G_ADHARPHOTO.toString().equals(entityType)) {
-                builder.append("from m_documents_images docim , m_customer_guarantor gd "
-                        + " where docim.entity_name = adharphoto and gd.id = docim.guarantor_id and gd.id=? ");
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType  from m_documents_images docim , m_customer_guarantor gd "
+                                + "   where gd.id = docim.guarantor_id  and docim.entity_name = 'adharphoto' and gd.id=? ");
 
             } else if (EntityTypeForImages.G_PANCARD.toString().equals(entityType)) {
-                builder.append("from m_documents_images docim , m_customer_guarantor gd "
-                        + " where gd.id = docim.guarantor_id and gd.id=? where docim.entity_name = pancard");
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_guarantor gd "
+                                + " where gd.id = docim.guarantor_id and docim.entity_name = 'pancard' and gd.id=? ");
 
             } else if (EntityTypeForImages.G_VEHICLE_LICENCE.toString().equals(entityType)) {
-                builder.append("from m_documents_images docim , m_customer_guarantor gd "
-                        + " where gd.id = docim.guarantor_id and gd.id=? where docim.entity_name = vehicle_licence");
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_guarantor gd "
+                                + " where gd.id = docim.guarantor_id and gd.id=? where docim.entity_name = vehicle_licence");
             } else if (EntityTypeForImages.INVOICEIMAGE.toString().equalsIgnoreCase(entityType)) {
-                builder.append("from m_documents_images docim , m_apply_vehicle_loan vl "
-                        + " where vl.id = docim.loan_id and vl.id=? where docim.entity_name = invoiceimage ");
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_apply_vehicle_loan vl "
+                                + " where vl.id = docim.loan_id and docim.entity_name = 'invoiceimage' and vl.id=? ");
 
             } else if (EntityTypeForImages.ENGINE.toString().equals(entityType)) {
-                builder.append(" from m_vehicle_images vm , m_vehicle_details vd "
-                        + " where vd.id = vm.vehicle_id and vd.id=? where docim.entity_name = engine ");
+                builder.append(
+                        "  vm.id as id, vm.location as location, vm.storage_type_enum as storageType  from m_vehicle_images vm , m_vehicle_details vd "
+                                + "   where vd.id = vm.vehicle_id and vm.entity_name = 'engine' and vd.id= ? ");
             } else if (EntityTypeForImages.CHASSIS.toString().equals(entityType)) {
-                builder.append("from m_vehicle_images vm , m_vehicle_details vd "
-                        + " where vd.id = vm.vehicle_id and vd.id=? where docim.entity_name = chassis ");
+                builder.append(
+                        " vm.id as id, vm.location as location, vm.storage_type_enum as storageType  from m_vehicle_images vm , m_vehicle_details vd "
+                                + "   where vd.id = vm.vehicle_id and vm.entity_name = 'chassis' and vd.id= ? ");
             } else if (EntityTypeForImages.VEHICLEINSURANCE.toString().equals(entityType)) {
-                builder.append("from m_vehicle_images vm , m_vehicle_details vd "
-                        + " where vd.id = vm.vehicle_id and vd.id=? where docim.entity_name = vehicleinsurance ");
+                builder.append(
+                        " vm.id as id, vm.location as location, vm.storage_type_enum as storageType  from m_vehicle_images vm , m_vehicle_details vd "
+                                + " where vd.id = vm.vehicle_id and vm.entity_name = 'vehicleinsurance' and vd.id= ? ");
             } else if (EntityTypeForImages.KMREADING.toString().equals(entityType)) {
-                builder.append("from m_vehicle_images vm , m_vehicle_details vd "
-                        + " where vd.id = vm.vehicle_id and vd.id=? where docim.entity_name = kmreading ");
+                builder.append(
+                        " vm.id as id, vm.location as location, vm.storage_type_enum as storageType  from m_vehicle_images vm , m_vehicle_details vd  "
+                                + " where vd.id = vm.vehicle_id and vm.entity_name = 'kmreading' and vd.id= ? ");
             }
 
             else if (EntityTypeForImages.RCBOOK.toString().equals(entityType)) {
-                builder.append("from m_vehicle_images vm , m_vehicle_details vd "
-                        + " where vd.id = vm.vehicle_id and vd.id=? where docim.entity_name = rcbook ");
-            } else if (EntityTypeForImages.VEHICLE.toString().equals(entityType)) {
-                builder.append("from m_image image , m_appuser appuser " + " where appuser.image_id = image.id and appuser.id=?");
+                builder.append(
+                        " vm.id as id, vm.location as location, vm.storage_type_enum as storageType  from m_vehicle_images vm , m_vehicle_details vd "
+                                + " where vd.id = vm.vehicle_id and vm.entity_name = 'rcbook' and vd.id= ? ");
+            } else if (EntityTypeForImages.VEHICLE.toString().equals(entityType)) { // work needs to be done for Vehicle
+                                                                                    // sides from different angle
+                builder.append(
+                        " vm.id as id, vm.location as location, vm.storage_type_enum as storageType from m_image image , m_appuser appuser "
+                                + " where appuser.image_id = image.id and appuser.id=?");
             }
 
             else if (EntityTypeForImages.BANK.toString().equals(entityType)) {
-                builder.append("from m_documents_images docim , m_customer_bank_details bd "
-                        + " where bd.id = docim.bank_id and bd.id=? where docim.entity_name = bank ");
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_bank_details bd "
+                                + " where bd.id = docim.bank_id and docim.entity_name = 'bank' and bd.id=? ");
             }
             return builder.toString();
         }
@@ -185,21 +210,59 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
             } else if (EntityTypeForImages.STAFF.toString().equalsIgnoreCase(entityType)) {
                 Staff owner = this.staffRepositoryWrapper.findOneWithNotFoundDetection(entityId);
                 displayName = owner.displayName();
+            } else if (EntityTypeForImages.INVOICEIMAGE.toString().equalsIgnoreCase(entityType)) {
+
+                VehicleLoan owner = this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = owner.getInvoiceNumber();
+
             } else if (EntityTypeForImages.PROFILEIMAGE.toString().equalsIgnoreCase(entityType)) {
                 AppUser owner = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(entityId);
                 displayName = owner.getFirstname();
-            } else if (EntityTypeForImages.ADHARPHOTO.toString().equals(entityType)
-                    || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityType)
-                    || EntityTypeForImages.INVOICEIMAGE.toString().equalsIgnoreCase(entityType)) {
-                VehicleLoan owner = this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
-                displayName = owner.getName();
-            } else if (EntityTypeForImages.ENGINE.toString().equals(entityType) || EntityTypeForImages.CHASSIS.toString().equals(entityType)
-                    || EntityTypeForImages.VEHICLE.toString().equals(entityType)) {
-                VehicleDetails vehicleDetails = this.vehicleDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
-                // displayName = owner.getFirstname();
+
+            } else if (EntityTypeForImages.CUSTOMERIMAGE.toString().equalsIgnoreCase(entityType)) {
+
+                final CustomerDetails customerDetails = this.customerDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = customerDetails.getName();
+            }
+
+            else if (EntityTypeForImages.ADHARPHOTO.toString().equals(entityType)) {
+                final CustomerDetails customerDetails = this.customerDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = customerDetails.getName();
+            } else if (EntityTypeForImages.PANCARD.toString().equals(entityType)) {
+                final CustomerDetails customerDetails = this.customerDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = customerDetails.getName();
+            }
+
+            else if (EntityTypeForImages.VEHICLE_LICENCE.toString().equals(entityType)) {
+                final CustomerDetails customerDetails = this.customerDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = customerDetails.getName();
             } else if (EntityTypeForImages.GUARANTORIMAGE.toString().equals(entityType)) {
                 CustomerGuarantor owner = this.customerGuarantorRepositoryWrapper.findOneWithNotFoundDetection(entityId);
                 displayName = owner.getGuarantorName();
+            } else if (EntityTypeForImages.G_PANCARD.toString().equals(entityType)) {
+                CustomerGuarantor owner = this.customerGuarantorRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = owner.getGuarantorName();
+            } else if (EntityTypeForImages.G_ADHARPHOTO.toString().equals(entityType)) {
+                CustomerGuarantor owner = this.customerGuarantorRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = owner.getGuarantorName();
+            } else if (EntityTypeForImages.G_VEHICLE_LICENCE.toString().equals(entityType)) {
+                CustomerGuarantor owner = this.customerGuarantorRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = owner.getGuarantorName();
+            } else if (EntityTypeForImages.ENGINE.toString().equals(entityType)) {
+                VehicleDetails vehicleDetails = this.vehicleDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = vehicleDetails.getEngineNumber();
+            } else if (EntityTypeForImages.CHASSIS.toString().equals(entityType)) {
+                VehicleDetails vehicleDetails = this.vehicleDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = vehicleDetails.getChassisNumber();
+            } else if (EntityTypeForImages.VEHICLEINSURANCE.toString().equals(entityType)) {
+                VehicleDetails vehicleDetails = this.vehicleDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = vehicleDetails.insurancePolicyNumber();
+            } else if (EntityTypeForImages.KMREADING.toString().equals(entityType)) {
+                VehicleDetails vehicleDetails = this.vehicleDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = vehicleDetails.getkmReading();
+            } else if (EntityTypeForImages.RCBOOK.toString().equals(entityType)) {
+                VehicleDetails vehicleDetails = this.vehicleDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = vehicleDetails.getVehicleNumber();
             } else if (EntityTypeForImages.BANK.toString().equals(entityType)) {
                 BankDetails owner = this.bankDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
                 displayName = owner.getAccountHolderName();
@@ -208,12 +271,14 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
             }
             System.out.println("displayName: " + displayName);
             final ImageMapper imageMapper = new ImageMapper(displayName);
+
             // System.out.println("imageMapper: " + imageMapper);
 
             final String sql = "select " + imageMapper.schema(entityType);
             System.out.println("sql: " + sql);
 
             final ImageData imageData = this.jdbcTemplate.queryForObject(sql, imageMapper, entityId);
+            System.out.println("imageData: " + imageData);
             // System.out.println("imageData: " + imageData);
             final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository(imageData.storageType());
             return contentRepository.fetchImage(imageData);

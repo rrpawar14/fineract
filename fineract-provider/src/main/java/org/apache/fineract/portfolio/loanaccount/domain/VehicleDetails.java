@@ -240,6 +240,25 @@ public class VehicleDetails extends AbstractPersistableCustom {
         return actualChanges;
     }
 
+    public String getEngineNumber() {
+        return this.engineNumber;
+    }
+
+    public String getChassisNumber() {
+        return this.chassisNumber;
+    }
+
+    public String insurancePolicyNumber() {
+        return this.insurancePolicy;
+    }
+
+    public String getkmReading() {
+        return this.kmReading.toString();
+    }
+
+    public String getVehicleNumber() {
+        return this.vehicleNumber;
+    }
     /*
      * public void setVehicleDetails(final VehicleImages vehicleImage) { this.vehicleImage = vehicleImage; }
      *
