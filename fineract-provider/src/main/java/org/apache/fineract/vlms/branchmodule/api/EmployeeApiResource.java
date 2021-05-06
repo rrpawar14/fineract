@@ -23,20 +23,27 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.vlms.branchmodule.data.EmployeeData;
+import org.apache.fineract.vlms.branchmodule.service.BranchModuleReadPlatformService;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.apache.fineract.vlms.fieldexecutive.domain.DocumentsData;
 import org.apache.fineract.vlms.fieldexecutive.service.FEReadPlatformService;
@@ -50,8 +57,10 @@ import org.springframework.stereotype.Component;
 public class EmployeeApiResource {
 
     private final PlatformSecurityContext context;
+    private final BranchModuleReadPlatformService branchModuleReadPlatformService;
     private final FEReadPlatformService readPlatformService;
     private final DefaultToApiJsonSerializer<DocumentsData> toApiJsonSerializer;
+    private final DefaultToApiJsonSerializer<EmployeeData> toApiEmployeeJsonSerializer;
     private final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
@@ -60,15 +69,40 @@ public class EmployeeApiResource {
 
     @Autowired
     public EmployeeApiResource(final PlatformSecurityContext context, final FEReadPlatformService readPlatformService,
+            final BranchModuleReadPlatformService branchModuleReadPlatformService,
             final DefaultToApiJsonSerializer<DocumentsData> toApiJsonSerializer,
+            final DefaultToApiJsonSerializer<EmployeeData> toApiEmployeeJsonSerializer,
             final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer, final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
         this.readPlatformService = readPlatformService;
+        this.branchModuleReadPlatformService = branchModuleReadPlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
+        this.toApiEmployeeJsonSerializer = toApiEmployeeJsonSerializer;
         this.toApiTaskJsonSerializer = toApiTaskJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
+    }
+
+    @GET
+    @Path("getEmployees")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Enquires", description = "Returns the list of Enquries.\n" + "\n" + "Example Requests:\n" + "\n"
+            + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveAllEnquires(@Context final UriInfo uriInfo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final Collection<EmployeeData> employeeData = this.branchModuleReadPlatformService.retrieveAllEmployee();
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiEmployeeJsonSerializer.serialize(settings, employeeData, RESPONSE_DATA_PARAMETERS);
     }
 
     @POST
