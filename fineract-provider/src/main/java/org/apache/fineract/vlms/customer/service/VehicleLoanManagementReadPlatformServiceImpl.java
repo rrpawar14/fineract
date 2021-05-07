@@ -62,7 +62,10 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
                     + " cnv.invoice_number as invoicenumber, "
 
                     // customer details
-                    + " cd.id as customerDetailsId, cd.name as customer_name, cd.gender as gender, cd.dob as dob, "
+                    + " cd.id as customerDetailsId, cd.name as customer_name, cd.gender as gender, cd.mobile_number as mobileNumber,"
+                    + " cd.alternate_number as alternateNumber, cd.father_name as fatherName, cd.applicant_type as applicantType,"
+                    + " cd.refer_by as referBy, cd.company_name as companyName, cd.monthly_income as monthlyIncome, cd.salary_date as salaryDate,"
+                    + " cd.salary_period as salaryPeriod, cd.dob as dob, "
                     + " cd.marital_status as maritalstatus,  cd.spousename as spouseName, cd.profession as profession, cd.proof_image_id as proofImageId, "
 
                     // communicationaddress cadd of customerdetails
@@ -82,7 +85,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
 
                     // guarantor details
                     + " cg.id as guarantorDetailsId, cg.guarantor_name as guarantorName, cg.gender as gender, cg.dob as dob, cg.mobile_number as guarantorMobileNumber, "
-                    + " cg.marital_status as maritalstatus,  cg.spouse_name as spousename, cg.profession as profession, "
+                    + " cg.marital_status as maritalstatus,  cg.spouse_name as gspousename, cg.profession as profession, "
 
                     // communicationaddress gcadd of guarantordetails
                     + " gcadd.street as street, gcadd.address_line_1 as addressline1, gcadd.address_line_2 as addressline2, "
@@ -232,10 +235,20 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             final Long customerDetailsId = rs.getLong("customerDetailsId");
             final String customerName = rs.getString("customerName");
             final String gender = rs.getString("gender");
+            final String mobileNumber = rs.getString("mobileNumber");
+            final String alternateNumber = rs.getString("alternateNumber");
+            final String fatherName = rs.getString("fatherName");
+            final String applicantType = rs.getString("applicantType");
+            final String referBy = rs.getString("referBy");
+            final String companyName = rs.getString("companyName");
+            final String monthlyIncome = rs.getString("monthlyIncome");
+            final LocalDate salaryDate = JdbcSupport.getLocalDate(rs, "salaryDate");
+            final String salaryPeriod = rs.getString("salaryPeriod");
 
             // final LocalDate dob = JdbcSupport.getLocalDate(rs, "overdueSinceDate");
             final LocalDate dob = JdbcSupport.getLocalDate(rs, "dob");
             final String maritalStatus = rs.getString("maritalstatus");
+            final String spouseName = rs.getString("spouseName");
             final String profession = rs.getString("profession");
             final Long imageId = rs.getLong("proofImageId");
             // final Long communicationAdd = rs.getLong("communicationadd_id");
@@ -243,6 +256,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             // final Long officeAdd = rs.getLong("officeadd_id");
 
             // fetched addresses and create address objects and inject in customerDetailsData
+
             final Long addId = rs.getLong("addId");
             final String street = rs.getString("street");
             final String addressLine1 = rs.getString("addressLine1");
@@ -262,8 +276,9 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
 
             final AddressData officeAddressData = new AddressData(addId, addressLine1, addressLine2, city, pincode, landmark, area, state);
 
-            CustomerDetailsData customerDetailsData = new CustomerDetailsData(customerDetailsId, customerName, gender, dob, maritalStatus,
-                    null, profession, communicationAddressData, permanentAddressData, officeAddressData);
+            CustomerDetailsData customerDetailsData = new CustomerDetailsData(customerDetailsId, customerName, gender, mobileNumber,
+                    alternateNumber, fatherName, applicantType, referBy, companyName, monthlyIncome, salaryDate, salaryPeriod, dob,
+                    maritalStatus, spouseName, profession, communicationAddressData, permanentAddressData, officeAddressData);
 
             final Long guarantorDetailsId = rs.getLong("guarantorDetailsId");
             final String guarantorName = rs.getString("guarantorName");
@@ -272,12 +287,12 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             // final LocalDate dob = JdbcSupport.getLocalDate(rs, "dob");
 
             // final String maritalStatus = rs.getString("maritalStatus");
-            final String spouseName = rs.getString("spouseName");
+            final String gspouseName = rs.getString("gspousename");
             // final String profession = rs.getString("profession");
             // final String state = rs.getString("state");
 
             GuarantorDetailsData guarantorDetailsData = new GuarantorDetailsData(guarantorDetailsId, guarantorName, guarantorMobileNumber,
-                    gender, dob, maritalStatus, spouseName, profession, communicationAddressData, permanentAddressData, officeAddressData);
+                    gender, dob, maritalStatus, gspouseName, profession, communicationAddressData, permanentAddressData, officeAddressData);
 
             final Long bankDetailsId = rs.getLong("bankDetailsId");
             final Long eligibleAmount = rs.getLong("eligibleAmount");

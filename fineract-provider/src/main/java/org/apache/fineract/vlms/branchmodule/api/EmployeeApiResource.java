@@ -43,6 +43,8 @@ import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSeria
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.vlms.branchmodule.data.EmployeeData;
+import org.apache.fineract.vlms.branchmodule.data.LoanApprovalLimitData;
+import org.apache.fineract.vlms.branchmodule.data.LoanDisbursalLimitData;
 import org.apache.fineract.vlms.branchmodule.service.BranchModuleReadPlatformService;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.apache.fineract.vlms.fieldexecutive.domain.DocumentsData;
@@ -62,6 +64,8 @@ public class EmployeeApiResource {
     private final DefaultToApiJsonSerializer<DocumentsData> toApiJsonSerializer;
     private final DefaultToApiJsonSerializer<EmployeeData> toApiEmployeeJsonSerializer;
     private final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer;
+    private final DefaultToApiJsonSerializer<LoanApprovalLimitData> toApiApprovalJsonSerializer;
+    private final DefaultToApiJsonSerializer<LoanDisbursalLimitData> toApiDisbursalJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList("documents"));
@@ -72,7 +76,10 @@ public class EmployeeApiResource {
             final BranchModuleReadPlatformService branchModuleReadPlatformService,
             final DefaultToApiJsonSerializer<DocumentsData> toApiJsonSerializer,
             final DefaultToApiJsonSerializer<EmployeeData> toApiEmployeeJsonSerializer,
-            final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer, final ApiRequestParameterHelper apiRequestParameterHelper,
+            final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer,
+            final DefaultToApiJsonSerializer<LoanApprovalLimitData> toApiApprovalJsonSerializer,
+            final DefaultToApiJsonSerializer<LoanDisbursalLimitData> toApiDisbursalJsonSerializer,
+            final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
         this.readPlatformService = readPlatformService;
@@ -80,6 +87,8 @@ public class EmployeeApiResource {
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.toApiEmployeeJsonSerializer = toApiEmployeeJsonSerializer;
         this.toApiTaskJsonSerializer = toApiTaskJsonSerializer;
+        this.toApiApprovalJsonSerializer = toApiApprovalJsonSerializer;
+        this.toApiDisbursalJsonSerializer = toApiDisbursalJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
     }
@@ -123,6 +132,48 @@ public class EmployeeApiResource {
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
         return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @GET
+    @Path("getLoanApproval")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Enquires", description = "Returns the list of Enquries.\n" + "\n" + "Example Requests:\n" + "\n"
+            + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveAllLoanApproval(@Context final UriInfo uriInfo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final Collection<LoanApprovalLimitData> loanApprovalData = this.branchModuleReadPlatformService.retrieveAllLoanApproval();
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiApprovalJsonSerializer.serialize(settings, loanApprovalData, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
+    @Path("getLoanDisbursal")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Enquires", description = "Returns the list of Enquries.\n" + "\n" + "Example Requests:\n" + "\n"
+            + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveAllLoanDisbursal(@Context final UriInfo uriInfo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final Collection<LoanDisbursalLimitData> loanDisbursalData = this.branchModuleReadPlatformService.retrieveAllLoanDisbursal();
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiDisbursalJsonSerializer.serialize(settings, loanDisbursalData, RESPONSE_DATA_PARAMETERS);
     }
 
 }

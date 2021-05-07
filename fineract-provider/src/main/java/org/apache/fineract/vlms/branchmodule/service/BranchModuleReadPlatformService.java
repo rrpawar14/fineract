@@ -20,9 +20,15 @@ package org.apache.fineract.vlms.branchmodule.service;
 
 import java.util.Collection;
 import org.apache.fineract.vlms.branchmodule.data.EmployeeData;
+import org.apache.fineract.vlms.branchmodule.data.LoanApprovalLimitData;
+import org.apache.fineract.vlms.branchmodule.data.LoanDisbursalLimitData;
 
 public interface BranchModuleReadPlatformService {
 
     Collection<EmployeeData> retrieveAllEmployee();
+
+    Collection<LoanApprovalLimitData> retrieveAllLoanApproval();
+
+    Collection<LoanDisbursalLimitData> retrieveAllLoanDisbursal();
 
 }

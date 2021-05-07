@@ -28,6 +28,8 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.vlms.branchmodule.data.EducationQualificationData;
 import org.apache.fineract.vlms.branchmodule.data.EmployeeData;
 import org.apache.fineract.vlms.branchmodule.data.InsuranceDetailsData;
+import org.apache.fineract.vlms.branchmodule.data.LoanApprovalLimitData;
+import org.apache.fineract.vlms.branchmodule.data.LoanDisbursalLimitData;
 import org.apache.fineract.vlms.customer.data.AddressData;
 import org.apache.fineract.vlms.customer.data.BankDetailsData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,6 +212,73 @@ public class BranchModuleReadPlatformServiceImpl implements BranchModuleReadPlat
 
         final EmployeeMapper rm = new EmployeeMapper();
         final String sql = "select " + rm.schema() + "from m_employee emp " + rm.schemaJoin();
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
+    private static final class LoanApprovalLimitMapper implements RowMapper<LoanApprovalLimitData> {
+
+        public String schema() {
+            return " lnapp.id as id, lnapp.approve_limit as approvalLimit, lnapp.branch_name as branchName, lnapp.requested_on as requestDate, lnapp.requested_loan_amount as requestAmount, "
+                    + " lnapp.approve_amount as approveAmount, lnapp.status as status ";
+        }
+
+        @Override
+        public LoanApprovalLimitData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final Long approvalLimit = rs.getLong("approvalLimit");
+            final String branchName = rs.getString("branchName");
+            final LocalDate requestDate = JdbcSupport.getLocalDate(rs, "requestDate");
+            final Long requestAmount = rs.getLong("requestAmount");
+            final Long approveAmount = rs.getLong("approveAmount");
+            final String status = rs.getString("status");
+
+            return LoanApprovalLimitData.instance(id, approvalLimit, branchName, requestDate, requestAmount, approveAmount, status);
+        }
+    }
+
+    private static final class LoanDisbursalLimitMapper implements RowMapper<LoanDisbursalLimitData> {
+
+        public String schema() {
+            return " lndsb.id as id, lndsb.cash_limit as cashLimit, lndsb.branch_name as branchName, lndsb.duration as duration, lndsb.requested_on as requestDate, lndsb.requested_amount as requestAmount, "
+                    + " lndsb.approved_amount as approveAmount, lndsb.status as status ";
+        }
+
+        @Override
+        public LoanDisbursalLimitData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final Long cashLimit = rs.getLong("cashLimit");
+            final String branchName = rs.getString("branchName");
+            final Long duration = rs.getLong("duration");
+            final LocalDate requestDate = JdbcSupport.getLocalDate(rs, "requestDate");
+            final Long requestAmount = rs.getLong("requestAmount");
+            final Long approveAmount = rs.getLong("approveAmount");
+            final String status = rs.getString("status");
+
+            return LoanDisbursalLimitData.instance(id, cashLimit, branchName, duration, requestDate, requestAmount, approveAmount, status);
+        }
+    }
+
+    @Override
+    @Cacheable(value = "EmployeeData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<LoanApprovalLimitData> retrieveAllLoanApproval() {
+        this.context.authenticatedUser();
+
+        final LoanApprovalLimitMapper rm = new LoanApprovalLimitMapper();
+        final String sql = "select " + rm.schema() + " from m_loan_approval_limit lnapp ";
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
+    @Override
+    @Cacheable(value = "DisbursalLimitData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<LoanDisbursalLimitData> retrieveAllLoanDisbursal() {
+        this.context.authenticatedUser();
+
+        final LoanDisbursalLimitMapper rm = new LoanDisbursalLimitMapper();
+        final String sql = "select " + rm.schema() + " from m_loan_disbursal_limit lndsb ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
     }

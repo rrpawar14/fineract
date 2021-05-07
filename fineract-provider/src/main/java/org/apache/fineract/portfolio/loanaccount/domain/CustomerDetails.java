@@ -113,18 +113,29 @@ public class CustomerDetails extends AbstractPersistableCustom {
         final String spousename = command.stringValueOfParameterNamed("spouseName");
         final String profession = command.stringValueOfParameterNamed("profession");
 
-        return new CustomerDetails(name, gender, dob, maritalStatus, spousename, profession, customerCommunicationAdd, customerPermanentAdd,
+        return new CustomerDetails(name, gender, mobileNo, fatherName, altNumber, applicantType, refBy, companyName, monthlyIncome,
+                salaryDate, salaryPeriod, dob, maritalStatus, spousename, profession, customerCommunicationAdd, customerPermanentAdd,
                 customerOfficeAdd);
 
     }
 
     public CustomerDetails() {}
 
-    private CustomerDetails(final String name, final String gender, final Date dob, final String maritalStatus, final String spousename,
-            final String profession, final Address customerCommunicationAdd, final Address customerPermanentAdd,
-            final Address customerOfficeAdd) {
+    private CustomerDetails(final String name, final String gender, final String mobileNo, final String fatherName, final String altNumber,
+            final String applicantType, final String refBy, final String companyName, final String monthlyIncome, final Date salaryDate,
+            final String salaryPeriod, final Date dob, final String maritalStatus, final String spousename, final String profession,
+            final Address customerCommunicationAdd, final Address customerPermanentAdd, final Address customerOfficeAdd) {
         this.name = name;
         this.gender = gender;
+        this.mobileNo = mobileNo;
+        this.fatherName = fatherName;
+        this.altNumber = altNumber;
+        this.applicantType = applicantType;
+        this.referBy = refBy;
+        this.companyName = companyName;
+        this.monthlyIncome = monthlyIncome;
+        this.salaryDate = salaryDate;
+        this.salaryPeriod = salaryPeriod;
         this.dob = dob;
         this.maritalStatus = maritalStatus;
         this.spousename = spousename;
