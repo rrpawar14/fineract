@@ -21,15 +21,16 @@ package org.apache.fineract.portfolio.loanaccount.domain;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.useradministration.domain.AppUser;
-import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetails;
 
 @Entity
 @Table(name = "m_apply_vehicle_loan")
@@ -50,23 +51,23 @@ public class VehicleLoan extends AbstractPersistableCustom {
     @Column(name = "created_date", nullable = true, length = 100)
     private Date createdDate;
 
-    @OneToOne(optional = true)
+    @OneToOne(optional = true , fetch = FetchType.LAZY)
     @JoinColumn(name = "customerdetails_id", nullable = true)
     private CustomerDetails customerDetails;
 
-    @OneToOne(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicledetails_id", nullable = true)
     private VehicleDetails vehicleDetails;
 
-    @OneToOne(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "guarantordetails_id", nullable = true)
     private CustomerGuarantor customerGuarantor;
 
-    @OneToOne(optional = true)
+    @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "loandetails_id", nullable = true)
-    private FELoanDetails loanDetails;
+    private Loan loanDetails;
 
-    @OneToOne(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "bankdetails_id", nullable = true)
     private BankDetails bankDetails;
 
@@ -77,7 +78,7 @@ public class VehicleLoan extends AbstractPersistableCustom {
     public VehicleLoan() {}
 
     public static VehicleLoan fromJson(final JsonCommand command, final CustomerDetails customerDetails,
-            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final FELoanDetails loanDetails,
+            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final Loan loanDetails,
             final BankDetails bankDetails, final AppUser appuser) {
 
         final String customerName = command.stringValueOfParameterNamed("customerName");
