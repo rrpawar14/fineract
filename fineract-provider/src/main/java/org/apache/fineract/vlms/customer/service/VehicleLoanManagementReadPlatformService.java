@@ -20,6 +20,7 @@ package org.apache.fineract.vlms.customer.service;
 
 import java.util.Collection;
 import org.apache.fineract.infrastructure.codes.data.CodeData;
+import org.apache.fineract.vlms.customer.data.CustomerDetailsData;
 import org.apache.fineract.vlms.customer.data.VehicleLoanData;
 
 public interface VehicleLoanManagementReadPlatformService {
@@ -27,6 +28,8 @@ public interface VehicleLoanManagementReadPlatformService {
     Collection<VehicleLoanData> retrieveAllCustomerVehicleLoan();
 
     Collection<VehicleLoanData> retrieveVehicleLoanByUserId(final Long userId);
+
+    Collection<CustomerDetailsData> retrieveCustomerData();
 
     VehicleLoanData retrieveVehicleLoanByLoanId(final Long loanId);
 

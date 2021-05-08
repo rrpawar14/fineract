@@ -337,6 +337,63 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
         }
     }
 
+    private static final class CustomerDetailsMapper implements RowMapper<CustomerDetailsData> {
+
+        public String schema() {
+            return " cd.id as customerDetailsId, cd.name as customerName, cd.gender as gender, cd.mobile_number as mobileNumber,"
+                    + " cd.alternate_number as alternateNumber, cd.father_name as fatherName, cd.applicant_type as applicantType,"
+                    + " cd.refer_by as referBy, cd.company_name as companyName, cd.monthly_income as monthlyIncome, cd.salary_date as salaryDate,"
+                    + " cd.salary_period as salaryPeriod, cd.dob as dob, "
+                    + " cd.marital_status as maritalstatus,  cd.spousename as spouseName, cd.profession as profession, cd.proof_image_id as proofImageId ";
+        }
+
+        @Override
+        public CustomerDetailsData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long customerDetailsId = rs.getLong("customerDetailsId");
+            final String customerName = rs.getString("customerName");
+            final String gender = rs.getString("gender");
+            final String mobileNumber = rs.getString("mobileNumber");
+            final String alternateNumber = rs.getString("alternateNumber");
+            final String fatherName = rs.getString("fatherName");
+            final String applicantType = rs.getString("applicantType");
+            final String referBy = rs.getString("referBy");
+            final String companyName = rs.getString("companyName");
+            final String monthlyIncome = rs.getString("monthlyIncome");
+            final LocalDate salaryDate = JdbcSupport.getLocalDate(rs, "salaryDate");
+            final String salaryPeriod = rs.getString("salaryPeriod");
+
+            // final LocalDate dob = JdbcSupport.getLocalDate(rs, "overdueSinceDate");
+            final LocalDate dob = JdbcSupport.getLocalDate(rs, "dob");
+            final String maritalStatus = rs.getString("maritalstatus");
+            final String spouseName = rs.getString("spouseName");
+            final String profession = rs.getString("profession");
+            final Long imageId = rs.getLong("proofImageId");
+            /*
+             * final Long addId = rs.getLong("addId"); final String street = rs.getString("street"); final String
+             * addressLine1 = rs.getString("addressLine1"); final String addressLine2 = rs.getString("addressLine2");
+             * final String city = rs.getString("city");
+             *
+             * final String pincode = rs.getString("postalcode"); final String landmark = rs.getString("landmark");
+             * final String area = rs.getString("area"); final String state = rs.getString("state");
+             *
+             * final AddressData communicationAddressData = new AddressData(addId, addressLine1, addressLine2, city,
+             * pincode, landmark, area, state);
+             *
+             * final AddressData permanentAddressData = new AddressData(addId, addressLine1, addressLine2, city,
+             * pincode, landmark, area, state);
+             *
+             * final AddressData officeAddressData = new AddressData(addId, addressLine1, addressLine2, city, pincode,
+             * landmark, area, state);
+             */
+
+            return CustomerDetailsData.instance(customerDetailsId, customerName, gender, mobileNumber, alternateNumber, fatherName,
+                    applicantType, referBy, companyName, monthlyIncome, salaryDate, salaryPeriod, dob, maritalStatus, spouseName,
+                    profession, null, null, null);
+        }
+
+    }
+
     @Override
     @Cacheable(value = "VehicleLoanData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
     public Collection<VehicleLoanData> retrieveAllCustomerVehicleLoan() {
@@ -360,6 +417,21 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
                     + " where cnv.customer_id=? order by cnv.customer_name";
 
             return this.jdbcTemplate.query(sql, rm, new Object[] { userId });
+        } catch (final EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    @Cacheable(value = "CustomerDetailsData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<CustomerDetailsData> retrieveCustomerData() {
+        try {
+            this.context.authenticatedUser();
+
+            final CustomerDetailsMapper rm = new CustomerDetailsMapper();
+            final String sql = " select" + rm.schema() + " from m_customer_details cd ";
+
+            return this.jdbcTemplate.query(sql, rm, new Object[] {});
         } catch (final EmptyResultDataAccessException e) {
             return null;
         }
