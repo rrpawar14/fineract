@@ -34,6 +34,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -45,6 +46,7 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.vlms.customer.data.CustomerDocumentsData;
 import org.apache.fineract.vlms.fieldexecutive.data.EnquiryData;
 import org.apache.fineract.vlms.fieldexecutive.data.EnrollData;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
@@ -62,6 +64,7 @@ public class FELoansApiResource {
     private final PlatformSecurityContext context;
     private final FEReadPlatformService readPlatformService;
     private final DefaultToApiJsonSerializer<DocumentsData> toApiJsonSerializer;
+    private final DefaultToApiJsonSerializer<CustomerDocumentsData> toApiCustomerDocumentsJsonSerializer;
     private final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer;
     private final DefaultToApiJsonSerializer<EnquiryData> toApiEnquiryJsonSerializer;
     private final DefaultToApiJsonSerializer<EnrollData> toApiEnrollJsonSerializer;
@@ -73,6 +76,7 @@ public class FELoansApiResource {
     @Autowired
     public FELoansApiResource(final PlatformSecurityContext context, final FEReadPlatformService readPlatformService,
             final DefaultToApiJsonSerializer<DocumentsData> toApiJsonSerializer,
+            final DefaultToApiJsonSerializer<CustomerDocumentsData> toApiCustomerDocumentsJsonSerializer,
             final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer,
             final DefaultToApiJsonSerializer<EnquiryData> toApiEnquiryJsonSerializer,
             final DefaultToApiJsonSerializer<EnrollData> toApiEnrollJsonSerializer,
@@ -81,6 +85,7 @@ public class FELoansApiResource {
         this.context = context;
         this.readPlatformService = readPlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
+        this.toApiCustomerDocumentsJsonSerializer = toApiCustomerDocumentsJsonSerializer;
         this.toApiTaskJsonSerializer = toApiTaskJsonSerializer;
         this.toApiEnquiryJsonSerializer = toApiEnquiryJsonSerializer;
         this.toApiEnrollJsonSerializer = toApiEnrollJsonSerializer;
@@ -326,7 +331,7 @@ public class FELoansApiResource {
                                                                               // @Schema(implementation =
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
-    public String retrieveCodes(@Context final UriInfo uriInfo) {
+    public String retrieveDocuments(@Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
@@ -334,6 +339,29 @@ public class FELoansApiResource {
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, documentsType, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
+    @Path("getDocumentsData/{clientId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Document_Type", description = "Returns the list of documentsType.\n" + "\n" + "Example Requests:\n"
+            + "\n" + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveDocumentsData(@Context final UriInfo uriInfo,
+            @QueryParam("command") @Parameter(description = "command") final String commandParam,
+            @PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final Collection<CustomerDocumentsData> documentsData = this.readPlatformService.retrieveDocumentData(commandParam, clientId);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiCustomerDocumentsJsonSerializer.serialize(settings, documentsData, RESPONSE_DATA_PARAMETERS);
     }
 
     @POST

@@ -25,6 +25,7 @@ import java.util.Collection;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.vlms.customer.data.CustomerDocumentsData;
 import org.apache.fineract.vlms.fieldexecutive.data.EnquiryData;
 import org.apache.fineract.vlms.fieldexecutive.data.EnrollData;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
@@ -199,6 +200,39 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
         final String sql = "select " + rm.schema() + " from m_feenroll erl ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
+    private static final class DocumentsDetailsDataMapper implements RowMapper<CustomerDocumentsData> {
+
+        public String schema() {
+            return " doc.id as id, doc.entity_name as entityName, doc.document_number as documentNumber  ";
+
+        }
+
+        @Override
+        public CustomerDocumentsData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final String entityName = rs.getString("entityName");
+            final String documentNumber = rs.getString("documentNumber");
+
+            return CustomerDocumentsData.instance(id, entityName, documentNumber);
+        }
+    }
+
+    @Override
+    @Cacheable(value = "CustomerDetailsData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<CustomerDocumentsData> retrieveDocumentData(String commandParam, Long clientId) {
+        this.context.authenticatedUser();
+        String sql = null;
+        final DocumentsDetailsDataMapper rm = new DocumentsDetailsDataMapper();
+        if (commandParam.equals("customerData")) {
+            sql = "select " + rm.schema() + " from m_documents_images doc where customerdetails_id= ? ";
+        } else if (commandParam.equals("guarantorData")) {
+            sql = "select " + rm.schema() + " from m_documents_images doc  where guarantor_id= ? ";
+        }
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] { clientId });
     }
 
 }

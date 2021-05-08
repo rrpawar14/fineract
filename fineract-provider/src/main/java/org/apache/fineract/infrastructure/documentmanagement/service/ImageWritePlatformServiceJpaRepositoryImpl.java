@@ -396,15 +396,15 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 System.out.println("--NotGuarantorImage--");
                 if (EntityTypeForImages.G_ADHARPHOTO.toString().equals(entityName)) {
                     System.out.println("--ADHARPHOTO--");
-                    entityName = "ADHARPHOTO";
+                    entityName = "adharphoto";
                     documentImage = createDocumentImage(entityName, documentImage, imageLocation, documentNumber, storageType, null,
                             customerGuarantor, null, null, null);
                 } else if (EntityTypeForImages.G_PANCARD.toString().equals(entityName)) {
-                    entityName = "PANCARD";
+                    entityName = "pancard";
                     documentImage = createDocumentImage(entityName, documentImage, imageLocation, documentNumber, storageType, null,
                             customerGuarantor, null, null, null);
                 } else if (EntityTypeForImages.G_VEHICLE_LICENCE.toString().equals(entityName)) {
-                    entityName = "VEHICLE_LICENCE";
+                    entityName = "vehicle_licence";
                     documentImage = createDocumentImage(entityName, documentImage, imageLocation, documentNumber, storageType, null,
                             customerGuarantor, null, null, null);
                 }

@@ -16,25 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.vlms.fieldexecutive.service;
+package org.apache.fineract.vlms.customer.data;
 
-import java.util.Collection;
-import org.apache.fineract.vlms.customer.data.CustomerDocumentsData;
-import org.apache.fineract.vlms.fieldexecutive.data.EnquiryData;
-import org.apache.fineract.vlms.fieldexecutive.data.EnrollData;
-import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
-import org.apache.fineract.vlms.fieldexecutive.domain.DocumentsData;
+import java.io.Serializable;
 
-public interface FEReadPlatformService {
+/**
+ * Immutable data object representing loan summary information.
+ */
+@SuppressWarnings("unused")
+public class CustomerDocumentsData implements Serializable {
 
-    Collection<EnquiryData> retrieveAllEnquires();
+    private final Long id;
 
-    Collection<EnrollData> retrieveAllEnroll();
+    private final String entityName;
 
-    Collection<DocumentsData> retrieveAllDocumentsType();
+    private final String documentNumber;
 
-    Collection<CustomerDocumentsData> retrieveDocumentData(String commandParam, Long clientId);
+    public static CustomerDocumentsData instance(final Long id, final String entityName, final String documentNumber) {
 
-    Collection<TaskData> retrieveAllTask();
+        return new CustomerDocumentsData(id, entityName, documentNumber);
+    }
+
+    public CustomerDocumentsData(final Long id, final String entityName, final String documentNumber) {
+        this.id = id;
+        this.entityName = entityName;
+        this.documentNumber = documentNumber;
+    }
 
 }
