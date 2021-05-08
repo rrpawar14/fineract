@@ -54,9 +54,6 @@ import org.apache.fineract.portfolio.fund.domain.FundRepository;
 import org.apache.fineract.portfolio.fund.exception.FundNotFoundException;
 import org.apache.fineract.portfolio.group.domain.Group;
 import org.apache.fineract.portfolio.group.domain.GroupRepository;
-import org.apache.fineract.portfolio.group.exception.ClientNotInGroupException;
-import org.apache.fineract.portfolio.group.exception.GroupNotActiveException;
-import org.apache.fineract.portfolio.group.exception.GroupNotFoundException;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
 import org.apache.fineract.portfolio.loanaccount.domain.DefaultLoanLifecycleStateMachine;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
@@ -249,47 +246,44 @@ public class LoanAssembler {
                 throw new ClientNotActiveException(clientId);
             }
         }
-
-        if (groupId != null) {
-            group = this.groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException(groupId));
-            if (group.isNotActive()) {
-                throw new GroupNotActiveException(groupId);
-            }
-        }
-
-        if (client != null && group != null) {
-
-            if (!group.hasClientAsMember(client)) {
-                throw new ClientNotInGroupException(clientId, groupId);
-            }
-
-            loanApplication = Loan.newIndividualLoanApplicationFromGroup(accountNo, client, group, loanType.getId().intValue(), loanProduct,
-                    fund, loanOfficer, loanPurpose, loanTransactionProcessingStrategy, loanProductRelatedDetail, loanCharges, collateral,
-                    syncDisbursementWithMeeting, fixedEmiAmount, disbursementDetails, maxOutstandingLoanBalance,
-                    createStandingInstructionAtDisbursement, isFloatingInterestRate, interestRateDifferential, rates);
-
-        } else if (group != null) {
-
-            loanApplication = Loan.newGroupLoanApplication(accountNo, group, loanType.getId().intValue(), loanProduct, fund, loanOfficer,
-                    loanPurpose, loanTransactionProcessingStrategy, loanProductRelatedDetail, loanCharges, collateral,
-                    syncDisbursementWithMeeting, fixedEmiAmount, disbursementDetails, maxOutstandingLoanBalance,
-                    createStandingInstructionAtDisbursement, isFloatingInterestRate, interestRateDifferential, rates);
-
-        } else if (client != null) {
-
+        /*
+         * if (groupId != null) { group = this.groupRepository.findById(groupId).orElseThrow(() -> new
+         * GroupNotFoundException(groupId)); if (group.isNotActive()) { throw new GroupNotActiveException(groupId); } }
+         *
+         * if (client != null && group != null) {
+         *
+         * if (!group.hasClientAsMember(client)) { throw new ClientNotInGroupException(clientId, groupId); }
+         *
+         * loanApplication = Loan.newIndividualLoanApplicationFromGroup(accountNo, client, group,
+         * loanType.getId().intValue(), loanProduct, fund, loanOfficer, loanPurpose, loanTransactionProcessingStrategy,
+         * loanProductRelatedDetail, loanCharges, collateral, syncDisbursementWithMeeting, fixedEmiAmount,
+         * disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement,
+         * isFloatingInterestRate, interestRateDifferential, rates);
+         *
+         * } else if (group != null) {
+         *
+         * loanApplication = Loan.newGroupLoanApplication(accountNo, group, loanType.getId().intValue(), loanProduct,
+         * fund, loanOfficer, loanPurpose, loanTransactionProcessingStrategy, loanProductRelatedDetail, loanCharges,
+         * collateral, syncDisbursementWithMeeting, fixedEmiAmount, disbursementDetails, maxOutstandingLoanBalance,
+         * createStandingInstructionAtDisbursement, isFloatingInterestRate, interestRateDifferential, rates);
+         *
+         * } else
+         */if (client != null) {
             loanApplication = Loan.newIndividualLoanApplication(accountNo, client, loanType.getId().intValue(), loanProduct, fund,
                     loanOfficer, loanPurpose, loanTransactionProcessingStrategy, loanProductRelatedDetail, loanCharges, collateral,
                     fixedEmiAmount, disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement,
                     isFloatingInterestRate, interestRateDifferential, rates);
 
         }
+        /*
+         *
+         *
+         * if (loanApplication == null) { throw new
+         * IllegalStateException("No loan application exists for either a client or group (or both)."); }
+         */
 
         final String externalId = this.fromApiJsonHelper.extractStringNamed("externalId", element);
         final LocalDate submittedOnDate = this.fromApiJsonHelper.extractLocalDateNamed("submittedOnDate", element);
-
-        if (loanApplication == null) {
-            throw new IllegalStateException("No loan application exists for either a client or group (or both).");
-        }
         loanApplication.setHelpers(defaultLoanLifecycleStateMachine(), this.loanSummaryWrapper,
                 this.loanRepaymentScheduleTransactionProcessorFactory);
 

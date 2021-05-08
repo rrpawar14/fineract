@@ -35,6 +35,7 @@ import org.apache.fineract.portfolio.loanaccount.domain.CustomerDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerDetailsRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantor;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantorRepository;
+import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoanRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetailsRepository;
@@ -64,6 +65,7 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
     private final AddressRepository addressRepository;
     private final AppUserRepositoryWrapper appUserRepositoryWrapper;
     private final FELoanDetailsRepository feLoanDetailsRepository;
+    private final LoanAssembler loanAssembler;
     private static final Logger LOG = LoggerFactory.getLogger(VehicleLoanManagementWritePlatformServiceImpl.class);
 
     @Autowired
@@ -71,7 +73,8 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             final NewVehicleLoanRepository newVehicleLoanRepository, final CustomerDetailsRepository customerDetailsRepository,
             final VehicleDetailsRepository vehicleDetailsRepository, final FELoanDetailsRepository feLoanDetailsRepository,
             final BankDetailsRepository bankDetailsRepository, final CustomerGuarantorRepository customerGuarantorRepository,
-            final AddressRepository addressRepository, final AppUserRepositoryWrapper appUserRepositoryWrapper) {
+            final AddressRepository addressRepository, final AppUserRepositoryWrapper appUserRepositoryWrapper,
+            final LoanAssembler loanAssembler) {
         this.context = context;
         this.fromJsonHelper = fromJsonHelper;
         this.newVehicleLoanRepository = newVehicleLoanRepository;
@@ -82,6 +85,7 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
         this.customerGuarantorRepository = customerGuarantorRepository;
         this.addressRepository = addressRepository;
         this.appUserRepositoryWrapper = appUserRepositoryWrapper;
+        this.loanAssembler = loanAssembler;
     }
 
     @Transactional
@@ -171,13 +175,15 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             final BankDetails bankDetailsObj = this.bankDetailsRepository.getOne(bankDetailsId);
             System.out.println("bankDetailsObj" + bankDetailsObj);
 
-            final FELoanDetails loanDetails = FELoanDetails.fromJson(command);
-            System.out.println("loanDetails" + loanDetails);
-            this.feLoanDetailsRepository.save(loanDetails);
-
+            // final Loan loanDetails = Loan.fromJson(command);
             final Long userId = command.longValueOfParameterNamed("userId");
-            System.out.println("userId" + userId);
             final AppUser appuser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
+            final Loan loanDetails = this.loanAssembler.assembleFrom(command, appuser);
+            System.out.println("loanDetails" + loanDetails);
+            // this.feLoanDetailsRepository.save(loanDetails);
+
+            System.out.println("userId" + userId);
+
             System.out.println("appuser" + appuser);
 
             final VehicleLoan newVehicleLoan = VehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj, customerGuarantorObj,

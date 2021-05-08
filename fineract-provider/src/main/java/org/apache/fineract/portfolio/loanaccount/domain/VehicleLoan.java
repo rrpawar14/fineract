@@ -18,15 +18,16 @@
  */
 package org.apache.fineract.portfolio.loanaccount.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.useradministration.domain.AppUser;
-import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetails;
 
 @Entity
 @Table(name = "m_apply_vehicle_loan")
@@ -75,9 +76,9 @@ public class VehicleLoan extends AbstractPersistableCustom {
     @JoinColumn(name = "guarantordetails_id", nullable = true)
     private CustomerGuarantor customerGuarantor;
 
-    @OneToOne(optional = true)
+    @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "loandetails_id", nullable = true)
-    private FELoanDetails loanDetails;
+    private Loan loanDetails;
 
     @OneToOne(optional = true)
     @JoinColumn(name = "bankdetails_id", nullable = true)
@@ -90,7 +91,7 @@ public class VehicleLoan extends AbstractPersistableCustom {
     public VehicleLoan() {}
 
     public static VehicleLoan fromJson(final JsonCommand command, final CustomerDetails customerDetails,
-            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final FELoanDetails loanDetails,
+            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final Loan loanDetails,
             final BankDetails bankDetails, final AppUser appuser) {
 
         final String customerName = command.stringValueOfParameterNamed("customerName");
@@ -108,7 +109,7 @@ public class VehicleLoan extends AbstractPersistableCustom {
 
     private VehicleLoan(final String customerName, final String vehicleType, final String dealer, final String invoiceNumber,
             final CustomerDetails customerDetails, final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor,
-            final FELoanDetails loanDetails, final BankDetails bankDetails, final AppUser appuser) {
+            final Loan loanDetails, final BankDetails bankDetails, final AppUser appuser) {
         this.customerName = customerName;
         this.vehicleType = vehicleType;
         this.dealer = dealer;
