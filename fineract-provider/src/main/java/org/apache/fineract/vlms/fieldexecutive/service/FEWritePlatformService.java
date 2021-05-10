@@ -38,4 +38,6 @@ public interface FEWritePlatformService {
     CommandProcessingResult editFETask(Long taskId, JsonCommand command);
 
     CommandProcessingResult deleteFETask(Long taskId, JsonCommand command);
+
+    CommandProcessingResult updateFECashLimit(Long requestId, JsonCommand command);
 }

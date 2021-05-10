@@ -32,6 +32,7 @@ import org.apache.fineract.portfolio.address.domain.Address;
 import org.apache.fineract.portfolio.address.domain.AddressRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEApplicantDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEApplicantDetailsRepository;
+import org.apache.fineract.vlms.fieldexecutive.domain.FECashLimit;
 import org.apache.fineract.vlms.fieldexecutive.domain.FECoApplicantDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.FECoApplicantDetailsRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnquiry;
@@ -48,6 +49,7 @@ import org.apache.fineract.vlms.fieldexecutive.domain.FEUsedVehicleLoan;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEUsedVehicleLoanRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEVehicleDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEVehicleDetailsRepository;
+import org.apache.fineract.vlms.fieldexecutive.domain.FeCashLimitRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.NewLoan;
 import org.apache.fineract.vlms.fieldexecutive.domain.NewLoanRepository;
 import org.slf4j.Logger;
@@ -77,6 +79,7 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
     private final FEEnrollRepository feEnrollRepository;
     private final CodeCommandFromApiJsonDeserializer fromApiJsonDeserializer;
     private final FETaskRepository feTaskRepository;
+    private final FeCashLimitRepository feCashLimitRepository;
 
     @Autowired
     public FEWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context, final FEEnquiryRepository feEnquiryRepository,
@@ -86,7 +89,7 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
             final FECoApplicantDetailsRepository feCoApplicantDetailsRepository,
             final FEVehicleDetailsRepository feVehicleDetailsRepository, final FELoanDetailsRepository feLoanDetailsRepository,
             final FETransferDetailsRepository feTransferDetailsRepository, final FEEnrollRepository feEnrollRepository,
-            final FETaskRepository feTaskRepository) {
+            final FETaskRepository feTaskRepository, final FeCashLimitRepository feCashLimitRepository) {
         this.context = context;
         this.feEnquiryRepository = feEnquiryRepository;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
@@ -100,6 +103,7 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
         this.feTransferDetailsRepository = feTransferDetailsRepository;
         this.feEnrollRepository = feEnrollRepository;
         this.feTaskRepository = feTaskRepository;
+        this.feCashLimitRepository = feCashLimitRepository;
     }
 
     @Transactional
@@ -244,8 +248,50 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
 
     }
 
+    @Transactional
+    @Override
+    @CacheEvict(value = "fetask", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult updateFECashLimit(final Long requestId, final JsonCommand command) {
+
+        try {
+            this.context.authenticatedUser();
+
+            // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+            /*
+             * final Code code = retrieveCodeBy(codeId); final Map<String, Object> changes = code.update(command);
+             */
+
+            final FECashLimit feCashLimit = retrieveCashLimitRequestBy(requestId);
+            final Map<String, Object> changes = feCashLimit.update(command);
+
+            if (!changes.isEmpty()) {
+                this.feCashLimitRepository.save(feCashLimit);
+            }
+
+            /*
+             * final FETask feTask = FETask.fromJson(command); this.feTaskRepository.save(feTask);
+             */
+
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(requestId).build();
+            // .withEntityId(code.getId())
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException ee) {
+            Throwable throwable = ExceptionUtils.getRootCause(ee.getCause());
+            handleDataIntegrityIssues(command, throwable, ee);
+            return CommandProcessingResult.empty();
+        }
+
+    }
+
     private FETask retrieveTaskBy(final Long taskId) {
         return this.feTaskRepository.findById(taskId).orElseThrow(() -> new CodeNotFoundException(taskId.toString()));
+    }
+
+    private FECashLimit retrieveCashLimitRequestBy(final Long requestId) {
+        return this.feCashLimitRepository.findById(requestId).orElseThrow(() -> new CodeNotFoundException(requestId.toString()));
     }
 
     @Transactional

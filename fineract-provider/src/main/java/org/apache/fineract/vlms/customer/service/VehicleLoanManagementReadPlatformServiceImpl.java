@@ -110,7 +110,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
                     + " bd.account_holder_name as accountHolderName, bd.bank_name as bankName, "
                     + " bd.branch_name as branchName, bd.IFSC as IFSC, "
 
-                    //loandetails ld
+                    // loandetails ld
                     + " ld.id as loandetailsId, ld.loan_amount as loanAmount, ld.loan_term as loanTerm, "
                     + " ld.loan_interest as loanInterest, ld.emi as emi, " + " ld.interest_inr as interestInr, ld.doc_charge as docCharge, "
                     + " ld.processing_charge as processingCharge, ld.pending_doc as pendingDoc, "

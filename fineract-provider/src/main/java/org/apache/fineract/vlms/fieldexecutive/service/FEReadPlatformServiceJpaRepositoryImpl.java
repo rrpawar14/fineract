@@ -28,6 +28,7 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.vlms.customer.data.CustomerDocumentsData;
 import org.apache.fineract.vlms.fieldexecutive.data.EnquiryData;
 import org.apache.fineract.vlms.fieldexecutive.data.EnrollData;
+import org.apache.fineract.vlms.fieldexecutive.data.FeCashInHandLimit;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.apache.fineract.vlms.fieldexecutive.domain.DocumentsData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -233,6 +234,41 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
         }
 
         return this.jdbcTemplate.query(sql, rm, new Object[] { clientId });
+    }
+
+    private static final class CashinHandDataMapper implements RowMapper<FeCashInHandLimit> {
+
+        public String schema() {
+            return " fecash.id as id, fecash.name as feName, fecash.cash_in_hand as cashInHand, fecash.required_on as requiredDate, "
+                    + " fecash.required_amount as requiredAmount, fecash.status as status";
+        }
+
+        @Override
+        public FeCashInHandLimit mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final String name = rs.getString("feName");
+
+            final Long cashInHand = rs.getLong("cashInHand");
+
+            final LocalDate requiredDate = JdbcSupport.getLocalDate(rs, "requiredDate");
+
+            final Long requiredAmount = rs.getLong("requiredAmount");
+            final String status = rs.getString("status");
+
+            return FeCashInHandLimit.instance(id, name, cashInHand, requiredDate, requiredAmount, status);
+        }
+    }
+
+    @Override
+    @Cacheable(value = "FeCashInHandLimitData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<FeCashInHandLimit> retrieveAllfeCashLimitData() {
+        this.context.authenticatedUser();
+
+        final CashinHandDataMapper rm = new CashinHandDataMapper();
+        final String sql = "select " + rm.schema() + " from m_fe_cashinhand fecash ";
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] {});
     }
 
     /*

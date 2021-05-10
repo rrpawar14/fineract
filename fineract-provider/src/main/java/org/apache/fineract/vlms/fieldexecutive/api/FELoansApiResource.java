@@ -49,6 +49,7 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.vlms.customer.data.CustomerDocumentsData;
 import org.apache.fineract.vlms.fieldexecutive.data.EnquiryData;
 import org.apache.fineract.vlms.fieldexecutive.data.EnrollData;
+import org.apache.fineract.vlms.fieldexecutive.data.FeCashInHandLimit;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.apache.fineract.vlms.fieldexecutive.domain.DocumentsData;
 import org.apache.fineract.vlms.fieldexecutive.service.FEReadPlatformService;
@@ -66,6 +67,7 @@ public class FELoansApiResource {
     private final DefaultToApiJsonSerializer<DocumentsData> toApiJsonSerializer;
     private final DefaultToApiJsonSerializer<CustomerDocumentsData> toApiCustomerDocumentsJsonSerializer;
     private final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer;
+    private final DefaultToApiJsonSerializer<FeCashInHandLimit> toApiCashInHandJsonSerializer;
     private final DefaultToApiJsonSerializer<EnquiryData> toApiEnquiryJsonSerializer;
     private final DefaultToApiJsonSerializer<EnrollData> toApiEnrollJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
@@ -81,7 +83,8 @@ public class FELoansApiResource {
             final DefaultToApiJsonSerializer<EnquiryData> toApiEnquiryJsonSerializer,
             final DefaultToApiJsonSerializer<EnrollData> toApiEnrollJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
-            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
+            final DefaultToApiJsonSerializer<FeCashInHandLimit> toApiCashInHandJsonSerializer) {
         this.context = context;
         this.readPlatformService = readPlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
@@ -91,6 +94,7 @@ public class FELoansApiResource {
         this.toApiEnrollJsonSerializer = toApiEnrollJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
+        this.toApiCashInHandJsonSerializer = toApiCashInHandJsonSerializer;
     }
 
     @GET
@@ -429,6 +433,42 @@ public class FELoansApiResource {
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiTaskJsonSerializer.serialize(settings, documentsType, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
+    @Path("feCashInHand")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Task", description = "Returns the list of Task.\n" + "\n" + "Example Requests:\n" + "\n" + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrievefeCashInHand(@Context final UriInfo uriInfo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final Collection<FeCashInHandLimit> feCashInHandLimit = this.readPlatformService.retrieveAllfeCashLimitData();
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiCashInHandJsonSerializer.serialize(settings, feCashInHandLimit, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @PUT
+    @Path("feCashInHand/{Id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Create a Task", description = "Creates a Field Executive Task. FE created through api are always 'user defined' and so system defined is marked as false.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String updateFECashLimit(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("Id") @Parameter(description = "Id") final Long Id) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateFECashLimit(Id).withJson(apiRequestBodyAsJson).build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
     }
 
 }
