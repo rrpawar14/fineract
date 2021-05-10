@@ -28,6 +28,7 @@ import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.vlms.customer.data.AddressData;
 import org.apache.fineract.vlms.customer.data.BankDetailsData;
+import org.apache.fineract.vlms.customer.data.BranchAnalyticsData;
 import org.apache.fineract.vlms.customer.data.CustomerDetailsData;
 import org.apache.fineract.vlms.customer.data.GuarantorDetailsData;
 import org.apache.fineract.vlms.customer.data.VehicleDetailsData;
@@ -454,6 +455,21 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
         }
     }
 
+    private static final class BranchAnalyticsMapper implements RowMapper<BranchAnalyticsData> {
+
+        public String schema() {
+            return " SELECT COUNT(id) FROM m_loan_details ";
+        }
+
+        @Override
+        public BranchAnalyticsData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long data = rs.getLong("data");
+
+            return BranchAnalyticsData.instance(data);
+        }
+    }
+
     @Override
     @Cacheable(value = "VehicleLoanData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
     public VehicleLoanData retrieveVehicleLoanByLoanId(final Long loanId) {
@@ -481,6 +497,29 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             final String sql = "select " + rm.schema() + " from m_appuser au where username = ?";
 
             return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { mobileNo });
+        } catch (final EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    @Cacheable(value = "VehicleLoanData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public BranchAnalyticsData getBranchAnalyticsData(final String commandParam) {
+        try {
+            this.context.authenticatedUser();
+            String sql = null;
+
+            final BranchAnalyticsMapper rm = new BranchAnalyticsMapper();
+            if (commandParam.equals("loanApplications")) {
+                sql = " SELECT COUNT(id) as data FROM m_loan_details ";
+
+            } else if (commandParam.equals("enquiry")) {
+                sql = " SELECT COUNT(id) as data FROM m_customerloanenquiry ";
+            } else if (commandParam.equals("customerOnboard")) {
+                sql = "SELECT COUNT(id) as data FROM m_customer_details";
+
+            }
+            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] {});
         } catch (final EmptyResultDataAccessException e) {
             return null;
         }

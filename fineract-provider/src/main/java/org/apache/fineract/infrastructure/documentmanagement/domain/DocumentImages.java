@@ -29,6 +29,7 @@ import org.apache.fineract.portfolio.loanaccount.domain.BankDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantor;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleLoan;
+import org.apache.fineract.vlms.branchmodule.domain.Employee;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnroll;
 
 @Entity
@@ -67,9 +68,13 @@ public final class DocumentImages extends AbstractPersistableCustom {
     @JoinColumn(name = "customerdetails_id", nullable = true)
     private CustomerDetails customerDetails;
 
+    @OneToOne(optional = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "employee_id", nullable = true)
+    private Employee employee;
+
     public DocumentImages(final String location, final String entityName, final String documentNumber, final StorageType storageType,
             final BankDetails bankDetailsImage, final CustomerGuarantor customerGuarantor, final VehicleLoan vehicleLoan,
-            final FEEnroll feEnroll, final CustomerDetails customerDetails) {
+            final FEEnroll feEnroll, final CustomerDetails customerDetails, final Employee employee) {
         this.location = location;
         this.entityName = entityName;
         this.storageType = storageType.getValue();
@@ -78,6 +83,7 @@ public final class DocumentImages extends AbstractPersistableCustom {
         this.vehicleLoan = vehicleLoan;
         this.feEnroll = feEnroll;
         this.customerDetails = customerDetails;
+        this.employee = employee;
         this.documentNumber = documentNumber;
         System.out.println("documentNumberT: " + documentNumber);
     }

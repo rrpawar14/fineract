@@ -235,4 +235,17 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
         return this.jdbcTemplate.query(sql, rm, new Object[] { clientId });
     }
 
+    /*
+     * @Override
+     *
+     * @Cacheable(value = "CustomerDetailsData", key =
+     * "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+     * public Collection<CustomerDocumentsData> retrieveDataforAnalytics(String commandParam, Long clientId) {
+     * this.context.authenticatedUser(); String sql = null; final DocumentsDetailsDataMapper rm = new
+     * DocumentsDetailsDataMapper(); if (commandParam.equals("customerData")) { sql = "select " + rm.schema() +
+     * " from m_documents_images doc where customerdetails_id= ? "; } else if (commandParam.equals("guarantorData")) {
+     * sql = "select " + rm.schema() + " from m_documents_images doc  where guarantor_id= ? "; }
+     *
+     * return this.jdbcTemplate.query(sql, rm, new Object[] { clientId }); }
+     */
 }

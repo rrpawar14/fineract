@@ -1,0 +1,54 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.fineract.vlms.branchmodule.domain;
+
+import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.portfolio.loanaccount.exception.LoanTransactionProcessingStrategyNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class EmployeeRepositoryWrapper {
+
+    private final EmployeeRepository repository;
+    private final PlatformSecurityContext context;
+
+    @Autowired
+    public EmployeeRepositoryWrapper(final EmployeeRepository repository, final PlatformSecurityContext context) {
+        this.repository = repository;
+        this.context = context;
+    }
+
+    public Employee findOneWithNotFoundDetection(final Long id) {
+        return this.findOneWithNotFoundDetection(id, false);
+    }
+
+    @Transactional(readOnly = true)
+    public Employee findOneWithNotFoundDetection(final Long applicationId, final boolean loadLazyCollections) {
+
+        final Employee employee = this.repository.findById(applicationId)
+                .orElseThrow(() -> new LoanTransactionProcessingStrategyNotFoundException(applicationId));
+        /*
+         * if (loadLazyCollections) { NewVehicleLoan.loadLazyCollections(); }
+         */
+        return employee;
+    }
+
+}

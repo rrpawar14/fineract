@@ -32,6 +32,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -44,6 +45,7 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.vlms.customer.data.BranchAnalyticsData;
 import org.apache.fineract.vlms.customer.data.CustomerDetailsData;
 import org.apache.fineract.vlms.customer.data.VehicleLoanData;
 import org.apache.fineract.vlms.customer.service.VehicleLoanManagementReadPlatformService;
@@ -59,6 +61,7 @@ public class CustomerLoansApiResource {
     private final PlatformSecurityContext context;
     private final VehicleLoanManagementReadPlatformService readPlatformService;
     private final DefaultToApiJsonSerializer<VehicleLoanData> toApiJsonSerializer;
+    private final DefaultToApiJsonSerializer<BranchAnalyticsData> tobranchApiJsonSerializer;
     private final DefaultToApiJsonSerializer<CodeData> toCodeDataApiJsonSerializer;
     private final DefaultToApiJsonSerializer<CustomerDetailsData> toCustomerDataApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
@@ -72,6 +75,7 @@ public class CustomerLoansApiResource {
             final DefaultToApiJsonSerializer<VehicleLoanData> toApiJsonSerializer,
             final DefaultToApiJsonSerializer<CodeData> toCodeDataApiJsonSerializer,
             final DefaultToApiJsonSerializer<CustomerDetailsData> toCustomerDataApiJsonSerializer,
+            final DefaultToApiJsonSerializer<BranchAnalyticsData> tobranchApiJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
@@ -79,6 +83,7 @@ public class CustomerLoansApiResource {
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.toCodeDataApiJsonSerializer = toCodeDataApiJsonSerializer;
         this.toCustomerDataApiJsonSerializer = toCustomerDataApiJsonSerializer;
+        this.tobranchApiJsonSerializer = tobranchApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
     }
@@ -210,5 +215,27 @@ public class CustomerLoansApiResource {
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, vehicleLoanData, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
+    @Path("branchAnalytic")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Vehicle Loan Data", description = "Returns the Vehicle Loan Data Based on UserId/CustomerId.\n" + "\n"
+            + "Example Requests:\n" + "\n" + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveVehicleLoanDataByLoanId(@Context final UriInfo uriInfo,
+            @QueryParam("command") @Parameter(description = "command") final String commandParam) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final BranchAnalyticsData branchAnalytics = this.readPlatformService.getBranchAnalyticsData(commandParam);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.tobranchApiJsonSerializer.serialize(settings, branchAnalytics, RESPONSE_DATA_PARAMETERS);
     }
 }

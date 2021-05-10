@@ -16,26 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.vlms.customer.service;
+package org.apache.fineract.vlms.customer.data;
 
-import java.util.Collection;
-import org.apache.fineract.infrastructure.codes.data.CodeData;
-import org.apache.fineract.vlms.customer.data.BranchAnalyticsData;
-import org.apache.fineract.vlms.customer.data.CustomerDetailsData;
-import org.apache.fineract.vlms.customer.data.VehicleLoanData;
+@SuppressWarnings("unused")
+public class BranchAnalyticsData {
 
-public interface VehicleLoanManagementReadPlatformService {
+    private final Long data;
 
-    Collection<VehicleLoanData> retrieveAllCustomerVehicleLoan();
+    public static BranchAnalyticsData instance(final Long data) {
+        return new BranchAnalyticsData(data);
+    }
 
-    Collection<VehicleLoanData> retrieveVehicleLoanByUserId(final Long userId);
-
-    Collection<CustomerDetailsData> retrieveCustomerData();
-
-    VehicleLoanData retrieveVehicleLoanByLoanId(final Long loanId);
-
-    CodeData checkMobileNumberStatus(final Long mobileNo);
-
-    BranchAnalyticsData getBranchAnalyticsData(String commandParam);
+    private BranchAnalyticsData(final Long data) {
+        this.data = data;
+    }
 
 }
