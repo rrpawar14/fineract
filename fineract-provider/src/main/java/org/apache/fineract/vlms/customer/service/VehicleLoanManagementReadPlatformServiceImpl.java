@@ -31,6 +31,7 @@ import org.apache.fineract.vlms.customer.data.BankDetailsData;
 import org.apache.fineract.vlms.customer.data.BranchAnalyticsData;
 import org.apache.fineract.vlms.customer.data.CustomerDetailsData;
 import org.apache.fineract.vlms.customer.data.GuarantorDetailsData;
+import org.apache.fineract.vlms.customer.data.LoanDetailsData;
 import org.apache.fineract.vlms.customer.data.VehicleDetailsData;
 import org.apache.fineract.vlms.customer.data.VehicleLoanData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,6 +109,13 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
                     + " bd.disbursal_type as disbursalType, bd.account_number as accountNumber, "
                     + " bd.account_holder_name as accountHolderName, bd.bank_name as bankName, "
                     + " bd.branch_name as branchName, bd.IFSC as IFSC, "
+
+                    //loandetails ld
+                    + " ld.id as loandetailsId, ld.loan_amount as loanAmount, ld.loan_term as loanTerm, "
+                    + " ld.loan_interest as loanInterest, ld.emi as emi, " + " ld.interest_inr as interestInr, ld.doc_charge as docCharge, "
+                    + " ld.processing_charge as processingCharge, ld.pending_doc as pendingDoc, "
+                    + " ld.other_charges as otherCharges, ld.closing_ac as closingAC, ld.closing_discount as closingDiscount, "
+                    + " ld.payout as payout, ld.due_date as dueDate, "
 
                     // vehicledetails vd of customer new vehicle
                     + " vd.id as vehicleId, vd.vehicle_number as vehicleNumber," + " vd.maker as maker, vd.model as model, "
@@ -213,7 +221,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
                     + " join m_vehicle_details vd on cnv.vehicledetails_id = vd.id "
                     + " left join m_customer_guarantor cg on cnv.guarantordetails_id = cg.id "
                     + " left join m_customer_bank_details bd on cnv.bankdetails_id = bd.id "
-
+                    + " left join m_loan_details ld on cnv.loandetails_id = ld.id "
                     + " left join m_address cadd on cd.communicationadd_id = cadd.id  "
 
                     + " left join m_address padd on cd.permanentadd_id = padd.id "
@@ -309,6 +317,27 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             BankDetailsData bankDetailsData = new BankDetailsData(bankDetailsId, eligibleAmount, accountType, disbursalType, accountNumber,
                     accountHolderName, bankName, branchName, IFSC);
 
+            final Long loandetailsId = rs.getLong("loandetailsId");
+            final Long loanAmount = rs.getLong("loanAmount");
+            final Long loanTerm = rs.getLong("loanTerm");
+            final Long loanInterest = rs.getLong("loanInterest");
+            final Long emi = rs.getLong("emi");
+
+            final Long interestInr = rs.getLong("interestInr");
+            final Long docCharge = rs.getLong("docCharge");
+            final Long processingCharge = rs.getLong("processingCharge");
+            final String pendingDoc = rs.getString("pendingDoc");
+
+            final Long otherCharges = rs.getLong("otherCharges");
+            final Long closingAC = rs.getLong("closingAC");
+
+            final Long closingDiscount = rs.getLong("closingDiscount");
+            final Long payout = rs.getLong("payout");
+            final LocalDate dueDate = JdbcSupport.getLocalDate(rs, "dueDate");
+
+            LoanDetailsData loandetailsData = new LoanDetailsData(loandetailsId, loanAmount, loanTerm, loanInterest, emi, interestInr,
+                    docCharge, processingCharge, pendingDoc, otherCharges, closingAC, closingDiscount, payout, dueDate);
+
             final Long vehicleId = rs.getLong("vehicleId");
             final String vehicleNumber = rs.getString("vehicleNumber");
             final String maker = rs.getString("maker");
@@ -333,7 +362,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             final String loanType = rs.getString("loanType");
 
             return VehicleLoanData.instance(loanId, customerName, vehicleType, loanType, customerDetailsData, guarantorDetailsData,
-                    vehicleDetailsData, bankDetailsData);
+                    vehicleDetailsData, bankDetailsData, loandetailsData);
 
         }
     }

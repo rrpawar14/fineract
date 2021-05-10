@@ -40,17 +40,19 @@ public class VehicleLoanData {
 
     private BankDetailsData bankDetails;
 
+    private LoanDetailsData loanDetailsData;
+
     public static VehicleLoanData instance(final Long id, final String customerName, final String vehicleType, final String loanType,
             final CustomerDetailsData customerDetails, final GuarantorDetailsData customerGuarantor,
-            final VehicleDetailsData vehicleDetails, final BankDetailsData bankDetails) {
+            final VehicleDetailsData vehicleDetails, final BankDetailsData bankDetails, final LoanDetailsData loanDetailsData) {
 
-        return new VehicleLoanData(id, customerName, vehicleType, loanType, customerDetails, customerGuarantor, vehicleDetails,
-                bankDetails);
+        return new VehicleLoanData(id, customerName, vehicleType, loanType, customerDetails, customerGuarantor, vehicleDetails, bankDetails,
+                loanDetailsData);
     }
 
     public VehicleLoanData(final Long id, final String customerName, final String vehicleType, final String loanType,
             final CustomerDetailsData customerDetails, final GuarantorDetailsData customerGuarantor,
-            final VehicleDetailsData vehicleDetails, final BankDetailsData bankDetails) {
+            final VehicleDetailsData vehicleDetails, final BankDetailsData bankDetails, final LoanDetailsData loanDetailsData) {
 
         this.id = id;
 
@@ -67,5 +69,7 @@ public class VehicleLoanData {
         this.vehicleDetails = vehicleDetails;
 
         this.bankDetails = bankDetails;
+
+        this.loanDetailsData = loanDetailsData;
     }
 }
