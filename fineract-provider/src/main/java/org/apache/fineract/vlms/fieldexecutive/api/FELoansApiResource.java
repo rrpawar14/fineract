@@ -179,6 +179,27 @@ public class FELoansApiResource {
         return this.toApiJsonSerializer.serialize(result);
     }
 
+    @PUT
+    @Path("updateEnroll/{enrollId}")
+    @Operation(summary = "Create a new applicant loan", description = "Removes the user and the associated roles and permissions.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(schema =
+                                                                              // @Schema(implementation =
+                                                                              // UsersApiResourceSwagger.DeleteUsersUserIdResponse.class)))
+                                                                              // })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String modifyFEEnroll(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("enrollId") @Parameter(description = "enrollId") final Long enrollId) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .updateFEEnroll(enrollId).withJson(apiRequestBodyAsJson) //
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
     @POST
     @Path("applyLoan")
     @Operation(summary = "Create a Loan", description = "Removes the user and the associated roles and permissions.")

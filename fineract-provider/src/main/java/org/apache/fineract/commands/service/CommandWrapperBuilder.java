@@ -1009,6 +1009,14 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder updateFEEnroll(Long enrollId) {
+        this.actionName = "UPDATE";
+        this.entityName = "FEENROLL";
+        this.entityId = enrollId;
+        this.href = "/loans/updateFEEnroll";
+        return this;
+    }
+
     public CommandWrapperBuilder updateGuarantorDetail(Long guarantorDetailsId) {
         this.actionName = "UPDATE";
         this.entityName = "GUARANTORDETAIL";

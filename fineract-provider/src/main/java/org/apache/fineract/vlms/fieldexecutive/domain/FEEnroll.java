@@ -18,13 +18,18 @@
  */
 package org.apache.fineract.vlms.fieldexecutive.domain;
 
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
+import org.apache.fineract.infrastructure.core.service.DateUtils;
 
 @Entity
 @Table(name = "m_feenroll", uniqueConstraints = { @UniqueConstraint(columnNames = { "mobile_number" }, name = "mobile_number") })
@@ -81,6 +86,78 @@ public class FEEnroll extends AbstractPersistableCustom {
         this.fatherName = fatherName;
         this.gender = gender;
         this.applicantType = applicantType;
+    }
+
+    public Map<String, Object> update(final JsonCommand command) {
+
+        final Map<String, Object> actualChanges = new LinkedHashMap<>(1);
+
+        final String customerNameParamName = "customerName";
+        if (command.isChangeInStringParameterNamed(customerNameParamName, this.customerName)) {
+            final String newValue = command.stringValueOfParameterNamed(customerNameParamName);
+            actualChanges.put(customerNameParamName, newValue);
+            this.customerName = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String mobileNumberParamName = "mobileNumber";
+        if (command.isChangeInStringParameterNamed(mobileNumberParamName, this.mobileNumber)) {
+            final String newValue = command.stringValueOfParameterNamed(mobileNumberParamName);
+            actualChanges.put(mobileNumberParamName, newValue);
+            this.mobileNumber = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String alternateMobileNumberParamName = "alternateMobileNumber";
+        if (command.isChangeInStringParameterNamed(alternateMobileNumberParamName, this.alternateMobileNumber)) {
+            final String newValue = command.stringValueOfParameterNamed(alternateMobileNumberParamName);
+            actualChanges.put(alternateMobileNumberParamName, newValue);
+            this.alternateMobileNumber = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String dateFormatAsInput = command.dateFormat();
+        final String localeAsInput = command.locale();
+
+        final String dobParamName = "dob";
+        final String localeParamName = "locale";
+        final String dateFormatParamName = "dateFormat";
+        if (command.isChangeInDateParameterNamed(dobParamName, this.dob)) {
+            final String valueAsInput = command.stringValueOfParameterNamed(dobParamName);
+            actualChanges.put(dobParamName, valueAsInput);
+            actualChanges.put(dateFormatParamName, dateFormatAsInput);
+            actualChanges.put(localeParamName, localeAsInput);
+
+            final LocalDate newValue = command.localDateValueOfParameterNamed(dobParamName);
+            this.dob = Date.from(newValue.atStartOfDay(DateUtils.getDateTimeZoneOfTenant()).toInstant());
+        }
+
+        final String fatherNameParamName = "fatherName";
+        if (command.isChangeInStringParameterNamed(fatherNameParamName, this.fatherName)) {
+            final String newValue = command.stringValueOfParameterNamed(fatherNameParamName);
+            actualChanges.put(fatherNameParamName, newValue);
+            this.fatherName = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String genderParamName = "gender";
+        if (command.isChangeInStringParameterNamed(genderParamName, this.gender)) {
+            final String newValue = command.stringValueOfParameterNamed(genderParamName);
+            actualChanges.put(genderParamName, newValue);
+            this.gender = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String applicantTypeParamName = "applicantType";
+        if (command.isChangeInStringParameterNamed(applicantTypeParamName, this.applicantType)) {
+            final String newValue = command.stringValueOfParameterNamed(applicantTypeParamName);
+            actualChanges.put(applicantTypeParamName, newValue);
+            this.applicantType = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String applicantIdParamName = "applicantId";
+        if (command.isChangeInStringParameterNamed(applicantTypeParamName, this.applicantType)) {
+            final String newValue = command.stringValueOfParameterNamed(applicantIdParamName);
+            actualChanges.put(applicantIdParamName, newValue);
+            this.applicantId = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        return actualChanges;
     }
 
 }

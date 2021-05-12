@@ -160,6 +160,38 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
 
     @Transactional
     @Override
+    @CacheEvict(value = "enroll", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult updateFEEnroll(final Long enrollId, final JsonCommand command) {
+
+        try {
+            this.context.authenticatedUser();
+
+            // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+            final FEEnroll feEnroll = this.feEnrollRepository.getOne(enrollId);
+            final Map<String, Object> changes = feEnroll.update(command);
+
+            if (!changes.isEmpty()) {
+                this.feEnrollRepository.save(feEnroll);
+            }
+            // final = FEEnroll.fromJson(command);
+            // this.feEnrollRepository.save(feEnroll);
+
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(feEnroll.getId()).build();
+            // .withEntityId(code.getId())
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException ee) {
+            Throwable throwable = ExceptionUtils.getRootCause(ee.getCause());
+            handleDataIntegrityIssues(command, throwable, ee);
+            return CommandProcessingResult.empty();
+        }
+
+    }
+
+    @Transactional
+    @Override
     @CacheEvict(value = "newloan", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
     public CommandProcessingResult createNewLoan(final JsonCommand command) {
 
