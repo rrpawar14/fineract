@@ -25,4 +25,10 @@ public interface BranchModuleWritePlatformService {
 
     CommandProcessingResult createEmployee(JsonCommand command);
 
+    CommandProcessingResult updateEmployeeDetail(Long employeeDetailsId, JsonCommand command);
+
+    CommandProcessingResult updateInsuranceDetail(Long insuranceDetailsId, JsonCommand command);
+
+    CommandProcessingResult updateQualificationDetail(Long qualficationId, JsonCommand command);
+
 }

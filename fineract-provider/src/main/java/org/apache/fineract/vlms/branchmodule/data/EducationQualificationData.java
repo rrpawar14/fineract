@@ -25,6 +25,8 @@ package org.apache.fineract.vlms.branchmodule.data;
 @SuppressWarnings("unused")
 public class EducationQualificationData {
 
+    final Long Id;
+
     private String university;
 
     private String qualification;
@@ -33,14 +35,15 @@ public class EducationQualificationData {
 
     private String passingyear;
 
-    public static EducationQualificationData instance(final String university, final String qualification, final String percentage,
-            final String passingyear) {
+    public static EducationQualificationData instance(final Long Id, final String university, final String qualification,
+            final String percentage, final String passingyear) {
 
-        return new EducationQualificationData(university, qualification, percentage, passingyear);
+        return new EducationQualificationData(Id, university, qualification, percentage, passingyear);
     }
 
-    public EducationQualificationData(final String university, final String qualification, final String percentage,
+    public EducationQualificationData(final Long Id, final String university, final String qualification, final String percentage,
             final String passingyear) {
+        this.Id = Id;
         this.university = university;
         this.qualification = qualification;
         this.percentage = percentage;

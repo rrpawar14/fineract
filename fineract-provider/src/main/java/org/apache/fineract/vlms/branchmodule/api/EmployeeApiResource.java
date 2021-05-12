@@ -29,7 +29,9 @@ import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -127,6 +129,69 @@ public class EmployeeApiResource {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .createEmployee().withJson(apiRequestBodyAsJson) //
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @PUT
+    @Path("updateEmployee/{employeeId}")
+    @Operation(summary = "Create a User Loan Enquiry", description = "Removes the user and the associated roles and permissions.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(schema =
+                                                                              // @Schema(implementation =
+                                                                              // UsersApiResourceSwagger.DeleteUsersUserIdResponse.class)))
+                                                                              // })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String updateEmployee(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("employeeId") @Parameter(description = "employeeId") final Long employeeId) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .updateEmployee(employeeId).withJson(apiRequestBodyAsJson) //
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @PUT
+    @Path("updateQualification/{qualificationId}")
+    @Operation(summary = "Create a User Loan Enquiry", description = "Removes the user and the associated roles and permissions.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(schema =
+                                                                              // @Schema(implementation =
+                                                                              // UsersApiResourceSwagger.DeleteUsersUserIdResponse.class)))
+                                                                              // })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String updateQualification(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("qualificationId") @Parameter(description = "qualificationId") final Long qualificationId) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .updateEducation(qualificationId).withJson(apiRequestBodyAsJson) //
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @PUT
+    @Path("updateInsurance/{insuranceId}")
+    @Operation(summary = "Create a User Loan Enquiry", description = "Removes the user and the associated roles and permissions.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(schema =
+                                                                              // @Schema(implementation =
+                                                                              // UsersApiResourceSwagger.DeleteUsersUserIdResponse.class)))
+                                                                              // })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String updateInsurance(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("insuranceId") @Parameter(description = "insuranceId") final Long insuranceId) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .updateInsurance(insuranceId).withJson(apiRequestBodyAsJson) //
                 .build();
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);

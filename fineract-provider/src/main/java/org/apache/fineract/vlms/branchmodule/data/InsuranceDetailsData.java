@@ -25,18 +25,22 @@ package org.apache.fineract.vlms.branchmodule.data;
 @SuppressWarnings("unused")
 public class InsuranceDetailsData {
 
+    private Long Id;
+
     private String policyNumber;
 
     private String companyCoverage;
 
     private String policyCoverage;
 
-    public static InsuranceDetailsData instance(final String policyNumber, final String companyCoverage, final String policyCoverage) {
+    public static InsuranceDetailsData instance(final Long Id, final String policyNumber, final String companyCoverage,
+            final String policyCoverage) {
 
-        return new InsuranceDetailsData(policyNumber, companyCoverage, policyCoverage);
+        return new InsuranceDetailsData(Id, policyNumber, companyCoverage, policyCoverage);
     }
 
-    public InsuranceDetailsData(final String policyNumber, final String companyCoverage, final String policyCoverage) {
+    public InsuranceDetailsData(final Long Id, final String policyNumber, final String companyCoverage, final String policyCoverage) {
+        this.Id = Id;
         this.policyNumber = policyNumber;
         this.companyCoverage = companyCoverage;
         this.policyCoverage = policyCoverage;

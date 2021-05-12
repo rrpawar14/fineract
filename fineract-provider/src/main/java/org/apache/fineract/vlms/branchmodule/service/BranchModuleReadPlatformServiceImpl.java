@@ -68,13 +68,13 @@ public class BranchModuleReadPlatformServiceImpl implements BranchModuleReadPlat
                     + " bnk.account_number as accountNumber, bnk.account_holder_name as accountHolderName, bnk.bank_name as bankName, bnk.branch_name as branchName,"
                     + " bnk.IFSC as IFSC, "
 
-                    + " genisn.policynumber as genPolicyNumber,  genisn.companycoverage as genCompanyCoverage, genisn.policycoverage as genPolicyCoverage, "
-                    + " accisn.policynumber as accPolicyNumber,  accisn.companycoverage as accCompanyCoverage, accisn.policycoverage as accPolicyCoverage, "
+                    + " genisn.id as genisnId, genisn.policynumber as genPolicyNumber,  genisn.companycoverage as genCompanyCoverage, genisn.policycoverage as genPolicyCoverage, "
+                    + " accisn.id as accisnId, accisn.policynumber as accPolicyNumber,  accisn.companycoverage as accCompanyCoverage, accisn.policycoverage as accPolicyCoverage, "
 
-                    + " sc.school_university as scUniversity, sc.qualification as scQualification, sc.percentage as scPercentage, sc.passingyear as scPassingYear, "
-                    + " cl.school_university as clUniversity, cl.qualification as clQualification, cl.percentage as clPercentage, cl.passingyear as clPassingYear, "
-                    + " gd.school_university as gdUniversity, gd.qualification as gdQualification, gd.percentage as gdPercentage, gd.passingyear as gdPassingYear, "
-                    + " pg.school_university as pgUniversity, pg.qualification as pgQualification, pg.percentage as pgPercentage, pg.passingyear as pgPassingYear ";
+                    + " sc.id as scId, sc.school_university as scUniversity, sc.qualification as scQualification, sc.percentage as scPercentage, sc.passingyear as scPassingYear, "
+                    + " cl.id as clId, cl.school_university as clUniversity, cl.qualification as clQualification, cl.percentage as clPercentage, cl.passingyear as clPassingYear, "
+                    + " gd.id as gdId, gd.school_university as gdUniversity, gd.qualification as gdQualification, gd.percentage as gdPercentage, gd.passingyear as gdPassingYear, "
+                    + " pg.id as pgId, pg.school_university as pgUniversity, pg.qualification as pgQualification, pg.percentage as pgPercentage, pg.passingyear as pgPassingYear ";
 
         }
 
@@ -153,48 +153,56 @@ public class BranchModuleReadPlatformServiceImpl implements BranchModuleReadPlat
             BankDetailsData bankDetailsData = new BankDetailsData(bankId, eligibleloan, accountType, disbursalType, accountNumber,
                     accountHolderName, bankName, branchName, IFSC);
 
+            final Long genInsuranceId = rs.getLong("genisnId");
             final String genPolicyNumber = rs.getString("genPolicyNumber");
             final String genCompanyCoverage = rs.getString("genCompanyCoverage");
             final String genPolicyCoverage = rs.getString("genPolicyCoverage");
 
-            InsuranceDetailsData genInsuranceDetailsData = new InsuranceDetailsData(genPolicyNumber, genCompanyCoverage, genPolicyCoverage);
+            InsuranceDetailsData genInsuranceDetailsData = new InsuranceDetailsData(genInsuranceId, genPolicyNumber, genCompanyCoverage,
+                    genPolicyCoverage);
 
+            final Long accInsuranceId = rs.getLong("accisnId");
             final String accPolicyNumber = rs.getString("accPolicyNumber");
             final String accCompanyCoverage = rs.getString("accCompanyCoverage");
             final String accPolicyCoverage = rs.getString("accPolicyCoverage");
 
-            InsuranceDetailsData accInsuranceDetailsData = new InsuranceDetailsData(accPolicyNumber, accCompanyCoverage, accPolicyCoverage);
+            InsuranceDetailsData accInsuranceDetailsData = new InsuranceDetailsData(accInsuranceId, accPolicyNumber, accCompanyCoverage,
+                    accPolicyCoverage);
 
+            final Long scId = rs.getLong("scId");
             final String scUniversity = rs.getString("scUniversity");
             final String scQualification = rs.getString("scQualification");
             final String scPercentage = rs.getString("scPercentage");
             final String scPassingYear = rs.getString("scPassingYear");
 
-            EducationQualificationData scEducationQualificationData = new EducationQualificationData(scUniversity, scQualification,
+            EducationQualificationData scEducationQualificationData = new EducationQualificationData(scId, scUniversity, scQualification,
                     scPercentage, scPassingYear);
 
+            final Long clId = rs.getLong("clId");
             final String clUniversity = rs.getString("clUniversity");
             final String clQualification = rs.getString("clQualification");
             final String clPercentage = rs.getString("clPercentage");
             final String clPassingYear = rs.getString("clPassingYear");
 
-            EducationQualificationData clEducationQualificationData = new EducationQualificationData(clUniversity, clQualification,
+            EducationQualificationData clEducationQualificationData = new EducationQualificationData(clId, clUniversity, clQualification,
                     clPercentage, clPassingYear);
 
+            final Long gdId = rs.getLong("gdId");
             final String gdUniversity = rs.getString("gdUniversity");
             final String gdQualification = rs.getString("gdQualification");
             final String gdPercentage = rs.getString("gdPercentage");
             final String gdPassingYear = rs.getString("gdPassingYear");
 
-            EducationQualificationData gdEducationQualificationData = new EducationQualificationData(gdUniversity, gdQualification,
+            EducationQualificationData gdEducationQualificationData = new EducationQualificationData(gdId, gdUniversity, gdQualification,
                     gdPercentage, gdPassingYear);
 
+            final Long pgId = rs.getLong("pgId");
             final String pgUniversity = rs.getString("pgUniversity");
             final String pgQualification = rs.getString("pgQualification");
             final String pgPercentage = rs.getString("pgPercentage");
             final String pgPassingYear = rs.getString("pgPassingYear");
 
-            EducationQualificationData pgEducationQualificationData = new EducationQualificationData(pgUniversity, pgQualification,
+            EducationQualificationData pgEducationQualificationData = new EducationQualificationData(pgId, pgUniversity, pgQualification,
                     pgPercentage, pgPassingYear);
 
             return EmployeeData.instance(empId, empName, calledName, surName, mobileNumber, alternateNumber, officialNumber, dob, gender,

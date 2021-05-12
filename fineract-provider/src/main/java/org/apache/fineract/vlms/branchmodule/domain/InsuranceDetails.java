@@ -22,9 +22,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
@@ -85,6 +88,34 @@ public class InsuranceDetails extends AbstractPersistableCustom {
         this.companyCoverage = companyCoverage;
         this.policyCoverage = policyCoverage;
 
+    }
+
+    public Map<String, Object> update(final JsonCommand command) {
+
+        final Map<String, Object> actualChanges = new LinkedHashMap<>(1);
+
+        final String policyNumberParamName = "policyNumber";
+        if (command.isChangeInStringParameterNamed(policyNumberParamName, this.policyNumber)) {
+            final String newValue = command.stringValueOfParameterNamed(policyNumberParamName);
+            actualChanges.put(policyNumberParamName, newValue);
+            this.policyNumber = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String companyCoverageParamName = "companyCoverage";
+        if (command.isChangeInStringParameterNamed(companyCoverageParamName, this.companyCoverage)) {
+            final String newValue = command.stringValueOfParameterNamed(companyCoverageParamName);
+            actualChanges.put(companyCoverageParamName, newValue);
+            this.companyCoverage = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String policyCoverageParamName = "policyCoverage";
+        if (command.isChangeInStringParameterNamed(policyCoverageParamName, this.policyCoverage)) {
+            final String newValue = command.stringValueOfParameterNamed(policyCoverageParamName);
+            actualChanges.put(policyCoverageParamName, newValue);
+            this.policyCoverage = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        return actualChanges;
     }
 
 }

@@ -947,6 +947,33 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder updateEmployee(Long employeeId) {
+        this.actionName = "UPDATE";
+        this.entityName = "EMPLOYEE";
+        this.entityId = employeeId;
+        this.loanId = null;
+        this.href = "/loans/employee";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateEducation(Long qualificationId) {
+        this.actionName = "UPDATE";
+        this.entityName = "EDUCATION";
+        this.entityId = qualificationId;
+        this.loanId = null;
+        this.href = "/loans/employee";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateInsurance(Long insuranceId) {
+        this.actionName = "UPDATE";
+        this.entityName = "INSURANCE";
+        this.entityId = insuranceId;
+        this.loanId = null;
+        this.href = "/loans/employee";
+        return this;
+    }
+
     public CommandWrapperBuilder createFEEnroll() {
         this.actionName = "CREATE";
         this.entityName = "FEENROLL";

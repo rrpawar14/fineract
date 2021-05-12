@@ -22,9 +22,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
@@ -82,6 +85,41 @@ public class EducationQualification extends AbstractPersistableCustom {
 
         return new EducationQualification(university, qualification, percentage, passingyear);
 
+    }
+
+    public Map<String, Object> update(final JsonCommand command) {
+
+        final Map<String, Object> actualChanges = new LinkedHashMap<>(1);
+
+        final String universityParamName = "university";
+        if (command.isChangeInStringParameterNamed(universityParamName, this.university)) {
+            final String newValue = command.stringValueOfParameterNamed(universityParamName);
+            actualChanges.put(universityParamName, newValue);
+            this.university = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String qualificationParamName = "qualification";
+        if (command.isChangeInStringParameterNamed(qualificationParamName, this.qualification)) {
+            final String newValue = command.stringValueOfParameterNamed(qualificationParamName);
+            actualChanges.put(qualificationParamName, newValue);
+            this.qualification = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String percentageParamName = "percentage";
+        if (command.isChangeInStringParameterNamed(percentageParamName, this.percentage)) {
+            final String newValue = command.stringValueOfParameterNamed(percentageParamName);
+            actualChanges.put(percentageParamName, newValue);
+            this.percentage = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String passingyearParamName = "passingyear";
+        if (command.isChangeInStringParameterNamed(passingyearParamName, this.passingyear)) {
+            final String newValue = command.stringValueOfParameterNamed(passingyearParamName);
+            actualChanges.put(passingyearParamName, newValue);
+            this.passingyear = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        return actualChanges;
     }
 
     private EducationQualification(final String university, final String qualification, final String percentage, final String passingyear) {

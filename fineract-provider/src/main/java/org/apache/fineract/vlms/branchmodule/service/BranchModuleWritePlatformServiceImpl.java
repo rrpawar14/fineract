@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.vlms.branchmodule.service;
 
+import java.util.Map;
 import javax.persistence.PersistenceException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.fineract.infrastructure.codes.serialization.CodeCommandFromApiJsonDeserializer;
@@ -163,6 +164,160 @@ public class BranchModuleWritePlatformServiceImpl implements BranchModuleWritePl
             return CommandProcessingResult.empty();
         }
 
+    }
+    /*
+     * @Transactional
+     *
+     * @Override
+     *
+     * @CacheEvict(value = "employee", key =
+     * "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+     * public CommandProcessingResult editEmployee(final JsonCommand command) {
+     *
+     * try { this.context.authenticatedUser();
+     *
+     * // this.fromApiJsonDeserializer.validateForCreate(command.json());
+     *
+     *
+     *
+     * /* final InsuranceDetails insuranceDetails = InsuranceDetails.fromJson(command, "general_insurance");
+     * this.insuranceRepository.save(insuranceDetails);
+     *
+     * final InsuranceDetails accidentalInsuranceDetails = InsuranceDetails.fromJson(command, "accidental_insurance");
+     * this.insuranceRepository.save(accidentalInsuranceDetails);
+     *
+     * final EducationQualification schoolQualification = EducationQualification.fromJson(command,
+     * "school_qualification"); this.educationQualificationRepository.save(schoolQualification);
+     *
+     * final EducationQualification collegeQualification = EducationQualification.fromJson(command,
+     * "college_qualification"); this.educationQualificationRepository.save(collegeQualification);
+     *
+     * final EducationQualification graduateQualification = EducationQualification.fromJson(command,
+     * "graduate_qualification"); this.educationQualificationRepository.save(graduateQualification);
+     *
+     * final EducationQualification postGraduateQualification = EducationQualification.fromJson(command,
+     * "postgraduate_qualification"); this.educationQualificationRepository.save(postGraduateQualification);
+     *
+     * final Employee employee = Employee.fromJson(command, customerAdd, permanentAdd, bankDetails, insuranceDetails,
+     * accidentalInsuranceDetails, schoolQualification, collegeQualification, graduateQualification,
+     * postGraduateQualification);
+     *
+     * this.employeeRepository.save(employee);
+     *
+     * return new
+     * CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(employee.getId()).build(); //
+     * .withEntityId(code.getId()) } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+     * handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve); return CommandProcessingResult.empty(); }
+     * catch (final PersistenceException ee) { Throwable throwable = ExceptionUtils.getRootCause(ee.getCause());
+     * handleDataIntegrityIssues(command, throwable, ee); return CommandProcessingResult.empty(); }
+     *
+     * }
+     */
+
+    @Transactional
+    @Override
+    public CommandProcessingResult updateEmployeeDetail(Long employeeDetailsId, final JsonCommand command) {
+
+        // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+        try {
+            this.context.authenticatedUser();
+
+            /*
+             * final FETask feTask = retrieveTaskBy(taskId); final Map<String, Object> changes = feTask.update(command);
+             *
+             * if (!changes.isEmpty()) { this.feTaskRepository.save(feTask); }
+             */
+
+            // createcustomerdetails
+            Employee employee = this.employeeRepository.getOne(employeeDetailsId);
+            final Map<String, Object> changes = employee.update(command);
+
+            if (!changes.isEmpty()) {
+                this.employeeRepository.save(employee);
+            }
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(employee.getId()).build();
+            // .withEntityId(code.getId())
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException ee) {
+            Throwable throwable = ExceptionUtils.getRootCause(ee.getCause());
+            handleDataIntegrityIssues(command, throwable, ee);
+            return CommandProcessingResult.empty();
+        }
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult updateInsuranceDetail(Long insuranceDetailsId, final JsonCommand command) {
+
+        // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+        try {
+            this.context.authenticatedUser();
+
+            /*
+             * final FETask feTask = retrieveTaskBy(taskId); final Map<String, Object> changes = feTask.update(command);
+             *
+             * if (!changes.isEmpty()) { this.feTaskRepository.save(feTask); }
+             */
+
+            // createcustomerdetails
+            InsuranceDetails insuranceDetails = this.insuranceRepository.getOne(insuranceDetailsId);
+            final Map<String, Object> changes = insuranceDetails.update(command);
+
+            if (!changes.isEmpty()) {
+                this.insuranceRepository.save(insuranceDetails);
+            }
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(insuranceDetails.getId()).build();
+            // .withEntityId(code.getId())
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException ee) {
+            Throwable throwable = ExceptionUtils.getRootCause(ee.getCause());
+            handleDataIntegrityIssues(command, throwable, ee);
+            return CommandProcessingResult.empty();
+        }
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult updateQualificationDetail(Long qualficationId, final JsonCommand command) {
+
+        // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+        try {
+            this.context.authenticatedUser();
+
+            /*
+             * final FETask feTask = retrieveTaskBy(taskId); final Map<String, Object> changes = feTask.update(command);
+             *
+             * if (!changes.isEmpty()) { this.feTaskRepository.save(feTask); }
+             */
+
+            // createcustomerdetails
+
+            final EducationQualification qualification = this.educationQualificationRepository.getOne(qualficationId);
+
+            // EducationQualification.fromJson(command, "graduate_qualification");
+            final Map<String, Object> changes = qualification.update(command);
+
+            if (!changes.isEmpty()) {
+                this.educationQualificationRepository.save(qualification);
+            }
+
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(qualification.getId()).build();
+            // .withEntityId(code.getId())
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException ee) {
+            Throwable throwable = ExceptionUtils.getRootCause(ee.getCause());
+            handleDataIntegrityIssues(command, throwable, ee);
+            return CommandProcessingResult.empty();
+        }
     }
 
     private void handleDataIntegrityIssues(final JsonCommand command, final Throwable realCause, final Exception dve) {
