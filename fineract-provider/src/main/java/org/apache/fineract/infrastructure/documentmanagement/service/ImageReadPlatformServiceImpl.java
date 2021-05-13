@@ -138,17 +138,17 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
             } else if (EntityTypeForImages.G_ADHARPHOTO.toString().equals(entityType)) {
                 builder.append(
                         " docim.id as id, docim.location as location, docim.storage_type_enum as storageType  from m_documents_images docim , m_customer_guarantor gd "
-                                + "   where gd.id = docim.guarantor_id  and docim.entity_name = 'adharphoto' and gd.id=? ");
+                                + "   where gd.id = docim.guarantor_id  and docim.entity_name = 'g_adharphoto' and gd.id=? ");
 
             } else if (EntityTypeForImages.G_PANCARD.toString().equals(entityType)) {
                 builder.append(
                         " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_guarantor gd "
-                                + " where gd.id = docim.guarantor_id and docim.entity_name = 'pancard' and gd.id=? ");
+                                + " where gd.id = docim.guarantor_id and docim.entity_name = 'g_pancard' and gd.id=? ");
 
             } else if (EntityTypeForImages.G_VEHICLE_LICENCE.toString().equals(entityType)) {
                 builder.append(
                         " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_guarantor gd "
-                                + " where gd.id = docim.guarantor_id and gd.id=? where docim.entity_name = vehicle_licence");
+                                + " where gd.id = docim.guarantor_id and gd.id=? where docim.entity_name = g_vehicle_licence");
             } else if (EntityTypeForImages.INVOICEIMAGE.toString().equalsIgnoreCase(entityType)) {
                 builder.append(
                         " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_apply_vehicle_loan vl "

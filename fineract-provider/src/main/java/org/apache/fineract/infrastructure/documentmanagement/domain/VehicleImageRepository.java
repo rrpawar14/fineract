@@ -20,7 +20,12 @@ package org.apache.fineract.infrastructure.documentmanagement.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface VehicleImageRepository extends JpaRepository<VehicleImages, Long>, JpaSpecificationExecutor<VehicleImages> {
+
+    @Query("select vecim from VehicleImages vecim where vecim.vehicleDetails.id = :entityId and vecim.entityName = :entityName ")
+    VehicleImages getVehicleImageByEntityNameandEntityId(@Param("entityId") Long entityId, @Param("entityName") String entityName);
 
 }

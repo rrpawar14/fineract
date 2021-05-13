@@ -72,4 +72,8 @@ public final class VehicleImages extends AbstractPersistableCustom {
         this.storageType = storageType;
     }
 
+    public void setVehicleId(final VehicleDetails vehicleDetails) {
+        this.vehicleDetails = vehicleDetails;
+    }
+
 }

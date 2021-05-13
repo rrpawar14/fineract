@@ -104,6 +104,34 @@ public final class DocumentImages extends AbstractPersistableCustom {
         this.location = location;
     }
 
+    public void setCustomerId(final CustomerDetails customerDetail) {
+        this.customerDetails = customerDetail;
+    }
+
+    public void setGuarantorId(final CustomerGuarantor customerGuarantor) {
+        this.customerGuarantor = customerGuarantor;
+    }
+
+    public void setBankId(final BankDetails bankImage) {
+        this.bankImage = bankImage;
+    }
+
+    public void setFeEnrollId(final FEEnroll feEnroll) {
+        this.feEnroll = feEnroll;
+    }
+
+    public void setVehicleLoanId(final VehicleLoan vehicleLoan) {
+        this.vehicleLoan = vehicleLoan;
+    }
+
+    public void setEmployeeId(final Employee employee) {
+        this.employee = employee;
+    }
+
+    public CustomerDetails getCustomerId() {
+        return this.customerDetails;
+    }
+
     public void setStorageType(final Integer storageType) {
         this.storageType = storageType;
     }

@@ -172,6 +172,9 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
     public CommandProcessingResult deleteImage(String entityName, final Long clientId) {
         Object owner = null;
         Image image = null; // create 2 table document vehicle
+        DocumentImages documentImage = null;
+        VehicleImages vehicleImage = null;
+
         if (EntityTypeForImages.CLIENTS.toString().equals(entityName)) {
             owner = this.clientRepositoryWrapper.findOneWithNotFoundDetection(clientId);
             Client client = (Client) owner;
@@ -179,15 +182,79 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             client.setImage(null);
             this.clientRepositoryWrapper.save(client);
 
-        } /*
-           * else if (EntityTypeForImages.NEWVEHICLE.toString().equals(entityName)) {
-           * System.out.println("--deleteImage--"); owner =
-           * this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(clientId); NewVehicleLoan newVehicleLoan
-           * = (NewVehicleLoan) owner; image = newVehicleLoan.getInvoiceImage(); newVehicleLoan.setImage(null);
-           * this.newVehicleLoanRepositoryWrapper.save(newVehicleLoan);
-           *
-           * }
-           */ else if (EntityTypeForImages.STAFF.toString().equals(entityName)) {
+        } else if (EntityTypeForImages.ADHARPHOTO.toString().equals(entityName) || EntityTypeForImages.PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.VEHICLE_LICENCE.toString().equals(entityName)
+                || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityName)) {
+            // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
+            System.out.println("-- GovernmentDocument--");
+            CustomerDetails cd = null;
+            // CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
+            documentImage = this.documentImageRepository.getCustomerDocumentImageByEntityNameandEntityId(clientId, entityName);
+
+            documentImage.setCustomerId(null);
+
+        } else if (EntityTypeForImages.GUARANTORIMAGE.toString().equals(entityName)
+                || EntityTypeForImages.G_ADHARPHOTO.toString().equals(entityName)
+                || EntityTypeForImages.G_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.G_VEHICLE_LICENCE.toString().equals(entityName)) {
+            // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
+            System.out.println("-- GovernmentDocument--");
+
+            // CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
+            documentImage = this.documentImageRepository.getGurantorDocumentImageByEntityNameandEntityId(clientId, entityName);
+
+            documentImage.setGuarantorId(null);
+
+        } else if (EntityTypeForImages.BANK.toString().equals(entityName)) {
+            // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
+            System.out.println("-- GovernmentDocument--");
+
+            // CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
+            documentImage = this.documentImageRepository.getBankDocumentImageByEntityNameandEntityId(clientId, entityName);
+
+            documentImage.setBankId(null);
+
+        } else if (EntityTypeForImages.ENROLL_CUSTOMERIMAGE.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_ADHARPHOTO.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_PANCARD.toString().equals(entityName)) {
+            // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
+            System.out.println("-- GovernmentDocument--");
+
+            // CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
+            documentImage = this.documentImageRepository.getFEEnrollDocumentImageByEntityNameandEntityId(clientId, entityName);
+
+            documentImage.setFeEnrollId(null);
+
+        } else if (EntityTypeForImages.EMPLOYEE_ADHAR.toString().equals(entityName)
+                || EntityTypeForImages.EMPLOYEE_PANCARD.toString().equals(entityName)) {
+            // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
+            System.out.println("-- GovernmentDocument--");
+
+            // CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
+            documentImage = this.documentImageRepository.getEmployeeDocumentImageByEntityNameandEntityId(clientId, entityName);
+
+            documentImage.setEmployeeId(null);
+
+        } else if (EntityTypeForImages.ENGINE.toString().equals(entityName) || EntityTypeForImages.CHASSIS.toString().equals(entityName)
+                || EntityTypeForImages.VEHICLE.toString().equals(entityName)) {
+            // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
+            System.out.println("-- GovernmentDocument--");
+
+            // CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
+            vehicleImage = this.vehicleImageRepository.getVehicleImageByEntityNameandEntityId(clientId, entityName);
+
+            vehicleImage.setVehicleId(null);
+
+        } else if (EntityTypeForImages.INVOICEIMAGE.toString().equals(entityName)) {
+            // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
+            System.out.println("-- GovernmentDocument--");
+
+            // CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
+            documentImage = this.documentImageRepository.getLoanDocumentImageByEntityNameandEntityId(clientId, entityName);
+
+            documentImage.setVehicleLoanId(null);
+
+        } else if (EntityTypeForImages.STAFF.toString().equals(entityName)) {
             owner = this.staffRepositoryWrapper.findOneWithNotFoundDetection(clientId);
             Staff staff = (Staff) owner;
             image = staff.getImage();
@@ -195,14 +262,28 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             this.staffRepositoryWrapper.save(staff);
 
         }
+
         // delete image from the file system
         if (image != null) {
+            System.out.println("-- image-- ");
             final ContentRepository contentRepository = this.contentRepositoryFactory
                     .getRepository(StorageType.fromInt(image.getStorageType()));
             contentRepository.deleteImage(image.getLocation());
             this.imageRepository.delete(image);
+        } else if (documentImage != null) {
+            System.out.println("-- documentImage-- ");
+            final ContentRepository contentRepository = this.contentRepositoryFactory
+                    .getRepository(StorageType.fromInt(documentImage.getStorageType()));
+            contentRepository.deleteImage(documentImage.getLocation());
+            this.documentImageRepository.delete(documentImage);
+        } else if (vehicleImage != null) {
+            System.out.println("-- vehicleImage-- ");
+            final ContentRepository contentRepository = this.contentRepositoryFactory
+                    .getRepository(StorageType.fromInt(vehicleImage.getStorageType()));
+            contentRepository.deleteImage(vehicleImage.getLocation());
+            this.vehicleImageRepository.delete(vehicleImage);
         }
-
+        System.out.println("-- done-- ");
         return new CommandProcessingResult(clientId);
     }
 
@@ -256,7 +337,9 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             // }
         }
         // if (entityName.equals("Engine") || entityName.equals("Chassis") || entityName.equals("Vehicle")) {
-        if (EntityTypeForImages.ENGINE.toString().equals(entityName) || EntityTypeForImages.CHASSIS.toString().equals(entityName)
+        if (EntityTypeForImages.ENGINE.toString().equals(entityName) || EntityTypeForImages.CHASSIS.toString().equals(entityName) ||
+        		EntityTypeForImages.VEHICLEINSURANCE.toString().equals(entityName) || EntityTypeForImages.KMREADING.toString().equals(entityName)
+        		|| EntityTypeForImages.RCBOOK.toString().equals(entityName)
                 || EntityTypeForImages.VEHICLE.toString().equals(entityName)) {
             // else if (EntityTypeForImages.VEHICLEDETAILS.toString().equals(entityName)) {
             System.out.println("--Engine--");
@@ -281,7 +364,9 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             BankDetails bankDetails = this.bankDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
             // documentImage = bankDetails.getImage();
             owner = bankDetails;
-        } else if (EntityTypeForImages.FEENROLL.toString().equals(entityName)) {
+        } else if (EntityTypeForImages.ENROLL_CUSTOMERIMAGE.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_ADHARPHOTO.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_PANCARD.toString().equals(entityName)) {
             System.out.println("--FEENROLL--");
             FEEnroll feEnroll = this.feEnrollRepositoryWrapper.findOneWithNotFoundDetection(entityId);
             // documentImage = bankDetails.getImage();
@@ -414,15 +499,15 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 System.out.println("--NotGuarantorImage--");
                 if (EntityTypeForImages.G_ADHARPHOTO.toString().equals(entityName)) {
                     System.out.println("--ADHARPHOTO--");
-                    entityName = "adharphoto";
+                    // entityName = "adharphoto";
                     documentImage = createDocumentImage(entityName, documentImage, imageLocation, documentNumber, storageType, null,
                             customerGuarantor, null, null, null, null);
                 } else if (EntityTypeForImages.G_PANCARD.toString().equals(entityName)) {
-                    entityName = "pancard";
+                    // entityName = "pancard";
                     documentImage = createDocumentImage(entityName, documentImage, imageLocation, documentNumber, storageType, null,
                             customerGuarantor, null, null, null, null);
                 } else if (EntityTypeForImages.G_VEHICLE_LICENCE.toString().equals(entityName)) {
-                    entityName = "vehicle_licence";
+                    // entityName = "vehicle_licence";
                     documentImage = createDocumentImage(entityName, documentImage, imageLocation, documentNumber, storageType, null,
                             customerGuarantor, null, null, null, null);
                 }

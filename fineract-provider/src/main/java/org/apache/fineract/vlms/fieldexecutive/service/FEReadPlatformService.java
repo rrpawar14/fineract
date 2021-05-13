@@ -42,6 +42,8 @@ public interface FEReadPlatformService {
 
     Collection<TaskData> retrieveAllTask();
 
+    Collection<TaskData> retrieveAllCompletedTask();
+
     Collection<FeCashInHandLimit> retrieveAllfeCashLimitData();
 
 }

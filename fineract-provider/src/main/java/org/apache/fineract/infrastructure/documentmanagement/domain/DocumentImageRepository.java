@@ -20,7 +20,31 @@ package org.apache.fineract.infrastructure.documentmanagement.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface DocumentImageRepository extends JpaRepository<DocumentImages, Long>, JpaSpecificationExecutor<DocumentImages> {
+
+    @Query("select docim from DocumentImages docim where docim.customerDetails.id = :entityId and docim.entityName = :entityName ")
+    DocumentImages getCustomerDocumentImageByEntityNameandEntityId(@Param("entityId") Long entityId,
+            @Param("entityName") String entityName);
+
+    @Query("select docim from DocumentImages docim where docim.customerGuarantor.id = :entityId and docim.entityName = :entityName ")
+    DocumentImages getGurantorDocumentImageByEntityNameandEntityId(@Param("entityId") Long entityId,
+            @Param("entityName") String entityName);
+
+    @Query("select docim from DocumentImages docim where docim.employee.id = :entityId and docim.entityName = :entityName ")
+    DocumentImages getEmployeeDocumentImageByEntityNameandEntityId(@Param("entityId") Long entityId,
+            @Param("entityName") String entityName);
+
+    @Query("select docim from DocumentImages docim where docim.bankImage.id = :entityId and docim.entityName = :entityName ")
+    DocumentImages getBankDocumentImageByEntityNameandEntityId(@Param("entityId") Long entityId, @Param("entityName") String entityName);
+
+    @Query("select docim from DocumentImages docim where docim.vehicleLoan.id = :entityId and docim.entityName = :entityName ")
+    DocumentImages getLoanDocumentImageByEntityNameandEntityId(@Param("entityId") Long entityId, @Param("entityName") String entityName);
+
+    @Query("select docim from DocumentImages docim where docim.feEnroll.id = :entityId and docim.entityName = :entityName ")
+    DocumentImages getFEEnrollDocumentImageByEntityNameandEntityId(@Param("entityId") Long entityId,
+            @Param("entityName") String entityName);
 
 }

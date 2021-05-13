@@ -86,7 +86,7 @@ public class FEEnroll extends AbstractPersistableCustom {
 
     private FEEnroll(final String applicantId, final String customerName, final String mobileNumber, final String alternateMobileNumber,
             final Date dob, final String fatherName, final String gender, final String applicantType, final Date date) {
-        this.applicantId = applicantId; // MobileNo is stored in username column for authentication
+        this.applicantId = applicantId;
         this.customerName = customerName;
         this.mobileNumber = mobileNumber;
         this.alternateMobileNumber = alternateMobileNumber;

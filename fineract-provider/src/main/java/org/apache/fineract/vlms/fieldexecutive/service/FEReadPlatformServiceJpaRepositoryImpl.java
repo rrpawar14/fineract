@@ -115,6 +115,17 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
     }
 
+    @Override
+    @Cacheable(value = "taskdata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<TaskData> retrieveAllCompletedTask() {
+        this.context.authenticatedUser();
+
+        final TaskDataMapper rm = new TaskDataMapper();
+        final String sql = "select " + rm.schema() + " from m_fe_task task where task.status = 'completed' ";
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
     /*
      * @Override public DocumentsData retrieveCode(final Long codeId) { try { this.context.authenticatedUser();
      *
