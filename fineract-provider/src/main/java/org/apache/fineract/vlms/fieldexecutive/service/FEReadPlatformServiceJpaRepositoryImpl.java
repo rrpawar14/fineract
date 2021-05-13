@@ -70,7 +70,7 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
 
         public String schema() {
             return " task.id as id, task.taskType as taskType, task.customer_mobile_no as customerMobileNo, task.customer_reg_no as customerRegNo, task.vehicle_number as vehicleNumber, "
-                    + " task.due_date as dueDate, task.assign_to as assignTo, task.description as description  ";
+                    + " task.due_date as dueDate, task.assign_to as assignTo, task.description as description, task.status as status, task.created_date as createdDate ";
 
         }
 
@@ -85,9 +85,11 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
             final LocalDate dueDate = JdbcSupport.getLocalDate(rs, "dueDate");
             final String assignTo = rs.getString("assignTo");
             final String description = rs.getString("description");
-            // final boolean status = rs.getBoolean("status");
+            final String status = rs.getString("status");
+            final LocalDate createdDate = JdbcSupport.getLocalDate(rs, "createdDate");
 
-            return TaskData.instance(id, taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, description);
+            return TaskData.instance(id, taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, description, status,
+                    createdDate);
         }
     }
 

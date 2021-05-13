@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.vlms.fieldexecutive.domain;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -58,6 +60,9 @@ public class FETask extends AbstractPersistableCustom {
     @Column(name = "status", nullable = false, length = 100)
     private String status;
 
+    @Column(name = "created_date", nullable = false, length = 100)
+    private Date createdDate;
+
     public static FETask fromJson(final JsonCommand command) {
 
         final String taskType = command.stringValueOfParameterNamed("taskType");
@@ -68,15 +73,17 @@ public class FETask extends AbstractPersistableCustom {
         final String assignTo = command.stringValueOfParameterNamed("assignTo");
         final String description = command.stringValueOfParameterNamed("description");
         final String status = command.stringValueOfParameterNamed("status");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Date dateobj = new Date();
 
-        return new FETask(taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, description, status);
+        return new FETask(taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, description, status, dateobj);
 
     }
 
     public FETask() {}
 
     private FETask(final String taskType, final String customerRegNo, final String customerMobileNo, final String vehicleNumber,
-            final Date dueDate, final String assignTo, final String description, final String status) {
+            final Date dueDate, final String assignTo, final String description, final String status, final Date date) {
         this.taskType = taskType;
         this.customerRegNo = customerRegNo;
         this.customerMobileNo = customerMobileNo;
@@ -85,6 +92,7 @@ public class FETask extends AbstractPersistableCustom {
         this.assignTo = assignTo;
         this.description = description;
         this.status = status;
+        this.createdDate = date;
     }
 
     public Map<String, Object> update(final JsonCommand command) {
