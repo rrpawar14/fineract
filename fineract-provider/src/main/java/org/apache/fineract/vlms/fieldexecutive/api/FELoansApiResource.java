@@ -118,6 +118,28 @@ public class FELoansApiResource {
         return this.toApiEnquiryJsonSerializer.serialize(settings, enquiresData, RESPONSE_DATA_PARAMETERS);
     }
 
+    @GET
+    @Path("getEnquiryByDate")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Enquires", description = "Returns the list of Enquries.\n" + "\n" + "Example Requests:\n" + "\n"
+            + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveAllEnquires(@Context final UriInfo uriInfo,
+            @QueryParam("date") @Parameter(description = "date") final String dateParam) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final Collection<EnquiryData> enquiresData = this.readPlatformService.retrieveAllEnquiresByDate(dateParam);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiEnquiryJsonSerializer.serialize(settings, enquiresData, RESPONSE_DATA_PARAMETERS);
+    }
+
     @POST
     @Path("enquiry")
     @Operation(summary = "Create a User Loan Enquiry", description = "Removes the user and the associated roles and permissions.")
@@ -157,6 +179,28 @@ public class FELoansApiResource {
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiEnrollJsonSerializer.serialize(settings, enrollData, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
+    @Path("getEnrollByDate")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Enquires", description = "Returns the list of Enquries.\n" + "\n" + "Example Requests:\n" + "\n"
+            + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveAllEnquiresByDate(@Context final UriInfo uriInfo,
+            @QueryParam("date") @Parameter(description = "date") final String dateParam) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final Collection<EnrollData> enquiresData = this.readPlatformService.retrieveAllEnrollByDate(dateParam);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiEnrollJsonSerializer.serialize(settings, enquiresData, RESPONSE_DATA_PARAMETERS);
     }
 
     @POST

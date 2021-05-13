@@ -134,7 +134,8 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
 
         public String schema() {
             return " cln.id as id, cln.customer_name as customerName, cln.mobile_number as mobileNumber,	cln.vehicle_number as vehicleNumber, "
-                    + "	cln.email as email, " + "	cln.pincode as pincode, " + "	cln.enquiry_id as enquiryId, " + "	cln.notes as notes";
+                    + "	cln.email as email, " + "	cln.pincode as pincode, "
+                    + "	cln.enquiry_id as enquiryId, cln.created_date as createdDate, " + "	cln.notes as notes";
         }
 
         @Override
@@ -147,10 +148,11 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
             final String pincode = rs.getString("pincode");
             final String email = rs.getString("email");
             final String enquiryId = rs.getString("enquiryId");
+            final LocalDate createdDate = JdbcSupport.getLocalDate(rs, "createdDate");
             final String notes = rs.getString("notes");
             // final boolean status = rs.getBoolean("status");
 
-            return EnquiryData.instance(id, mobileNumber, customerName, vehicleNumber, pincode, email, enquiryId, notes);
+            return EnquiryData.instance(id, mobileNumber, customerName, vehicleNumber, pincode, email, enquiryId, createdDate, notes);
         }
     }
 
@@ -165,12 +167,23 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
     }
 
+    @Override
+    @Cacheable(value = "taskdata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<EnquiryData> retrieveAllEnquiresByDate(String date) {
+        this.context.authenticatedUser();
+
+        final EnquiryDataMapper rm = new EnquiryDataMapper();
+        final String sql = "select " + rm.schema() + " from m_customerloanenquiry cln where cln.created_date = ?";
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] { date });
+    }
+
     private static final class EnrollDataMapper implements RowMapper<EnrollData> {
 
         public String schema() {
             return " erl.id as id, erl.customer_name as customerName, erl.mobile_number as mobileNumber, "
                     + "	erl.alternate_mobile_number as alternateMobileNumber , erl.dob as dob, erl.father_name as fatherName, "
-                    + "	erl.gender as gender, erl.applicant_type as applicantType, erl.applicant_id as applicantId ";
+                    + "	erl.gender as gender, erl.applicant_type as applicantType, erl.applicant_id as applicantId, erl.created_date as createdDate ";
 
         }
 
@@ -186,9 +199,10 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
             final String gender = rs.getString("gender");
             final String applicantType = rs.getString("applicantType");
             final String applicantId = rs.getString("applicantId");
+            final LocalDate createdDate = JdbcSupport.getLocalDate(rs, "createdDate");
 
             return EnrollData.instance(id, customerName, mobileNumber, alternateMobileNumber, dob, fatherName, gender, applicantType,
-                    applicantId);
+                    applicantId, createdDate);
         }
     }
 
@@ -201,6 +215,17 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
         final String sql = "select " + rm.schema() + " from m_feenroll erl ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
+    @Override
+    @Cacheable(value = "taskdata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<EnrollData> retrieveAllEnrollByDate(String date) {
+        this.context.authenticatedUser();
+
+        final EnrollDataMapper rm = new EnrollDataMapper();
+        final String sql = "select " + rm.schema() + " from m_feenroll erl where erl.created_date = ? ";
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] { date });
     }
 
     private static final class DocumentsDetailsDataMapper implements RowMapper<CustomerDocumentsData> {

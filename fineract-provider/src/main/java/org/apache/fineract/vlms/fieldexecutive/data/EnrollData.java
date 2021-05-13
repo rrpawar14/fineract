@@ -53,14 +53,19 @@ public class EnrollData implements Serializable {
     @SuppressWarnings("unused")
     private final String applicantId;
 
+    @SuppressWarnings("unused")
+    private final LocalDate createdDate;
+
     public static EnrollData instance(final Long id, final String customerName, final String mobileNumber,
             final String alternateMobileNumber, final LocalDate dob, final String fatherName, final String gender,
-            final String applicantType, final String applicantId) {
-        return new EnrollData(id, customerName, mobileNumber, alternateMobileNumber, dob, fatherName, gender, applicantType, applicantId);
+            final String applicantType, final String applicantId, final LocalDate createdDate) {
+        return new EnrollData(id, customerName, mobileNumber, alternateMobileNumber, dob, fatherName, gender, applicantType, applicantId,
+                createdDate);
     }
 
     private EnrollData(final Long id, final String customerName, final String mobileNumber, final String alternateMobileNumber,
-            final LocalDate dob, final String fatherName, final String gender, final String applicantType, final String applicantId) {
+            final LocalDate dob, final String fatherName, final String gender, final String applicantType, final String applicantId,
+            final LocalDate createdDate) {
         this.id = id;
         this.customerName = customerName;
         this.mobileNumber = mobileNumber;
@@ -70,6 +75,7 @@ public class EnrollData implements Serializable {
         this.gender = gender;
         this.applicantType = applicantType;
         this.applicantId = applicantId;
+        this.createdDate = createdDate;
     }
 
     /*

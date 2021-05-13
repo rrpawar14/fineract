@@ -55,6 +55,9 @@ public class FETask extends AbstractPersistableCustom {
     @Column(name = "description", nullable = false, length = 100)
     private String description;
 
+    @Column(name = "status", nullable = false, length = 100)
+    private String status;
+
     public static FETask fromJson(final JsonCommand command) {
 
         final String taskType = command.stringValueOfParameterNamed("taskType");
@@ -64,15 +67,16 @@ public class FETask extends AbstractPersistableCustom {
         final Date dueDate = command.dateValueOfParameterNamed("dueDate");
         final String assignTo = command.stringValueOfParameterNamed("assignTo");
         final String description = command.stringValueOfParameterNamed("description");
+        final String status = command.stringValueOfParameterNamed("status");
 
-        return new FETask(taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, description);
+        return new FETask(taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, description, status);
 
     }
 
     public FETask() {}
 
     private FETask(final String taskType, final String customerRegNo, final String customerMobileNo, final String vehicleNumber,
-            final Date dueDate, final String assignTo, final String description) {
+            final Date dueDate, final String assignTo, final String description, final String status) {
         this.taskType = taskType;
         this.customerRegNo = customerRegNo;
         this.customerMobileNo = customerMobileNo;
@@ -80,6 +84,7 @@ public class FETask extends AbstractPersistableCustom {
         this.dueDate = dueDate;
         this.assignTo = assignTo;
         this.description = description;
+        this.status = status;
     }
 
     public Map<String, Object> update(final JsonCommand command) {
@@ -142,6 +147,13 @@ public class FETask extends AbstractPersistableCustom {
             final String newValue = command.stringValueOfParameterNamed(descriptionParamName);
             actualChanges.put(descriptionParamName, newValue);
             this.description = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String statusParamName = "status";
+        if (command.isChangeInStringParameterNamed(statusParamName, this.status)) {
+            final String newValue = command.stringValueOfParameterNamed(statusParamName);
+            actualChanges.put(statusParamName, newValue);
+            this.status = StringUtils.defaultIfEmpty(newValue, null);
         }
 
         return actualChanges;

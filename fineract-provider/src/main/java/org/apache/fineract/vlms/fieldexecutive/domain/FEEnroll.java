@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.vlms.fieldexecutive.domain;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -59,6 +61,9 @@ public class FEEnroll extends AbstractPersistableCustom {
     @Column(name = "applicant_id", nullable = false, length = 100)
     private String applicantId;
 
+    @Column(name = "created_date", nullable = false, length = 100)
+    private Date createdDate;
+
     public FEEnroll() {}
 
     public static FEEnroll fromJson(final JsonCommand command) {
@@ -71,13 +76,16 @@ public class FEEnroll extends AbstractPersistableCustom {
         final String fatherName = command.stringValueOfParameterNamed("fatherName");
         final String gender = command.stringValueOfParameterNamed("gender");
         final String applicantType = command.stringValueOfParameterNamed("applicantType");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Date dateobj = new Date();
 
-        return new FEEnroll(applicantId, customerName, mobileNumber, alternateMobileNumber, dob, fatherName, gender, applicantType);
+        return new FEEnroll(applicantId, customerName, mobileNumber, alternateMobileNumber, dob, fatherName, gender, applicantType,
+                dateobj);
 
     }
 
     private FEEnroll(final String applicantId, final String customerName, final String mobileNumber, final String alternateMobileNumber,
-            final Date dob, final String fatherName, final String gender, final String applicantType) {
+            final Date dob, final String fatherName, final String gender, final String applicantType, final Date date) {
         this.applicantId = applicantId; // MobileNo is stored in username column for authentication
         this.customerName = customerName;
         this.mobileNumber = mobileNumber;
@@ -86,6 +94,7 @@ public class FEEnroll extends AbstractPersistableCustom {
         this.fatherName = fatherName;
         this.gender = gender;
         this.applicantType = applicantType;
+        this.createdDate = date;
     }
 
     public Map<String, Object> update(final JsonCommand command) {

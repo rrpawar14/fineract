@@ -18,6 +18,9 @@
  */
 package org.apache.fineract.vlms.fieldexecutive.domain;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -43,6 +46,9 @@ public class FEEnquiry extends AbstractPersistableCustom {
     @Column(name = "enquiry_id", nullable = false, length = 100)
     private String enquiryId;
 
+    @Column(name = "created_date", nullable = false, length = 100)
+    private Date createdDate;
+
     public static FEEnquiry fromJson(final JsonCommand command) {
 
         final String mobileNumber = command.stringValueOfParameterNamed("mobileNumber");
@@ -50,20 +56,23 @@ public class FEEnquiry extends AbstractPersistableCustom {
         final String vehicleNumber = command.stringValueOfParameterNamed("vehicleNumber");
         final String email = command.stringValueOfParameterNamed("email");
         final String enquiryId = command.stringValueOfParameterNamed("enquiryId");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Date dateobj = new Date();
 
-        return new FEEnquiry(mobileNumber, customerName, vehicleNumber, email, enquiryId);
+        return new FEEnquiry(mobileNumber, customerName, vehicleNumber, email, enquiryId, dateobj);
 
     }
 
     public FEEnquiry() {}
 
     private FEEnquiry(final String mobileNumber, final String customerName, final String vehicleNumber, final String email,
-            final String enquiryId) {
+            final String enquiryId, final Date date) {
         this.mobileNumber = mobileNumber; // MobileNo is stored in username column for authentication
         this.customerName = customerName;
         this.vehicleNumber = vehicleNumber;
         this.email = email;
         this.enquiryId = enquiryId;
+        this.createdDate = date;
     }
 
 }

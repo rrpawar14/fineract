@@ -19,6 +19,7 @@
 package org.apache.fineract.vlms.fieldexecutive.data;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 /**
  * Immutable data object representing a code.
@@ -49,13 +50,16 @@ public class EnquiryData implements Serializable {
     @SuppressWarnings("unused")
     private final String notes;
 
+    @SuppressWarnings("unused")
+    private final LocalDate createdDate;
+
     public static EnquiryData instance(final Long id, final String mobileNumber, final String customerName, final String vehicleNumber,
-            final String pincode, final String email, final String enquiryId, final String notes) {
-        return new EnquiryData(id, mobileNumber, customerName, vehicleNumber, pincode, email, enquiryId, notes);
+            final String pincode, final String email, final String enquiryId, final LocalDate createdDate, final String notes) {
+        return new EnquiryData(id, mobileNumber, customerName, vehicleNumber, pincode, email, enquiryId, createdDate, notes);
     }
 
     private EnquiryData(final Long id, final String mobileNumber, final String customerName, final String vehicleNumber,
-            final String pincode, final String email, final String enquiryId, final String notes) {
+            final String pincode, final String email, final String enquiryId, final LocalDate createdDate, final String notes) {
         this.id = id;
         this.mobileNumber = mobileNumber;
         this.customerName = customerName;
@@ -63,6 +67,7 @@ public class EnquiryData implements Serializable {
         this.pincode = pincode;
         this.email = email;
         this.enquiryId = enquiryId;
+        this.createdDate = createdDate;
         this.notes = notes;
     }
 
