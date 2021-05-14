@@ -25,6 +25,7 @@ import java.util.Collection;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.vlms.branchmodule.data.BranchAnalyticsAllData;
 import org.apache.fineract.vlms.branchmodule.data.EducationQualificationData;
 import org.apache.fineract.vlms.branchmodule.data.EmployeeData;
 import org.apache.fineract.vlms.branchmodule.data.InsuranceDetailsData;
@@ -246,6 +247,89 @@ public class BranchModuleReadPlatformServiceImpl implements BranchModuleReadPlat
         }
     }
 
+    private static final class BranchAnalyticsAllDataMapper implements RowMapper<BranchAnalyticsAllData> {
+
+        public String schema() {
+            return " ba.cashDemand as cashDemand, ba.cashCollection as cashCollection, ba.loanAmountBankCollection as loanAmountBankCollection,"
+                    + " ba.loanAmountCashCollection as loanAmountCashCollection, ba.feAssigned as feAssigned, ba.feFollowup as feFollowup,"
+                    + " ba.feCompleted as feCompleted, ba.insuranceExpired as insuranceExpired,  ba.insuranceRenewal as insuranceRenewal,"
+                    + " ba.insuranceHold as insuranceHold, ba.insuranceCompleted as insuranceCompleted, ba.allocatedCash as allocatedCash,"
+                    + " ba.expense as expense, ba.agtAssigned as agtAssigned, ba.agtNotAssigned as agtNotAssigned, ba.rtoExpenses as rtoExpenses,"
+                    + " ba.rtoCompleted as rtoCompleted, ba.docPending as docPending, ba.docCompleted as docCompleted,  ba.disbursalRepossessed as disbursalRepossessed,"
+                    + " ba.disbursalReleased as disbursalReleased,  ba.disbursalBank as disbursalBank, ba.disbursalCash as disbursalCash,"
+                    + " ba.customerLoanDisburse as customerLoanDisburse, ba.guarantorLoanDisburse as guarantorLoanDisburse, ba.thirdPartyLoanDisburse as thirdPartyLoanDisburse,"
+                    + " ba.enquiryDirect as enquiryDirect, ba.enquiryWalkIn as enquiryWalkIn, ba.enquiryReloan as enquiryReloan ";
+        }
+
+        @Override
+        public BranchAnalyticsAllData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long cashDemand = rs.getLong("cashDemand");
+
+            final Long cashCollection = rs.getLong("cashCollection");
+
+            final Long loanAmountBankCollection = rs.getLong("loanAmountBankCollection");
+
+            final Long loanAmountCashCollection = rs.getLong("loanAmountCashCollection");
+
+            final Long feAssigned = rs.getLong("feAssigned");
+
+            final Long feFollowup = rs.getLong("feFollowup");
+
+            final Long feCompleted = rs.getLong("feCompleted");
+
+            final Long insuranceExpired = rs.getLong("insuranceExpired");
+
+            final Long insuranceRenewal = rs.getLong("insuranceRenewal");
+
+            final Long insuranceHold = rs.getLong("insuranceHold");
+
+            final Long insuranceCompleted = rs.getLong("insuranceCompleted");
+
+            final Long allocatedCash = rs.getLong("allocatedCash");
+
+            final Long expense = rs.getLong("expense");
+
+            final Long agtAssigned = rs.getLong("agtAssigned");
+
+            final Long agtNotAssigned = rs.getLong("agtNotAssigned");
+
+            final Long rtoExpenses = rs.getLong("rtoExpenses");
+
+            final Long rtoCompleted = rs.getLong("rtoCompleted");
+
+            final Long docPending = rs.getLong("docPending");
+
+            final Long docCompleted = rs.getLong("docCompleted");
+
+            final Long disbursalRepossessed = rs.getLong("disbursalRepossessed");
+
+            final Long disbursalReleased = rs.getLong("disbursalReleased");
+
+            final Long disbursalBank = rs.getLong("disbursalBank");
+
+            final Long disbursalCash = rs.getLong("disbursalCash");
+
+            final Long customerLoanDisburse = rs.getLong("customerLoanDisburse");
+
+            final Long guarantorLoanDisburse = rs.getLong("guarantorLoanDisburse");
+
+            final Long thirdPartyLoanDisburse = rs.getLong("thirdPartyLoanDisburse");
+
+            final Long enquiryDirect = rs.getLong("enquiryDirect");
+
+            final Long enquiryWalkIn = rs.getLong("enquiryWalkIn");
+
+            final Long enquiryReloan = rs.getLong("enquiryReloan");
+
+            return BranchAnalyticsAllData.instance(cashDemand, cashCollection, loanAmountBankCollection, loanAmountCashCollection,
+                    feAssigned, feFollowup, feCompleted, insuranceExpired, insuranceRenewal, insuranceHold, insuranceCompleted,
+                    allocatedCash, expense, agtAssigned, agtNotAssigned, rtoExpenses, rtoCompleted, docPending, docCompleted,
+                    disbursalRepossessed, disbursalReleased, disbursalBank, disbursalCash, customerLoanDisburse, guarantorLoanDisburse,
+                    thirdPartyLoanDisburse, enquiryDirect, enquiryWalkIn, enquiryReloan);
+        }
+    }
+
     private static final class LoanDisbursalLimitMapper implements RowMapper<LoanDisbursalLimitData> {
 
         public String schema() {
@@ -287,6 +371,17 @@ public class BranchModuleReadPlatformServiceImpl implements BranchModuleReadPlat
 
         final LoanDisbursalLimitMapper rm = new LoanDisbursalLimitMapper();
         final String sql = "select " + rm.schema() + " from m_loan_disbursal_limit lndsb ";
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
+    @Override
+    @Cacheable(value = "DisbursalLimitData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<BranchAnalyticsAllData> retrieveAllBranchAnalyticsData() {
+        this.context.authenticatedUser();
+
+        final BranchAnalyticsAllDataMapper rm = new BranchAnalyticsAllDataMapper();
+        final String sql = "select " + rm.schema() + " from m_branchAnalytics_dummy_data ba ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
     }

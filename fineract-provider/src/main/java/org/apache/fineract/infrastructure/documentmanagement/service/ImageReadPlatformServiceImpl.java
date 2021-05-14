@@ -172,12 +172,30 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
                                 + " where vd.id = vm.vehicle_id and vm.entity_name = 'kmreading' and vd.id= ? ");
             }
 
+            else if (EntityTypeForImages.ENROLL_CUSTOMERIMAGE.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_feenroll enr "
+                                + " where enr.id = docim.feEnroll_id and docim.entity_name = 'enroll_customerimage' and enr.id=? ");
+            }
+
+            else if (EntityTypeForImages.ENROLL_ADHARPHOTO.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_feenroll enr "
+                                + " where enr.id = docim.feEnroll_id and docim.entity_name = 'enroll_adharphoto' and enr.id=? ");
+            }
+
+            else if (EntityTypeForImages.ENROLL_PANCARD.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_feenroll enr "
+                                + " where enr.id = docim.feEnroll_id and docim.entity_name = 'enroll_pancard' and enr.id=? ");
+            }
+
             else if (EntityTypeForImages.RCBOOK.toString().equals(entityType)) {
                 builder.append(
                         " vm.id as id, vm.location as location, vm.storage_type_enum as storageType  from m_vehicle_images vm , m_vehicle_details vd "
                                 + " where vd.id = vm.vehicle_id and vm.entity_name = 'rcbook' and vd.id= ? ");
             } else if (EntityTypeForImages.VEHICLE.toString().equals(entityType)) { // work needs to be done for Vehicle
-                                                                                    // sides from different angle
+                                                                                    // images from different angle
                 builder.append(
                         " vm.id as id, vm.location as location, vm.storage_type_enum as storageType from m_image image , m_appuser appuser "
                                 + " where appuser.image_id = image.id and appuser.id=?");

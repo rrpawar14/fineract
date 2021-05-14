@@ -337,9 +337,9 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             // }
         }
         // if (entityName.equals("Engine") || entityName.equals("Chassis") || entityName.equals("Vehicle")) {
-        if (EntityTypeForImages.ENGINE.toString().equals(entityName) || EntityTypeForImages.CHASSIS.toString().equals(entityName) ||
-        		EntityTypeForImages.VEHICLEINSURANCE.toString().equals(entityName) || EntityTypeForImages.KMREADING.toString().equals(entityName)
-        		|| EntityTypeForImages.RCBOOK.toString().equals(entityName)
+        if (EntityTypeForImages.ENGINE.toString().equals(entityName) || EntityTypeForImages.CHASSIS.toString().equals(entityName)
+                || EntityTypeForImages.VEHICLEINSURANCE.toString().equals(entityName)
+                || EntityTypeForImages.KMREADING.toString().equals(entityName) || EntityTypeForImages.RCBOOK.toString().equals(entityName)
                 || EntityTypeForImages.VEHICLE.toString().equals(entityName)) {
             // else if (EntityTypeForImages.VEHICLEDETAILS.toString().equals(entityName)) {
             System.out.println("--Engine--");
