@@ -236,7 +236,10 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             documentImage.setEmployeeId(null);
 
         } else if (EntityTypeForImages.ENGINE.toString().equals(entityName) || EntityTypeForImages.CHASSIS.toString().equals(entityName)
-                || EntityTypeForImages.VEHICLE.toString().equals(entityName)
+                || EntityTypeForImages.VEHICLE_FRONT.toString().equals(entityName)
+                || EntityTypeForImages.VEHICLE_LEFT.toString().equals(entityName)
+                || EntityTypeForImages.VEHICLE_RIGHT.toString().equals(entityName)
+                || EntityTypeForImages.VEHICLE_BACK.toString().equals(entityName)
                 || EntityTypeForImages.VEHICLE_CHALAN_REPORT.toString().equals(entityName)
                 || EntityTypeForImages.VEHICLE_TRANSACTION_HISTORY.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
@@ -342,7 +345,10 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
         if (EntityTypeForImages.ENGINE.toString().equals(entityName) || EntityTypeForImages.CHASSIS.toString().equals(entityName)
                 || EntityTypeForImages.VEHICLEINSURANCE.toString().equals(entityName)
                 || EntityTypeForImages.KMREADING.toString().equals(entityName) || EntityTypeForImages.RCBOOK.toString().equals(entityName)
-                || EntityTypeForImages.VEHICLE.toString().equals(entityName)
+                || EntityTypeForImages.VEHICLE_FRONT.toString().equals(entityName)
+                || EntityTypeForImages.VEHICLE_LEFT.toString().equals(entityName)
+                || EntityTypeForImages.VEHICLE_RIGHT.toString().equals(entityName)
+                || EntityTypeForImages.VEHICLE_BACK.toString().equals(entityName)
                 || EntityTypeForImages.VEHICLE_CHALAN_REPORT.toString().equals(entityName)
                 || EntityTypeForImages.VEHICLE_TRANSACTION_HISTORY.toString().equals(entityName)) {
             // else if (EntityTypeForImages.VEHICLEDETAILS.toString().equals(entityName)) {

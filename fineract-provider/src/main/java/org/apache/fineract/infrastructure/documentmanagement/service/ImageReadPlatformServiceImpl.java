@@ -194,11 +194,30 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
                 builder.append(
                         " vm.id as id, vm.location as location, vm.storage_type_enum as storageType  from m_vehicle_images vm , m_vehicle_details vd "
                                 + " where vd.id = vm.vehicle_id and vm.entity_name = 'rcbook' and vd.id= ? ");
-            } else if (EntityTypeForImages.VEHICLE.toString().equals(entityType)) { // work needs to be done for Vehicle
-                                                                                    // images from different angle
+            } else if (EntityTypeForImages.VEHICLE_FRONT.toString().equals(entityType)) { // work needs to be done for
+                                                                                          // Vehicle
+                // images from different angle
                 builder.append(
-                        " vm.id as id, vm.location as location, vm.storage_type_enum as storageType from m_image image , m_appuser appuser "
-                                + " where appuser.image_id = image.id and appuser.id=?");
+                        " vm.id as id, vm.location as location, vm.storage_type_enum as storageType  from m_vehicle_images vm , m_vehicle_details vd "
+                                + " where vd.id = vm.vehicle_id and vm.entity_name = 'vehicle_front' and vd.id= ? ");
+            } else if (EntityTypeForImages.VEHICLE_BACK.toString().equals(entityType)) { // work needs to be done for
+                                                                                         // Vehicle
+                // images from different angle
+                builder.append(
+                        " vm.id as id, vm.location as location, vm.storage_type_enum as storageType  from m_vehicle_images vm , m_vehicle_details vd "
+                                + " where vd.id = vm.vehicle_id and vm.entity_name = 'vehicle_back' and vd.id= ? ");
+            } else if (EntityTypeForImages.VEHICLE_RIGHT.toString().equals(entityType)) { // work needs to be done for
+                                                                                          // Vehicle
+                // images from different angle
+                builder.append(
+                        " vm.id as id, vm.location as location, vm.storage_type_enum as storageType  from m_vehicle_images vm , m_vehicle_details vd "
+                                + " where vd.id = vm.vehicle_id and vm.entity_name = 'vehicle_right' and vd.id= ? ");
+            } else if (EntityTypeForImages.VEHICLE_LEFT.toString().equals(entityType)) { // work needs to be done for
+                                                                                         // Vehicle
+                // images from different angle
+                builder.append(
+                        " vm.id as id, vm.location as location, vm.storage_type_enum as storageType  from m_vehicle_images vm , m_vehicle_details vd "
+                                + " where vd.id = vm.vehicle_id and vm.entity_name = 'vehicle_left' and vd.id= ? ");
             }
 
             else if (EntityTypeForImages.BANK.toString().equals(entityType)) {
