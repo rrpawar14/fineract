@@ -59,8 +59,10 @@ public class AuthenticationApiResource {
 
         public String username;
         public String password;
+        public String transactionPin;
     }
 
+    public static boolean transactionPin = false;
     private final DaoAuthenticationProvider customAuthenticationProvider;
     private final ToApiJsonSerializer<AuthenticatedUserData> apiJsonSerializerService;
     private final SpringSecurityPlatformSecurityContext springSecurityPlatformSecurityContext;
@@ -92,14 +94,28 @@ public class AuthenticationApiResource {
             throw new IllegalArgumentException(
                     "Invalid JSON in BODY (no longer URL param; see FINERACT-726) of POST to /authentication: " + apiRequestBodyAsJson);
         }
-        if (request.username == null || request.password == null) {
-            throw new IllegalArgumentException("Username or Password is null in JSON (see FINERACT-726) of POST to /authentication: "
-                    + apiRequestBodyAsJson + "; username=" + request.username + ", password=" + request.password);
+        /*
+         * if (request.username == null || request.transactionPin == null) { throw new
+         * IllegalArgumentException("Username or Password is null in JSON (see FINERACT-726) of POST to /authentication: "
+         * + apiRequestBodyAsJson + "; username=" + request.username + ", password=" + request.password); }
+         */
+
+        Authentication authentication = null;
+
+        String transactionPinParamName = "transaction_pin";
+        if (request.transactionPin == null) {
+            transactionPin = false;
+            System.out.println("login-");
+            System.out.println("status:" + AuthenticationApiResource.transactionPin);
+            authentication = new UsernamePasswordAuthenticationToken(request.username, request.password);
+        } else {
+            System.out.println("transaction-");
+            transactionPin = true;
+            System.out.println("status::" + AuthenticationApiResource.transactionPin);
+            authentication = new UsernamePasswordAuthenticationToken(request.username, request.transactionPin);
         }
 
-        final Authentication authentication = new UsernamePasswordAuthenticationToken(request.username, request.password);
         final Authentication authenticationCheck = this.customAuthenticationProvider.authenticate(authentication);
-
         final Collection<String> permissions = new ArrayList<>();
         AuthenticatedUserData authenticatedUserData = new AuthenticatedUserData(request.username, permissions);
 

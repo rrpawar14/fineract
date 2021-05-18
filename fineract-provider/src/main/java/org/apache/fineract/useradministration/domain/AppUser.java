@@ -45,6 +45,7 @@ import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
+import org.apache.fineract.infrastructure.security.api.AuthenticationApiResource;
 import org.apache.fineract.infrastructure.security.domain.PlatformUser;
 import org.apache.fineract.infrastructure.security.exception.NoAuthorizationException;
 import org.apache.fineract.infrastructure.security.service.PlatformPasswordEncoder;
@@ -80,6 +81,9 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "transaction_pin", nullable = false)
+    private String transactionPin;
 
     @Column(name = "nonexpired", nullable = false)
     private boolean accountNonExpired;
@@ -170,6 +174,7 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
         final String name = command.stringValueOfParameterNamed("name");
         final String mobileNo = command.stringValueOfParameterNamed("mobileNo");
         String password = command.stringValueOfParameterNamed("password");
+        String transactionPin = command.stringValueOfParameterNamed("transactionPin");
         boolean accountNonExpired = true;
         boolean accountNonLocked = true;
         boolean credentialsNonExpired = true;
@@ -231,6 +236,13 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     }
 
+    public void updateTransactionPin(final String encodeTransactionPin) {
+        this.transactionPin = encodeTransactionPin;
+        this.firstTimeLoginRemaining = false;
+        this.lastTimePasswordUpdated = DateUtils.getDateOfTenant();
+
+    }
+
     public void changeOffice(final Office differentOffice) {
         this.office = differentOffice;
     }
@@ -263,11 +275,30 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
             }
         }
 
+        final String transactionPinParamName = "transactionPin";
+        final String transactionPinEncodedParamName = "transactionPinEncoded";
+        if (command.hasParameter(transactionPinParamName)) {
+            if (command.isChangeInPasswordParameterNamed(transactionPinParamName, this.transactionPin, platformPasswordEncoder, getId())) {
+                final String transactionPinEncodedValue = command.passwordValueOfParameterNamed(transactionPinParamName,
+                        platformPasswordEncoder, getId());
+                actualChanges.put(transactionPinEncodedParamName, transactionPinEncodedValue);
+                updateTransactionPin(transactionPinEncodedValue);
+            }
+        }
+
         if (command.hasParameter(passwordEncodedParamName)) {
             if (command.isChangeInStringParameterNamed(passwordEncodedParamName, this.password)) {
                 final String newValue = command.stringValueOfParameterNamed(passwordEncodedParamName);
                 actualChanges.put(passwordEncodedParamName, newValue);
                 updatePassword(newValue);
+            }
+        }
+
+        if (command.hasParameter(transactionPinEncodedParamName)) {
+            if (command.isChangeInStringParameterNamed(transactionPinEncodedParamName, this.transactionPin)) {
+                final String newValue = command.stringValueOfParameterNamed(transactionPinEncodedParamName);
+                actualChanges.put(transactionPinEncodedParamName, newValue);
+                updateTransactionPin(newValue);
             }
         }
 
@@ -433,7 +464,13 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     @Override
     public String getPassword() {
-        return this.password;
+        if (AuthenticationApiResource.transactionPin == true) {
+            System.out.println("fetching pin" + AuthenticationApiResource.transactionPin);
+            return this.transactionPin;
+        } else {
+            System.out.println("fetching pass" + AuthenticationApiResource.transactionPin);
+            return this.password;
+        }
     }
 
     @Override
@@ -441,6 +478,9 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
         return this.username;
     }
 
+    /*
+     * @Override public String getTransactionPin() { return this.transactionPin; }
+     */
     public String getDisplayName() {
         if (this.staff != null && StringUtils.isNotBlank(this.staff.displayName())) {
             return this.staff.displayName();
