@@ -284,6 +284,26 @@ public class FELoansApiResource {
         return this.toApiJsonSerializer.serialize(result);
     }
 
+    @POST
+    @Path("loanChangeRequest")
+    @Operation(summary = "Create a User Loan Enquiry", description = "Creates the Loan Change Request.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(schema =
+                                                                              // @Schema(implementation =
+                                                                              // UsersApiResourceSwagger.DeleteUsersUserIdResponse.class)))
+                                                                              // })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String customerLoanChangeRequest(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .createLoanChangeRequest().withJson(apiRequestBodyAsJson) //
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
     @PUT
     @Path("modifyCustomerDetails/{customerDetailId}")
     @Operation(summary = "Create a new applicant loan", description = "Removes the user and the associated roles and permissions.")

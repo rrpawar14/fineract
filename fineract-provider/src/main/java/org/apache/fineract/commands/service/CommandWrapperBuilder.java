@@ -938,6 +938,15 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createLoanChangeRequest() {
+        this.actionName = "CREATE";
+        this.entityName = "LOANCHANGEREQUEST";
+        this.entityId = null;
+        this.loanId = null;
+        this.href = "/loans/changeRequest";
+        return this;
+    }
+
     public CommandWrapperBuilder createEmployee() {
         this.actionName = "CREATE";
         this.entityName = "EMPLOYEE";

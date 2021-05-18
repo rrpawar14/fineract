@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.vlms.customer.service;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -34,6 +35,7 @@ import org.apache.fineract.vlms.customer.data.GuarantorDetailsData;
 import org.apache.fineract.vlms.customer.data.LoanDetailsData;
 import org.apache.fineract.vlms.customer.data.VehicleDetailsData;
 import org.apache.fineract.vlms.customer.data.VehicleLoanData;
+import org.apache.fineract.vlms.fieldexecutive.data.LoanChangeRequestData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -116,6 +118,9 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
                     + " ld.processing_charge as processingCharge, ld.pending_doc as pendingDoc, "
                     + " ld.other_charges as otherCharges, ld.closing_ac as closingAC, ld.closing_discount as closingDiscount, "
                     + " ld.payout as payout, ld.due_date as dueDate, "
+
+                    + " cr.id as changeRequestId, cr.loan_id as cloandetailsId, cr.loan_interest as changeLoanInterest, cr.loan_amount as changeLoanAmount, "
+                    + " cr.doc_charges as changeDocCharges, cr.processing_charges as changeProcessingCharges, cr.loan_closure_amount as loanClosureAmount, "
 
                     // vehicledetails vd of customer new vehicle
                     + " vd.id as vehicleId, vd.vehicle_number as vehicleNumber," + " vd.maker as maker, vd.model as model, "
@@ -222,6 +227,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
                     + " left join m_customer_guarantor cg on cnv.guarantordetails_id = cg.id "
                     + " left join m_customer_bank_details bd on cnv.bankdetails_id = bd.id "
                     + " left join m_loan_details ld on cnv.loandetails_id = ld.id "
+                    + " left join m_loan_change_request cr on cr.loan_id = ld.id "
                     + " left join m_address cadd on cd.communicationadd_id = cadd.id  "
 
                     + " left join m_address padd on cd.permanentadd_id = padd.id "
@@ -338,6 +344,18 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             LoanDetailsData loandetailsData = new LoanDetailsData(loandetailsId, loanAmount, loanTerm, loanInterest, emi, interestInr,
                     docCharge, processingCharge, pendingDoc, otherCharges, closingAC, closingDiscount, payout, dueDate);
 
+            final Long changeRequestId = rs.getLong("changeRequestId");
+            final Long cloandetailsId = rs.getLong("cloandetailsId");
+            final BigDecimal changeLoanInterest = rs.getBigDecimal("changeLoanInterest");
+            final BigDecimal changeLoanAmount = rs.getBigDecimal("changeLoanAmount");
+
+            final BigDecimal changeDocCharges = rs.getBigDecimal("changeDocCharges");
+            final BigDecimal changeProcessingCharges = rs.getBigDecimal("changeProcessingCharges");
+            final BigDecimal loanClosureAmount = rs.getBigDecimal("loanClosureAmount");
+
+            LoanChangeRequestData loanChangeRequestData = new LoanChangeRequestData(changeRequestId, cloandetailsId, changeLoanInterest,
+                    changeLoanAmount, changeDocCharges, changeProcessingCharges, loanClosureAmount);
+
             final Long vehicleId = rs.getLong("vehicleId");
             final String vehicleNumber = rs.getString("vehicleNumber");
             final String maker = rs.getString("maker");
@@ -362,7 +380,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             final String loanType = rs.getString("loanType");
 
             return VehicleLoanData.instance(loanId, customerName, vehicleType, loanType, customerDetailsData, guarantorDetailsData,
-                    vehicleDetailsData, bankDetailsData, loandetailsData);
+                    vehicleDetailsData, bankDetailsData, loandetailsData, loanChangeRequestData);
 
         }
     }

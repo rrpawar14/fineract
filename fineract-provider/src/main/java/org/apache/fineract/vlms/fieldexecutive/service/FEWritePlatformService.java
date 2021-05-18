@@ -37,6 +37,8 @@ public interface FEWritePlatformService {
 
     CommandProcessingResult createFETask(JsonCommand command);
 
+    CommandProcessingResult createChangeLoanRequest(JsonCommand command);
+
     CommandProcessingResult editFETask(Long taskId, JsonCommand command);
 
     CommandProcessingResult deleteFETask(Long taskId, JsonCommand command);

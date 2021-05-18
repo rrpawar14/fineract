@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.vlms.customer.data;
 
+import org.apache.fineract.vlms.fieldexecutive.data.LoanChangeRequestData;
+
 /**
  * Immutable data object representing loan summary information.
  */
@@ -42,17 +44,21 @@ public class VehicleLoanData {
 
     private LoanDetailsData loanDetailsData;
 
+    private LoanChangeRequestData loanChangeRequestData;
+
     public static VehicleLoanData instance(final Long id, final String customerName, final String vehicleType, final String loanType,
             final CustomerDetailsData customerDetails, final GuarantorDetailsData customerGuarantor,
-            final VehicleDetailsData vehicleDetails, final BankDetailsData bankDetails, final LoanDetailsData loanDetailsData) {
+            final VehicleDetailsData vehicleDetails, final BankDetailsData bankDetails, final LoanDetailsData loanDetailsData,
+            final LoanChangeRequestData loanChangeRequestData) {
 
         return new VehicleLoanData(id, customerName, vehicleType, loanType, customerDetails, customerGuarantor, vehicleDetails, bankDetails,
-                loanDetailsData);
+                loanDetailsData, loanChangeRequestData);
     }
 
     public VehicleLoanData(final Long id, final String customerName, final String vehicleType, final String loanType,
             final CustomerDetailsData customerDetails, final GuarantorDetailsData customerGuarantor,
-            final VehicleDetailsData vehicleDetails, final BankDetailsData bankDetails, final LoanDetailsData loanDetailsData) {
+            final VehicleDetailsData vehicleDetails, final BankDetailsData bankDetails, final LoanDetailsData loanDetailsData,
+            final LoanChangeRequestData loanChangeRequestData) {
 
         this.id = id;
 
@@ -71,5 +77,7 @@ public class VehicleLoanData {
         this.bankDetails = bankDetails;
 
         this.loanDetailsData = loanDetailsData;
+
+        this.loanChangeRequestData = loanChangeRequestData;
     }
 }
