@@ -46,4 +46,6 @@ public interface FEReadPlatformService {
 
     Collection<FeCashInHandLimit> retrieveAllfeCashLimitData();
 
+    FeCashInHandLimit retrievefeCashLimitData(String mobileNo);
+
 }

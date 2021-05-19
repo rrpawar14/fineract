@@ -560,6 +560,27 @@ public class FELoansApiResource {
         return this.toApiCashInHandJsonSerializer.serialize(settings, feCashInHandLimit, RESPONSE_DATA_PARAMETERS);
     }
 
+    @GET
+    @Path("feCashInHand/{mobileNumber}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Task", description = "Returns the list of Task.\n" + "\n" + "Example Requests:\n" + "\n" + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrievefeCashInHand(@Context final UriInfo uriInfo,
+            @PathParam("mobileNumber") @Parameter(description = "mobileNumber") final String mobileNumber) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final FeCashInHandLimit feCashInHandLimit = this.readPlatformService.retrievefeCashLimitData(mobileNumber);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiCashInHandJsonSerializer.serialize(settings, feCashInHandLimit, RESPONSE_DATA_PARAMETERS);
+    }
+
     @PUT
     @Path("feCashInHand/{Id}")
     @Consumes({ MediaType.APPLICATION_JSON })

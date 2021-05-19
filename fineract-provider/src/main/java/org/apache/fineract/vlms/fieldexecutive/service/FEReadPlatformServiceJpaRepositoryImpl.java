@@ -274,11 +274,35 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
         return this.jdbcTemplate.query(sql, rm, new Object[] { clientId });
     }
 
-    private static final class CashinHandDataMapper implements RowMapper<FeCashInHandLimit> {
+    private static final class CashinHandAllDataMapper implements RowMapper<FeCashInHandLimit> {
 
         public String schema() {
             return " fecash.id as id, fecash.name as feName, fecash.cash_in_hand as cashInHand, fecash.required_on as requiredDate, "
                     + " fecash.required_amount as requiredAmount, fecash.status as status";
+        }
+
+        @Override
+        public FeCashInHandLimit mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final String name = rs.getString("feName");
+
+            final Long cashInHand = rs.getLong("cashInHand");
+
+            final LocalDate requiredDate = JdbcSupport.getLocalDate(rs, "requiredDate");
+
+            final Long requiredAmount = rs.getLong("requiredAmount");
+            final String status = rs.getString("status");
+
+            return FeCashInHandLimit.instance(id, name, cashInHand, requiredDate, requiredAmount, status);
+        }
+    }
+
+    private static final class CashinHandDataMapper implements RowMapper<FeCashInHandLimit> {
+
+        public String schema() {
+            return " fecash.id as id, fecash.name as feName, fecash.cash_in_hand as cashInHand, fecash.required_on as requiredDate, "
+                    + " fecash.required_amount as requiredAmount, fecash.status as status ";
         }
 
         @Override
@@ -303,10 +327,22 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
     public Collection<FeCashInHandLimit> retrieveAllfeCashLimitData() {
         this.context.authenticatedUser();
 
-        final CashinHandDataMapper rm = new CashinHandDataMapper();
+        final CashinHandAllDataMapper rm = new CashinHandAllDataMapper();
         final String sql = "select " + rm.schema() + " from m_fe_cashinhand fecash ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
+    @Override
+    @Cacheable(value = "FeCashInHandLimitData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public FeCashInHandLimit retrievefeCashLimitData(String mobileNo) {
+        this.context.authenticatedUser();
+
+        final CashinHandDataMapper rm = new CashinHandDataMapper();
+        final String sql = "select " + rm.schema()
+                + "from m_fe_cashinhand fecash left join m_fieldExecutive fe  on fecash.fe_id=fe.id where fe.mobile_number = ? ";
+
+        return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { mobileNo });
     }
 
     /*
