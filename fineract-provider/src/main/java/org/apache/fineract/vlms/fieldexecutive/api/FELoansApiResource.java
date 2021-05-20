@@ -50,6 +50,7 @@ import org.apache.fineract.vlms.customer.data.CustomerDocumentsData;
 import org.apache.fineract.vlms.fieldexecutive.data.EnquiryData;
 import org.apache.fineract.vlms.fieldexecutive.data.EnrollData;
 import org.apache.fineract.vlms.fieldexecutive.data.FeCashInHandLimit;
+import org.apache.fineract.vlms.fieldexecutive.data.FieldExecutiveData;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.apache.fineract.vlms.fieldexecutive.domain.DocumentsData;
 import org.apache.fineract.vlms.fieldexecutive.service.FEReadPlatformService;
@@ -68,6 +69,7 @@ public class FELoansApiResource {
     private final DefaultToApiJsonSerializer<CustomerDocumentsData> toApiCustomerDocumentsJsonSerializer;
     private final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer;
     private final DefaultToApiJsonSerializer<FeCashInHandLimit> toApiCashInHandJsonSerializer;
+    private final DefaultToApiJsonSerializer<FieldExecutiveData> toApifieldExecutiveJsonSerializer;
     private final DefaultToApiJsonSerializer<EnquiryData> toApiEnquiryJsonSerializer;
     private final DefaultToApiJsonSerializer<EnrollData> toApiEnrollJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
@@ -84,7 +86,8 @@ public class FELoansApiResource {
             final DefaultToApiJsonSerializer<EnrollData> toApiEnrollJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
-            final DefaultToApiJsonSerializer<FeCashInHandLimit> toApiCashInHandJsonSerializer) {
+            final DefaultToApiJsonSerializer<FeCashInHandLimit> toApiCashInHandJsonSerializer,
+            final DefaultToApiJsonSerializer<FieldExecutiveData> toApifieldExecutiveJsonSerializer) {
         this.context = context;
         this.readPlatformService = readPlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
@@ -95,6 +98,28 @@ public class FELoansApiResource {
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
         this.toApiCashInHandJsonSerializer = toApiCashInHandJsonSerializer;
+        this.toApifieldExecutiveJsonSerializer = toApifieldExecutiveJsonSerializer;
+    }
+
+    @GET
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve FieldExecutive", description = "Returns the list of Task.\n" + "\n" + "Example Requests:\n" + "\n"
+            + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrievefeCashInHandByNumberAndDate(@Context final UriInfo uriInfo,
+            @QueryParam("mobileNumber") @Parameter(description = "mobileNumber") final String mobileNumber) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final FieldExecutiveData fieldExecutiveData = this.readPlatformService.retrieveFieldExecutive(mobileNumber);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApifieldExecutiveJsonSerializer.serialize(settings, fieldExecutiveData, RESPONSE_DATA_PARAMETERS);
     }
 
     @GET
@@ -592,7 +617,7 @@ public class FELoansApiResource {
                                                                               // @Schema(implementation =
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
-    public String retrievefeCashInHandByNumberAndDate(@Context final UriInfo uriInfo,
+    public String retrievefeCashInHandByNumber(@Context final UriInfo uriInfo,
             @PathParam("mobileNumber") @Parameter(description = "mobileNumber") final String mobileNumber) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
@@ -613,6 +638,21 @@ public class FELoansApiResource {
             @PathParam("Id") @Parameter(description = "Id") final Long Id) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().updateFECashLimit(Id).withJson(apiRequestBodyAsJson).build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @POST
+    @Path("feCashInHand")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Create a Task", description = "Creates a Field Executive Task. FE created through api are always 'user defined' and so system defined is marked as false.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String updateFECashLimit(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().createFECashLimit().withJson(apiRequestBodyAsJson).build();
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 

@@ -74,16 +74,16 @@ public class FETask extends AbstractPersistableCustom {
         final String description = command.stringValueOfParameterNamed("description");
         final String status = command.stringValueOfParameterNamed("status");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        Date dateobj = new Date();
+        Date createdDate = new Date();
 
-        return new FETask(taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, description, status, dateobj);
+        return new FETask(taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, description, status, createdDate);
 
     }
 
     public FETask() {}
 
     private FETask(final String taskType, final String customerRegNo, final String customerMobileNo, final String vehicleNumber,
-            final Date dueDate, final String assignTo, final String description, final String status, final Date date) {
+            final Date dueDate, final String assignTo, final String description, final String status, final Date createdDate) {
         this.taskType = taskType;
         this.customerRegNo = customerRegNo;
         this.customerMobileNo = customerMobileNo;
@@ -92,7 +92,7 @@ public class FETask extends AbstractPersistableCustom {
         this.assignTo = assignTo;
         this.description = description;
         this.status = status;
-        this.createdDate = date;
+        this.createdDate = createdDate;
     }
 
     public Map<String, Object> update(final JsonCommand command) {

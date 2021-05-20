@@ -18,11 +18,15 @@
  */
 package org.apache.fineract.vlms.fieldexecutive.domain;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
@@ -34,6 +38,10 @@ public class FECashLimit extends AbstractPersistableCustom {
 
     @Column(name = "name", nullable = false, length = 100)
     private String feName; // MobileNo is stored in username column for authentication
+
+    @ManyToOne
+    @JoinColumn(name = "fe_id", nullable = true)
+    private FieldExecutive fieldExecutive;
 
     @Column(name = "cash_in_hand", nullable = false, length = 100)
     private Integer cashInHand;
@@ -50,27 +58,29 @@ public class FECashLimit extends AbstractPersistableCustom {
     @Column(name = "status", nullable = false, length = 100)
     private String status;
 
-    public static FECashLimit fromJson(final JsonCommand command) {
+    public static FECashLimit fromJson(final FieldExecutive fieldExecutive, final JsonCommand command) {
 
         final String feName = command.stringValueOfParameterNamed("feName");
         final Integer cashInHand = command.integerValueOfParameterNamed("cashInHand");
         final Integer cashLimit = command.integerValueOfParameterNamed("cashLimit");
-        final Date requiredOnDate = command.dateValueOfParameterNamed("requiredOnDate");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Date createdDate = new Date();
         final Integer requiredAmount = command.integerValueOfParameterNamed("requiredAmount");
         final String status = command.stringValueOfParameterNamed("status");
 
-        return new FECashLimit(feName, cashInHand, cashLimit, requiredOnDate, requiredAmount, status);
+        return new FECashLimit(feName, cashInHand, cashLimit, createdDate, requiredAmount, status, fieldExecutive);
 
     }
 
     private FECashLimit(final String feName, final Integer cashInHand, final Integer cashLimit, final Date requiredOnDate,
-            final Integer requiredAmount, final String status) {
+            final Integer requiredAmount, final String status, final FieldExecutive fieldExecutive) {
         this.feName = feName; // MobileNo is stored in username column for authentication
         this.cashInHand = cashInHand;
         this.cashLimit = cashLimit;
         this.requiredOnDate = requiredOnDate;
         this.requiredAmount = requiredAmount;
         this.status = status;
+        this.fieldExecutive = fieldExecutive;
     }
 
     public Map<String, Object> update(final FECashLimit feCashLimit, final JsonCommand command) {

@@ -1074,6 +1074,14 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createFECashLimit() {
+        this.actionName = "CREATE";
+        this.entityName = "FECASHLIMIT";
+        this.entityId = null;
+        this.href = "/feCash/template";
+        return this;
+    }
+
     public CommandWrapperBuilder updateFECashLimit(Long requestId) {
         this.actionName = "UPDATE";
         this.entityName = "FECASHLIMIT";

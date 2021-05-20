@@ -32,6 +32,7 @@ import org.apache.fineract.vlms.customer.data.CustomerDocumentsData;
 import org.apache.fineract.vlms.fieldexecutive.data.EnquiryData;
 import org.apache.fineract.vlms.fieldexecutive.data.EnrollData;
 import org.apache.fineract.vlms.fieldexecutive.data.FeCashInHandLimit;
+import org.apache.fineract.vlms.fieldexecutive.data.FieldExecutiveData;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.apache.fineract.vlms.fieldexecutive.domain.DocumentsData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -364,6 +365,38 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
                 + "from m_fe_cashinhand fecash left join m_fieldExecutive fe  on fecash.fe_id=fe.id where fe.mobile_number = ? and fecash.required_on = ?";
 
         return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { mobileNo, formattedDate });
+    }
+
+    private static final class FieldExecutiveAllDataMapper implements RowMapper<FieldExecutiveData> {
+
+        public String schema() {
+            return " fe.id as id, fe.name as feName, fe.mobile_number as mobileNumber, "
+                    + " fe.age as age, fe.branch as branch, fe.cash_limit as cashLimit ";
+        }
+
+        @Override
+        public FieldExecutiveData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final String name = rs.getString("feName");
+            final String mobileNumber = rs.getString("mobileNumber");
+            final Long age = rs.getLong("age");
+            final String branch = rs.getString("branch");
+            final String cashLimit = rs.getString("cashLimit");
+
+            return FieldExecutiveData.instance(id, name, mobileNumber, age, branch, cashLimit);
+        }
+    }
+
+    @Override
+    @Cacheable(value = "FeCashInHandLimitData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public FieldExecutiveData retrieveFieldExecutive(String mobileNo) {
+        this.context.authenticatedUser();
+
+        final FieldExecutiveAllDataMapper rm = new FieldExecutiveAllDataMapper();
+        final String sql = "select " + rm.schema() + " from m_fieldexecutive fe where fe.mobile_number = ?";
+
+        return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { mobileNo });
     }
 
     /*

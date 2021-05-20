@@ -50,6 +50,8 @@ import org.apache.fineract.vlms.fieldexecutive.domain.FEUsedVehicleLoanRepositor
 import org.apache.fineract.vlms.fieldexecutive.domain.FEVehicleDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEVehicleDetailsRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FeCashLimitRepository;
+import org.apache.fineract.vlms.fieldexecutive.domain.FieldExecutive;
+import org.apache.fineract.vlms.fieldexecutive.domain.FieldExecutiveRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.LoanChangeRequest;
 import org.apache.fineract.vlms.fieldexecutive.domain.LoanChangeRequestRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.NewLoan;
@@ -83,6 +85,7 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
     private final FETaskRepository feTaskRepository;
     private final FeCashLimitRepository feCashLimitRepository;
     private final LoanChangeRequestRepository loanChangeRequestRepository;
+    private final FieldExecutiveRepository fieldExecutiveRepository;
 
     @Autowired
     public FEWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context, final FEEnquiryRepository feEnquiryRepository,
@@ -93,7 +96,7 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
             final FEVehicleDetailsRepository feVehicleDetailsRepository, final FELoanDetailsRepository feLoanDetailsRepository,
             final FETransferDetailsRepository feTransferDetailsRepository, final FEEnrollRepository feEnrollRepository,
             final FETaskRepository feTaskRepository, final FeCashLimitRepository feCashLimitRepository,
-            final LoanChangeRequestRepository loanChangeRequestRepository) {
+            final LoanChangeRequestRepository loanChangeRequestRepository, final FieldExecutiveRepository fieldExecutiveRepository) {
         this.context = context;
         this.feEnquiryRepository = feEnquiryRepository;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
@@ -109,6 +112,7 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
         this.feTaskRepository = feTaskRepository;
         this.feCashLimitRepository = feCashLimitRepository;
         this.loanChangeRequestRepository = loanChangeRequestRepository;
+        this.fieldExecutiveRepository = fieldExecutiveRepository;
     }
 
     @Transactional
@@ -303,6 +307,34 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
              */
 
             return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(taskId).build();
+            // .withEntityId(code.getId())
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException ee) {
+            Throwable throwable = ExceptionUtils.getRootCause(ee.getCause());
+            handleDataIntegrityIssues(command, throwable, ee);
+            return CommandProcessingResult.empty();
+        }
+
+    }
+
+    @Transactional
+    @Override
+    @CacheEvict(value = "fetask", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult createFECashLimit(final JsonCommand command) {
+
+        try {
+            this.context.authenticatedUser();
+
+            final Long fieldExecutiveId = command.longValueOfParameterNamed("fieldExecutiveId");
+
+            FieldExecutive fieldExecutive = this.fieldExecutiveRepository.getOne(fieldExecutiveId);
+
+            final FECashLimit feCashLimit = FECashLimit.fromJson(fieldExecutive, command);
+            this.feCashLimitRepository.save(feCashLimit);
+
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(feCashLimit.getId()).build();
             // .withEntityId(code.getId())
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);

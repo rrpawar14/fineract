@@ -23,6 +23,7 @@ import org.apache.fineract.vlms.customer.data.CustomerDocumentsData;
 import org.apache.fineract.vlms.fieldexecutive.data.EnquiryData;
 import org.apache.fineract.vlms.fieldexecutive.data.EnrollData;
 import org.apache.fineract.vlms.fieldexecutive.data.FeCashInHandLimit;
+import org.apache.fineract.vlms.fieldexecutive.data.FieldExecutiveData;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.apache.fineract.vlms.fieldexecutive.domain.DocumentsData;
 
@@ -49,5 +50,7 @@ public interface FEReadPlatformService {
     Collection<FeCashInHandLimit> retrieveAllfeCashLimitData();
 
     FeCashInHandLimit retrievefeCashLimitData(String mobileNo);
+
+    FieldExecutiveData retrieveFieldExecutive(String mobileNo);
 
 }
