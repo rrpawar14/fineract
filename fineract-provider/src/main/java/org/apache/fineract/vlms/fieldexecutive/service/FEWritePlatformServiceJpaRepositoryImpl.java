@@ -330,7 +330,8 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
              */
 
             final FECashLimit feCashLimit = retrieveCashLimitRequestBy(requestId);
-            final Map<String, Object> changes = feCashLimit.update(command);
+
+            final Map<String, Object> changes = feCashLimit.update(feCashLimit, command);
 
             if (!changes.isEmpty()) {
                 this.feCashLimitRepository.save(feCashLimit);

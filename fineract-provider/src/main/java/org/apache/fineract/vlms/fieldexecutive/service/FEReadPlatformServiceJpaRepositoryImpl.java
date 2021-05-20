@@ -21,6 +21,9 @@ package org.apache.fineract.vlms.fieldexecutive.service;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
@@ -191,6 +194,17 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
         return this.jdbcTemplate.query(sql, rm, new Object[] { date });
     }
 
+    @Override
+    @Cacheable(value = "taskdata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<EnquiryData> retrieveAllEnquiresByMobileNumber(String mobileNo) {
+        this.context.authenticatedUser();
+
+        final EnquiryDataMapper rm = new EnquiryDataMapper();
+        final String sql = "select " + rm.schema() + " from m_customerloanenquiry cln where cln.mobile_number = ?";
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] { mobileNo });
+    }
+
     private static final class EnrollDataMapper implements RowMapper<EnrollData> {
 
         public String schema() {
@@ -300,7 +314,7 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
 
     private static final class CashinHandDataMapper implements RowMapper<FeCashInHandLimit> {
 
-        public String schema() {
+        public String schema() { // add cash limit
             return " fecash.id as id, fecash.name as feName, fecash.cash_in_hand as cashInHand, fecash.required_on as requiredDate, "
                     + " fecash.required_amount as requiredAmount, fecash.status as status ";
         }
@@ -337,12 +351,19 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
     @Cacheable(value = "FeCashInHandLimitData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
     public FeCashInHandLimit retrievefeCashLimitData(String mobileNo) {
         this.context.authenticatedUser();
+        ZoneId asiaZone = ZoneId.of("Asia/Kolkata");
+        LocalDateTime myDateObj = LocalDateTime.now(asiaZone);
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        String formattedDate = myDateObj.format(myFormatObj);
+
+        System.out.println("After formatting: " + formattedDate);
 
         final CashinHandDataMapper rm = new CashinHandDataMapper();
         final String sql = "select " + rm.schema()
-                + "from m_fe_cashinhand fecash left join m_fieldExecutive fe  on fecash.fe_id=fe.id where fe.mobile_number = ? ";
+                + "from m_fe_cashinhand fecash left join m_fieldExecutive fe  on fecash.fe_id=fe.id where fe.mobile_number = ? and fecash.required_on = ?";
 
-        return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { mobileNo });
+        return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { mobileNo, formattedDate });
     }
 
     /*

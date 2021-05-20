@@ -129,12 +129,34 @@ public class FELoansApiResource {
                                                                               // @Schema(implementation =
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
-    public String retrieveAllEnquires(@Context final UriInfo uriInfo,
+    public String retrieveAllEnquiresByDate(@Context final UriInfo uriInfo,
             @QueryParam("date") @Parameter(description = "date") final String dateParam) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
         final Collection<EnquiryData> enquiresData = this.readPlatformService.retrieveAllEnquiresByDate(dateParam);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiEnquiryJsonSerializer.serialize(settings, enquiresData, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
+    @Path("getEnquiryByMobileNumber")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Enquires", description = "Returns the list of Enquries.\n" + "\n" + "Example Requests:\n" + "\n"
+            + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveAllEnquiresByMobileNumber(@Context final UriInfo uriInfo,
+            @QueryParam("mobileNo") @Parameter(description = "mobileNo") final String mobileNo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final Collection<EnquiryData> enquiresData = this.readPlatformService.retrieveAllEnquiresByMobileNumber(mobileNo);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiEnquiryJsonSerializer.serialize(settings, enquiresData, RESPONSE_DATA_PARAMETERS);
@@ -192,7 +214,7 @@ public class FELoansApiResource {
                                                                               // @Schema(implementation =
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
-    public String retrieveAllEnquiresByDate(@Context final UriInfo uriInfo,
+    public String retrieveAllEnrollByDate(@Context final UriInfo uriInfo,
             @QueryParam("date") @Parameter(description = "date") final String dateParam) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
@@ -570,7 +592,7 @@ public class FELoansApiResource {
                                                                               // @Schema(implementation =
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
-    public String retrievefeCashInHand(@Context final UriInfo uriInfo,
+    public String retrievefeCashInHandByNumberAndDate(@Context final UriInfo uriInfo,
             @PathParam("mobileNumber") @Parameter(description = "mobileNumber") final String mobileNumber) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);

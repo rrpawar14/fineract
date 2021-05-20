@@ -32,6 +32,8 @@ public interface FEReadPlatformService {
 
     Collection<EnquiryData> retrieveAllEnquiresByDate(String dateParam);
 
+    Collection<EnquiryData> retrieveAllEnquiresByMobileNumber(String mobileNumber);
+
     Collection<EnrollData> retrieveAllEnroll();
 
     Collection<EnrollData> retrieveAllEnrollByDate(String dateParam);

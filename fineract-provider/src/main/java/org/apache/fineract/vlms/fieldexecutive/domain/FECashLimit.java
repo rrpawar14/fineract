@@ -38,6 +38,9 @@ public class FECashLimit extends AbstractPersistableCustom {
     @Column(name = "cash_in_hand", nullable = false, length = 100)
     private Integer cashInHand;
 
+    @Column(name = "cash_limit", nullable = false, length = 100)
+    private Integer cashLimit;
+
     @Column(name = "required_on", nullable = false, length = 100)
     private Date requiredOnDate;
 
@@ -51,26 +54,39 @@ public class FECashLimit extends AbstractPersistableCustom {
 
         final String feName = command.stringValueOfParameterNamed("feName");
         final Integer cashInHand = command.integerValueOfParameterNamed("cashInHand");
+        final Integer cashLimit = command.integerValueOfParameterNamed("cashLimit");
         final Date requiredOnDate = command.dateValueOfParameterNamed("requiredOnDate");
         final Integer requiredAmount = command.integerValueOfParameterNamed("requiredAmount");
         final String status = command.stringValueOfParameterNamed("status");
 
-        return new FECashLimit(feName, cashInHand, requiredOnDate, requiredAmount, status);
+        return new FECashLimit(feName, cashInHand, cashLimit, requiredOnDate, requiredAmount, status);
 
     }
 
-    private FECashLimit(final String feName, final Integer cashInHand, final Date requiredOnDate, final Integer requiredAmount,
-            final String status) {
+    private FECashLimit(final String feName, final Integer cashInHand, final Integer cashLimit, final Date requiredOnDate,
+            final Integer requiredAmount, final String status) {
         this.feName = feName; // MobileNo is stored in username column for authentication
         this.cashInHand = cashInHand;
+        this.cashLimit = cashLimit;
         this.requiredOnDate = requiredOnDate;
         this.requiredAmount = requiredAmount;
         this.status = status;
     }
 
-    public Map<String, Object> update(final JsonCommand command) {
+    public Map<String, Object> update(final FECashLimit feCashLimit, final JsonCommand command) {
 
         final Map<String, Object> actualChanges = new LinkedHashMap<>(1);
+        final String status = command.stringValueOfParameterNamed("status");
+        // final FECashLimit feCashLimit = retrieveCashLimitRequestBy(requestId);
+        if (status.equals("approved")) {
+            Integer cashRequired = feCashLimit.getRequiredAmount();
+            Integer cashLimit = feCashLimit.getCashLimit();
+            Integer newCash = cashRequired + cashLimit;
+            final String cashLimitParamName = "cashLimit";
+            this.cashLimit = newCash;
+
+            actualChanges.put(cashLimitParamName, newCash);
+        }
 
         final String statusTypeParamName = "status";
         if (command.isChangeInStringParameterNamed(statusTypeParamName, this.status)) {
@@ -79,6 +95,14 @@ public class FECashLimit extends AbstractPersistableCustom {
             this.status = StringUtils.defaultIfEmpty(newValue, null);
         }
         return actualChanges;
+    }
+
+    public Integer getRequiredAmount() {
+        return this.requiredAmount;
+    }
+
+    public Integer getCashLimit() {
+        return this.cashLimit;
     }
 
 }
