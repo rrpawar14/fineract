@@ -362,7 +362,7 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
 
         final CashinHandDataMapper rm = new CashinHandDataMapper();
         final String sql = "select " + rm.schema()
-                + "from m_fe_cashinhand fecash left join m_fieldExecutive fe  on fecash.fe_id=fe.id where fe.mobile_number = ? and fecash.required_on = ?";
+                + "from m_fe_cashinhand fecash left join m_fieldexecutive fe  on fecash.fe_id=fe.id where fe.mobile_number = ? and fecash.required_on = ?";
 
         return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { mobileNo, formattedDate });
     }

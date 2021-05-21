@@ -45,7 +45,6 @@ import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
-import org.apache.fineract.infrastructure.security.api.AuthenticationApiResource;
 import org.apache.fineract.infrastructure.security.domain.PlatformUser;
 import org.apache.fineract.infrastructure.security.exception.NoAuthorizationException;
 import org.apache.fineract.infrastructure.security.service.PlatformPasswordEncoder;
@@ -464,13 +463,12 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     @Override
     public String getPassword() {
-        if (AuthenticationApiResource.transactionPin == true) {
-            System.out.println("fetching pin" + AuthenticationApiResource.transactionPin);
-            return this.transactionPin;
-        } else {
-            System.out.println("fetching pass" + AuthenticationApiResource.transactionPin);
-            return this.password;
-        }
+        /*
+         * if (AuthenticationApiResource.transactionPin == true) { System.out.println("fetching pin" +
+         * AuthenticationApiResource.transactionPin); return this.transactionPin; } else {
+         * System.out.println("fetching pass" + AuthenticationApiResource.transactionPin); return this.password; }
+         */
+        return this.password;
     }
 
     @Override

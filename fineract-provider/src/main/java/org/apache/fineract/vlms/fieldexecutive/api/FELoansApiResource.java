@@ -102,6 +102,7 @@ public class FELoansApiResource {
     }
 
     @GET
+    @Path("{mobileNumber}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve FieldExecutive", description = "Returns the list of Task.\n" + "\n" + "Example Requests:\n" + "\n"
@@ -112,7 +113,7 @@ public class FELoansApiResource {
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
     public String retrievefeCashInHandByNumberAndDate(@Context final UriInfo uriInfo,
-            @QueryParam("mobileNumber") @Parameter(description = "mobileNumber") final String mobileNumber) {
+            @PathParam("mobileNumber") @Parameter(description = "mobileNumber") final String mobileNumber) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
