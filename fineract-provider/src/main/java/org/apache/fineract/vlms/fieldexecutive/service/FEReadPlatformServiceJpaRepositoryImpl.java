@@ -186,13 +186,13 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
 
     @Override
     @Cacheable(value = "taskdata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
-    public Collection<EnquiryData> retrieveAllEnquiresByDate(String date) {
+    public Collection<EnquiryData> retrieveAllEnquiresByDate(String fromdateParam, String todateParam) {
         this.context.authenticatedUser();
 
         final EnquiryDataMapper rm = new EnquiryDataMapper();
-        final String sql = "select " + rm.schema() + " from m_customerloanenquiry cln where cln.created_date = ?";
+        final String sql = "select " + rm.schema() + " from m_customerloanenquiry cln where cln.created_date BETWEEN " + " ? and ? ";
 
-        return this.jdbcTemplate.query(sql, rm, new Object[] { date });
+        return this.jdbcTemplate.query(sql, rm, new Object[] { fromdateParam, todateParam });
     }
 
     @Override
@@ -247,13 +247,13 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
 
     @Override
     @Cacheable(value = "taskdata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
-    public Collection<EnrollData> retrieveAllEnrollByDate(String date) {
+    public Collection<EnrollData> retrieveAllEnrollByDate(String fromdateParam, String todateParam) {
         this.context.authenticatedUser();
 
         final EnrollDataMapper rm = new EnrollDataMapper();
-        final String sql = "select " + rm.schema() + " from m_feenroll erl where erl.created_date = ? ";
+        final String sql = "select " + rm.schema() + " from m_feenroll erl where erl.created_date BETWEEN " + " ? and ? ";
 
-        return this.jdbcTemplate.query(sql, rm, new Object[] { date });
+        return this.jdbcTemplate.query(sql, rm, new Object[] { fromdateParam, todateParam });
     }
 
     private static final class DocumentsDetailsDataMapper implements RowMapper<CustomerDocumentsData> {

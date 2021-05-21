@@ -156,11 +156,12 @@ public class FELoansApiResource {
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
     public String retrieveAllEnquiresByDate(@Context final UriInfo uriInfo,
-            @QueryParam("date") @Parameter(description = "date") final String dateParam) {
+            @QueryParam("fromdate") @Parameter(description = "fromdate") final String fromdateParam,
+            @QueryParam("todate") @Parameter(description = "todate") final String todateParam) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
-        final Collection<EnquiryData> enquiresData = this.readPlatformService.retrieveAllEnquiresByDate(dateParam);
+        final Collection<EnquiryData> enquiresData = this.readPlatformService.retrieveAllEnquiresByDate(fromdateParam, todateParam);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiEnquiryJsonSerializer.serialize(settings, enquiresData, RESPONSE_DATA_PARAMETERS);
@@ -241,11 +242,12 @@ public class FELoansApiResource {
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
     public String retrieveAllEnrollByDate(@Context final UriInfo uriInfo,
-            @QueryParam("date") @Parameter(description = "date") final String dateParam) {
+            @QueryParam("fromdate") @Parameter(description = "fromdate") final String fromdateParam,
+            @QueryParam("todate") @Parameter(description = "todate") final String todateParam) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
-        final Collection<EnrollData> enquiresData = this.readPlatformService.retrieveAllEnrollByDate(dateParam);
+        final Collection<EnrollData> enquiresData = this.readPlatformService.retrieveAllEnrollByDate(fromdateParam, todateParam);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiEnrollJsonSerializer.serialize(settings, enquiresData, RESPONSE_DATA_PARAMETERS);

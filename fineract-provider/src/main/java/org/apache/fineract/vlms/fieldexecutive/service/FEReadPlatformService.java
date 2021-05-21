@@ -31,13 +31,13 @@ public interface FEReadPlatformService {
 
     Collection<EnquiryData> retrieveAllEnquires();
 
-    Collection<EnquiryData> retrieveAllEnquiresByDate(String dateParam);
+    Collection<EnquiryData> retrieveAllEnquiresByDate(String fromdateParam, String todateParam);
 
     Collection<EnquiryData> retrieveAllEnquiresByMobileNumber(String mobileNumber);
 
     Collection<EnrollData> retrieveAllEnroll();
 
-    Collection<EnrollData> retrieveAllEnrollByDate(String dateParam);
+    Collection<EnrollData> retrieveAllEnrollByDate(String fromdateParam, String todateParam);
 
     Collection<DocumentsData> retrieveAllDocumentsType();
 
