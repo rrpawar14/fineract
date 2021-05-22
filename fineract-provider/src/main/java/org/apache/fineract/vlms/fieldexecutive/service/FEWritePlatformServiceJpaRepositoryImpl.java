@@ -430,6 +430,77 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
 
     @Transactional
     @Override
+    @CacheEvict(value = "fetask", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult deleteFEEnquiry(Long enquiryId) {
+
+        this.context.authenticatedUser();
+
+        // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+        // final FETask feTask = retrieveTaskBy(taskId);
+
+        final FEEnquiry feEnquiry = this.feEnquiryRepository.getOne(enquiryId);
+
+        try {
+            this.feEnquiryRepository.delete(feEnquiry);
+            this.feEnquiryRepository.flush();
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            throw new PlatformDataIntegrityException("error.msg.cund.unknown.data.integrity.issue",
+                    "Unknown data integrity issue with resource: " + dve.getMostSpecificCause(), dve);
+        }
+
+        // return new
+        // CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(feTask.getId()).build();
+
+        return new CommandProcessingResultBuilder().withEntityId(enquiryId).build();
+
+        // .withEntityId(code.getId())
+        /*
+         * } catch (final JpaSystemException | DataIntegrityViolationException dve) { handleDataIntegrityIssues(command,
+         * dve.getMostSpecificCause(), dve); return CommandProcessingResult.empty(); } catch (final PersistenceException
+         * ee) { Throwable throwable = ExceptionUtils.getRootCause(ee.getCause()); handleDataIntegrityIssues(command,
+         * throwable, ee); return CommandProcessingResult.empty(); }
+         */
+
+    }
+
+    @Transactional
+    @Override
+    @CacheEvict(value = "fetask", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult deleteFEEnroll(Long enrollId) {
+
+        this.context.authenticatedUser();
+
+        // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+        // final FETask feTask = retrieveTaskBy(taskId);
+        final FEEnroll feEnroll = this.feEnrollRepository.getOne(enrollId);
+
+        try {
+            this.feEnrollRepository.delete(feEnroll);
+            this.feEnrollRepository.flush();
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            throw new PlatformDataIntegrityException("error.msg.cund.unknown.data.integrity.issue",
+                    "Unknown data integrity issue with resource: " + dve.getMostSpecificCause(), dve);
+        }
+
+        // return new
+        // CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(feTask.getId()).build();
+
+        return new CommandProcessingResultBuilder().withEntityId(enrollId).build();
+
+        // .withEntityId(code.getId())
+        /*
+         * } catch (final JpaSystemException | DataIntegrityViolationException dve) { handleDataIntegrityIssues(command,
+         * dve.getMostSpecificCause(), dve); return CommandProcessingResult.empty(); } catch (final PersistenceException
+         * ee) { Throwable throwable = ExceptionUtils.getRootCause(ee.getCause()); handleDataIntegrityIssues(command,
+         * throwable, ee); return CommandProcessingResult.empty(); }
+         */
+
+    }
+
+    @Transactional
+    @Override
     @CacheEvict(value = "feUsedVehicleLoan", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
     public CommandProcessingResult createFEUsedVehicleLoan(final JsonCommand command) {
 

@@ -938,6 +938,24 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder deleteFEEnquiry(Long Id) {
+        this.actionName = "DELETE";
+        this.entityName = "FEENQUIRYLOAN";
+        this.entityId = Id;
+        this.loanId = null;
+        this.href = "/loans/feenquiry";
+        return this;
+    }
+
+    public CommandWrapperBuilder deleteFEEnroll(Long Id) {
+        this.actionName = "DELETE";
+        this.entityName = "FEENROLL";
+        this.entityId = Id;
+        this.loanId = null;
+        this.href = "/loans/feeroll";
+        return this;
+    }
+
     public CommandWrapperBuilder createLoanChangeRequest() {
         this.actionName = "CREATE";
         this.entityName = "LOANCHANGEREQUEST";

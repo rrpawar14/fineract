@@ -102,6 +102,26 @@ public class FELoansApiResource {
     }
 
     @GET
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve FieldExecutive", description = "Returns the list of Task.\n" + "\n" + "Example Requests:\n" + "\n"
+            + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrievefeCashInHandByNumberAndDate(@Context final UriInfo uriInfo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final Collection<FieldExecutiveData> fieldExecutiveData = this.readPlatformService.retrieveAllFieldExecutive();
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApifieldExecutiveJsonSerializer.serialize(settings, fieldExecutiveData, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
     @Path("{mobileNumber}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
@@ -202,6 +222,47 @@ public class FELoansApiResource {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .createFEEnquiry().withJson(apiRequestBodyAsJson) //
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @DELETE
+    @Path("enquiry/{id}")
+    @Operation(summary = "Create a User Loan Enquiry", description = "Removes the user and the associated roles and permissions.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(schema =
+                                                                              // @Schema(implementation =
+                                                                              // UsersApiResourceSwagger.DeleteUsersUserIdResponse.class)))
+                                                                              // })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String customerDeleteEnquiry(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("id") @Parameter(description = "id") final Long id) {
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .deleteFEEnquiry(id) //
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @DELETE
+    @Path("enroll/{id}")
+    @Operation(summary = "Create a User Loan Enquiry", description = "Removes the user and the associated roles and permissions.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(schema =
+                                                                              // @Schema(implementation =
+                                                                              // UsersApiResourceSwagger.DeleteUsersUserIdResponse.class)))
+                                                                              // })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String customerDeleteEnroll(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("id") @Parameter(description = "id") final Long id) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .deleteFEEnroll(id) //
                 .build();
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);

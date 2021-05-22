@@ -28,13 +28,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@CommandType(entity = "FEENQUIRYLOAN", action = "DELETE")
-public class DeleteFEEnquiryCommandHandler implements NewCommandSourceHandler {
+@CommandType(entity = "FEENROLL", action = "DELETE")
+public class DeleteFEEnrollCommandHandler implements NewCommandSourceHandler {
 
     private final FEWritePlatformService writePlatformService;
 
     @Autowired
-    public DeleteFEEnquiryCommandHandler(final FEWritePlatformService writePlatformService) {
+    public DeleteFEEnrollCommandHandler(final FEWritePlatformService writePlatformService) {
         this.writePlatformService = writePlatformService;
     }
 
@@ -42,6 +42,6 @@ public class DeleteFEEnquiryCommandHandler implements NewCommandSourceHandler {
     @Override
     public CommandProcessingResult processCommand(final JsonCommand command) {
 
-        return this.writePlatformService.deleteFEEnquiry(command.entityId());
+        return this.writePlatformService.deleteFEEnroll(command.entityId());
     }
 }

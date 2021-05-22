@@ -31,6 +31,10 @@ public interface FEWritePlatformService {
 
     CommandProcessingResult updateFEEnroll(Long enrollId, JsonCommand command);
 
+    CommandProcessingResult deleteFEEnquiry(Long enquiryId);
+
+    CommandProcessingResult deleteFEEnroll(Long enrollId);
+
     CommandProcessingResult createNewLoan(JsonCommand command);
 
     CommandProcessingResult createFEUsedVehicleLoan(JsonCommand command);

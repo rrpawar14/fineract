@@ -399,6 +399,17 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
         return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { mobileNo });
     }
 
+    @Override
+    @Cacheable(value = "FeCashInHandLimitData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<FieldExecutiveData> retrieveAllFieldExecutive() {
+        this.context.authenticatedUser();
+
+        final FieldExecutiveAllDataMapper rm = new FieldExecutiveAllDataMapper();
+        final String sql = "select " + rm.schema() + " from m_fieldexecutive fe ";
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
     /*
      * @Override
      *
