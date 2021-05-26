@@ -45,9 +45,11 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.vlms.customer.data.AadharData;
 import org.apache.fineract.vlms.customer.data.BranchAnalyticsData;
 import org.apache.fineract.vlms.customer.data.CustomerDetailsData;
 import org.apache.fineract.vlms.customer.data.VehicleLoanData;
+import org.apache.fineract.vlms.customer.service.AadharDecodingReadPlatformServiceImpl;
 import org.apache.fineract.vlms.customer.service.VehicleLoanManagementReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -63,9 +65,11 @@ public class CustomerLoansApiResource {
     private final DefaultToApiJsonSerializer<VehicleLoanData> toApiJsonSerializer;
     private final DefaultToApiJsonSerializer<BranchAnalyticsData> tobranchApiJsonSerializer;
     private final DefaultToApiJsonSerializer<CodeData> toCodeDataApiJsonSerializer;
+    private final DefaultToApiJsonSerializer<AadharData> toAadharDataApiJsonSerializer;
     private final DefaultToApiJsonSerializer<CustomerDetailsData> toCustomerDataApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
+    // private final AadharDecodingReadPlatformServiceImpl aadharDecodingReadPlatformServiceImpl;
     private static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList("customers"));
     private final String resourceNameForPermissions = "CUSTOMERS";
 
@@ -74,18 +78,44 @@ public class CustomerLoansApiResource {
             final VehicleLoanManagementReadPlatformService readPlatformService,
             final DefaultToApiJsonSerializer<VehicleLoanData> toApiJsonSerializer,
             final DefaultToApiJsonSerializer<CodeData> toCodeDataApiJsonSerializer,
+            final DefaultToApiJsonSerializer<AadharData> toAadharDataApiJsonSerializer,
             final DefaultToApiJsonSerializer<CustomerDetailsData> toCustomerDataApiJsonSerializer,
             final DefaultToApiJsonSerializer<BranchAnalyticsData> tobranchApiJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+        // final AadharDecodingReadPlatformServiceImpl aadharDecodingReadPlatformServiceImpl) {
         this.context = context;
         this.readPlatformService = readPlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.toCodeDataApiJsonSerializer = toCodeDataApiJsonSerializer;
+        this.toAadharDataApiJsonSerializer = toAadharDataApiJsonSerializer;
         this.toCustomerDataApiJsonSerializer = toCustomerDataApiJsonSerializer;
         this.tobranchApiJsonSerializer = tobranchApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
+        // this.aadharDecodingReadPlatformServiceImpl = aadharDecodingReadPlatformServiceImpl;
+    }
+
+    @GET
+    @Path("aadharscanner/{encrypytedData}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve All Vehicle Loan Data", description = "Returns the list of Vehicle Loan Data.\n" + "\n"
+            + "Example Requests:\n" + "\n" + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveAadharData(@Context final UriInfo uriInfo,
+            @PathParam("encrypytedData") @Parameter(description = "encrypytedData") final String encrypytedData) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final AadharData aadharData = AadharDecodingReadPlatformServiceImpl.fetchAdharDetails(encrypytedData);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toAadharDataApiJsonSerializer.serialize(settings, aadharData, RESPONSE_DATA_PARAMETERS);
     }
 
     @GET

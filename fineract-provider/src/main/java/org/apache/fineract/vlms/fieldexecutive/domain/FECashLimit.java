@@ -18,12 +18,14 @@
  */
 package org.apache.fineract.vlms.fieldexecutive.domain;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -31,10 +33,14 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
+import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 
 @Entity
 @Table(name = "m_fe_cashinhand")
 public class FECashLimit extends AbstractPersistableCustom {
+
+    @Embedded
+    private MonetaryCurrency currency;
 
     @Column(name = "name", nullable = false, length = 100)
     private String feName; // MobileNo is stored in username column for authentication
@@ -44,16 +50,16 @@ public class FECashLimit extends AbstractPersistableCustom {
     private FieldExecutive fieldExecutive;
 
     @Column(name = "cash_in_hand", nullable = false, length = 100)
-    private Integer cashInHand;
+    private BigDecimal cashInHand;
 
     @Column(name = "cash_limit", nullable = false, length = 100)
-    private Integer cashLimit;
+    private BigDecimal cashLimit;
 
     @Column(name = "required_on", nullable = false, length = 100)
     private Date requiredOnDate;
 
     @Column(name = "required_amount", nullable = false, length = 100)
-    private Integer requiredAmount;
+    private BigDecimal requiredAmount;
 
     @Column(name = "status", nullable = false, length = 100)
     private String status;
@@ -61,19 +67,19 @@ public class FECashLimit extends AbstractPersistableCustom {
     public static FECashLimit fromJson(final FieldExecutive fieldExecutive, final JsonCommand command) {
 
         final String feName = command.stringValueOfParameterNamed("feName");
-        final Integer cashInHand = command.integerValueOfParameterNamed("cashInHand");
-        final Integer cashLimit = command.integerValueOfParameterNamed("cashLimit");
+        final BigDecimal cashInHand = command.bigDecimalValueOfParameterNamed("cashInHand");
+        final BigDecimal cashLimit = command.bigDecimalValueOfParameterNamed("cashLimit");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Date createdDate = new Date();
-        final Integer requiredAmount = command.integerValueOfParameterNamed("requiredAmount");
+        final BigDecimal requiredAmount = command.bigDecimalValueOfParameterNamed("requiredAmount");
         final String status = command.stringValueOfParameterNamed("status");
 
         return new FECashLimit(feName, cashInHand, cashLimit, createdDate, requiredAmount, status, fieldExecutive);
 
     }
 
-    private FECashLimit(final String feName, final Integer cashInHand, final Integer cashLimit, final Date requiredOnDate,
-            final Integer requiredAmount, final String status, final FieldExecutive fieldExecutive) {
+    private FECashLimit(final String feName, final BigDecimal cashInHand, final BigDecimal cashLimit, final Date requiredOnDate,
+            final BigDecimal requiredAmount, final String status, final FieldExecutive fieldExecutive) {
         this.feName = feName; // MobileNo is stored in username column for authentication
         this.cashInHand = cashInHand;
         this.cashLimit = cashLimit;
@@ -83,15 +89,25 @@ public class FECashLimit extends AbstractPersistableCustom {
         this.fieldExecutive = fieldExecutive;
     }
 
+    /*
+     * public Money getPrincpal() { return this.loanRepaymentScheduleDetail.getPrincipal(); }
+     */
+
     public Map<String, Object> update(final FECashLimit feCashLimit, final JsonCommand command) {
 
         final Map<String, Object> actualChanges = new LinkedHashMap<>(1);
         final String status = command.stringValueOfParameterNamed("status");
         // final FECashLimit feCashLimit = retrieveCashLimitRequestBy(requestId);
         if (status.equals("approved")) {
-            Integer cashRequired = feCashLimit.getRequiredAmount();
-            Integer cashLimit = feCashLimit.getCashLimit();
-            Integer newCash = cashRequired + cashLimit;
+            BigDecimal cashRequired = feCashLimit.getRequiredAmount();
+            BigDecimal cashLimit = feCashLimit.getCashLimit();
+
+            // BigDecimal newCash = cashRequired + cashLimit;
+            // Money cashLimitMoney = Money.of(this.currency, cashLimit);
+            // Money cashRequiredMoney = Money.of(this.currency, cashRequired);
+
+            BigDecimal newCash = cashRequired.add(cashLimit);
+
             final String cashLimitParamName = "cashLimit";
             this.cashLimit = newCash;
 
@@ -107,12 +123,17 @@ public class FECashLimit extends AbstractPersistableCustom {
         return actualChanges;
     }
 
-    public Integer getRequiredAmount() {
+    public BigDecimal getRequiredAmount() {
         return this.requiredAmount;
     }
 
-    public Integer getCashLimit() {
+    public BigDecimal getCashLimit() {
         return this.cashLimit;
     }
 
+    /*
+     * public Money getCashLimit() { return Money.of(this.currency, this.cashLimit); }
+     *
+     * public Money getCashRequired() { return Money.of(this.currency, this.requiredAmount); }
+     */
 }
