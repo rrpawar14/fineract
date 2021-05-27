@@ -188,6 +188,27 @@ public class FELoansApiResource {
     }
 
     @GET
+    @Path("getEnquiry/{id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Enroll", description = "Returns the list of Enroll.\n" + "\n" + "Example Requests:\n" + "\n"
+            + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveEnquiry(@Context final UriInfo uriInfo, @PathParam("id") @Parameter(description = "id") final Long id) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final EnquiryData enquiresData = this.readPlatformService.retrieveEnquiry(id);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiEnquiryJsonSerializer.serialize(settings, enquiresData, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
     @Path("getEnquiryByMobileNumber")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
@@ -302,7 +323,7 @@ public class FELoansApiResource {
                                                                               // @Schema(implementation =
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
-    public String retrieveAllEnroll(@Context final UriInfo uriInfo, @PathParam("id") @Parameter(description = "id") final Long id) {
+    public String retrieveEnroll(@Context final UriInfo uriInfo, @PathParam("id") @Parameter(description = "id") final Long id) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
@@ -724,6 +745,22 @@ public class FELoansApiResource {
             @PathParam("Id") @Parameter(description = "Id") final Long Id) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().updateFECashLimit(Id).withJson(apiRequestBodyAsJson).build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @DELETE
+    @Path("deleteCashInHand/{Id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Create a Task", description = "Creates a Field Executive Task. FE created through api are always 'user defined' and so system defined is marked as false.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String deleteFECashLimit(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("Id") @Parameter(description = "Id") final Long Id) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().deleteFECashLimit(Id).build();
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 

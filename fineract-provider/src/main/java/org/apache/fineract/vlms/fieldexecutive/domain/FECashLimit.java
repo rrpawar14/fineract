@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -33,14 +32,10 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
-import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 
 @Entity
 @Table(name = "m_fe_cashinhand")
 public class FECashLimit extends AbstractPersistableCustom {
-
-    @Embedded
-    private MonetaryCurrency currency;
 
     @Column(name = "name", nullable = false, length = 100)
     private String feName; // MobileNo is stored in username column for authentication

@@ -46,11 +46,17 @@ public class FEEnroll extends AbstractPersistableCustom {
     @Column(name = "alternate_mobile_number", nullable = false, length = 100)
     private String alternateMobileNumber;
 
+    @Column(name = "alternate_mobile_number_two", nullable = false, length = 100)
+    private String alternateMobileNumberTwo;
+
     @Column(name = "dob", nullable = false, length = 100)
     private Date dob;
 
     @Column(name = "father_name", nullable = false, length = 100)
     private String fatherName;
+
+    @Column(name = "spouse_name", nullable = false, length = 100)
+    private String spouseName;
 
     @Column(name = "gender", nullable = false, length = 100)
     private String gender;
@@ -72,26 +78,31 @@ public class FEEnroll extends AbstractPersistableCustom {
         final String customerName = command.stringValueOfParameterNamed("customerName");
         final String mobileNumber = command.stringValueOfParameterNamed("mobileNumber");
         final String alternateMobileNumber = command.stringValueOfParameterNamed("alternateMobileNumber");
+        final String alternateMobileNumberTwo = command.stringValueOfParameterNamed("alternateMobileNumberTwo");
         final Date dob = command.dateValueOfParameterNamed("dob");
         final String fatherName = command.stringValueOfParameterNamed("fatherName");
+        final String spouseName = command.stringValueOfParameterNamed("spouseName");
         final String gender = command.stringValueOfParameterNamed("gender");
         final String applicantType = command.stringValueOfParameterNamed("applicantType");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Date dateobj = new Date();
 
-        return new FEEnroll(applicantId, customerName, mobileNumber, alternateMobileNumber, dob, fatherName, gender, applicantType,
-                dateobj);
+        return new FEEnroll(applicantId, customerName, mobileNumber, alternateMobileNumber, alternateMobileNumberTwo, dob, fatherName,
+                spouseName, gender, applicantType, dateobj);
 
     }
 
     private FEEnroll(final String applicantId, final String customerName, final String mobileNumber, final String alternateMobileNumber,
-            final Date dob, final String fatherName, final String gender, final String applicantType, final Date date) {
+            final String alternateMobileNumberTwo, final Date dob, final String fatherName, final String spouseName, final String gender,
+            final String applicantType, final Date date) {
         this.applicantId = applicantId;
         this.customerName = customerName;
         this.mobileNumber = mobileNumber;
         this.alternateMobileNumber = alternateMobileNumber;
+        this.alternateMobileNumberTwo = alternateMobileNumberTwo;
         this.dob = dob;
         this.fatherName = fatherName;
+        this.spouseName = spouseName;
         this.gender = gender;
         this.applicantType = applicantType;
         this.createdDate = date;
@@ -122,6 +133,13 @@ public class FEEnroll extends AbstractPersistableCustom {
             this.alternateMobileNumber = StringUtils.defaultIfEmpty(newValue, null);
         }
 
+        final String alternateMobileNumberTwoParamName = "alternateMobileNumberTwo";
+        if (command.isChangeInStringParameterNamed(alternateMobileNumberTwoParamName, this.alternateMobileNumberTwo)) {
+            final String newValue = command.stringValueOfParameterNamed(alternateMobileNumberTwoParamName);
+            actualChanges.put(alternateMobileNumberTwoParamName, newValue);
+            this.alternateMobileNumberTwo = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
         final String dateFormatAsInput = command.dateFormat();
         final String localeAsInput = command.locale();
 
@@ -143,6 +161,13 @@ public class FEEnroll extends AbstractPersistableCustom {
             final String newValue = command.stringValueOfParameterNamed(fatherNameParamName);
             actualChanges.put(fatherNameParamName, newValue);
             this.fatherName = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String spouseNameParamName = "spouseName";
+        if (command.isChangeInStringParameterNamed(spouseNameParamName, this.spouseName)) {
+            final String newValue = command.stringValueOfParameterNamed(spouseNameParamName);
+            actualChanges.put(spouseNameParamName, newValue);
+            this.spouseName = StringUtils.defaultIfEmpty(newValue, null);
         }
 
         final String genderParamName = "gender";

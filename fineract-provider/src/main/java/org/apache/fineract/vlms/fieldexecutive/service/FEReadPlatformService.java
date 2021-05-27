@@ -33,6 +33,8 @@ public interface FEReadPlatformService {
 
     Collection<EnquiryData> retrieveAllEnquiresByDate(String fromdateParam, String todateParam);
 
+    EnquiryData retrieveEnquiry(Long id);
+
     Collection<EnquiryData> retrieveAllEnquiresByMobileNumber(String mobileNumber);
 
     Collection<EnrollData> retrieveAllEnroll();

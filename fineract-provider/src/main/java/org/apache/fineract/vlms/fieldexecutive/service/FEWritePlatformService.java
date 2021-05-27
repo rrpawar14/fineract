@@ -49,5 +49,7 @@ public interface FEWritePlatformService {
 
     CommandProcessingResult createFECashLimit(JsonCommand command);
 
+    CommandProcessingResult deleteFECashLimit(final Long Id);
+
     CommandProcessingResult updateFECashLimit(Long requestId, JsonCommand command);
 }

@@ -1108,6 +1108,14 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder deleteFECashLimit(Long cashLimitId) {
+        this.actionName = "DELETE";
+        this.entityName = "FECASHLIMIT";
+        this.entityId = cashLimitId;
+        this.href = "/feCashLimit";
+        return this;
+    }
+
     public CommandWrapperBuilder deleteFETask(Long taskId) {
         this.actionName = "DELETE";
         this.entityName = "FETASK";

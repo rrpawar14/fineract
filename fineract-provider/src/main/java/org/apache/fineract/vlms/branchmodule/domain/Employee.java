@@ -150,9 +150,10 @@ public class Employee extends AbstractPersistableCustom {
         final String vehicleNumber = command.stringValueOfParameterNamed("vehicleNumber");
         final String vehicleType = command.stringValueOfParameterNamed("vehicleType");
         final Date doj = command.dateValueOfParameterNamed("doj");
+        final String agtnumber = command.stringValueOfParameterNamed("agtnumber");
 
         return new Employee(name, calledName, surName, mobileNumber, altNumber, officialNumber, dob, gender, age, maritalStatus,
-                designation, spousename, bloodGroup, fatherName, vehicleNumber, vehicleType, doj, customerCommunicationAdd,
+                designation, spousename, bloodGroup, fatherName, vehicleNumber, vehicleType, doj, agtnumber, customerCommunicationAdd,
                 customerPermanentAdd, bankDetails, insuranceDetails, accidentalInsuranceDetails, schoolQualification, collegeQualification,
                 graduateQualification, postgraduateQualification);
 
@@ -163,10 +164,11 @@ public class Employee extends AbstractPersistableCustom {
     private Employee(final String name, final String calledName, final String surName, final String mobileNumber, final String altNumber,
             final String officialNumber, final Date dob, final String gender, final Integer age, final String maritalStatus,
             final String designation, final String spousename, final String bloodGroup, final String fatherName, final String vehicleNumber,
-            final String vehicleType, final Date doj, final Address customerCommunicationAdd, final Address customerPermanentAdd,
-            final BankDetails bankDetails, final InsuranceDetails insuranceDetails, final InsuranceDetails accidentalInsuranceDetails,
-            final EducationQualification schoolQualification, final EducationQualification collegeQualification,
-            final EducationQualification graduateQualification, final EducationQualification postgraduateQualification) {
+            final String vehicleType, final Date doj, final String agtnumber, final Address customerCommunicationAdd,
+            final Address customerPermanentAdd, final BankDetails bankDetails, final InsuranceDetails insuranceDetails,
+            final InsuranceDetails accidentalInsuranceDetails, final EducationQualification schoolQualification,
+            final EducationQualification collegeQualification, final EducationQualification graduateQualification,
+            final EducationQualification postgraduateQualification) {
         this.name = name;
         this.calledName = calledName;
         this.surName = surName;
@@ -184,6 +186,7 @@ public class Employee extends AbstractPersistableCustom {
         this.vehicleNumber = vehicleNumber;
         this.vehicleType = vehicleType;
         this.doj = doj;
+        this.agtnumber = agtnumber;
         this.communicationAdd = customerCommunicationAdd;
         this.permanentAdd = customerPermanentAdd;
         this.bankDetails = bankDetails;

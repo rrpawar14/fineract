@@ -386,6 +386,26 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
 
     }
 
+    @Transactional
+    @Override
+    @CacheEvict(value = "fetask", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult deleteFECashLimit(final Long Id) {
+
+        this.context.authenticatedUser();
+
+        final FECashLimit feCashLimit = retrieveCashLimitRequestBy(Id);
+        try {
+            this.feCashLimitRepository.delete(feCashLimit);
+            this.feCashLimitRepository.flush();
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            throw new PlatformDataIntegrityException("error.msg.cund.unknown.data.integrity.issue",
+                    "Unknown data integrity issue with resource: " + dve.getMostSpecificCause(), dve);
+        }
+        return new CommandProcessingResultBuilder().withEntityId(Id).build();
+        // .withEntityId(code.getId())
+
+    }
+
     private FETask retrieveTaskBy(final Long taskId) {
         return this.feTaskRepository.findById(taskId).orElseThrow(() -> new CodeNotFoundException(taskId.toString()));
     }

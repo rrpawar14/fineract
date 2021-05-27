@@ -185,6 +185,17 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
     }
 
     @Override
+    @Cacheable(value = "enquiryData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public EnquiryData retrieveEnquiry(Long id) {
+        this.context.authenticatedUser();
+
+        final EnquiryDataMapper rm = new EnquiryDataMapper();
+        final String sql = "select " + rm.schema() + " from m_customerloanenquiry cln where cln.id = ? ";
+
+        return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { id });
+    }
+
+    @Override
     @Cacheable(value = "taskdata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
     public Collection<EnquiryData> retrieveAllEnquiresByDate(String fromdateParam, String todateParam) {
         this.context.authenticatedUser();
