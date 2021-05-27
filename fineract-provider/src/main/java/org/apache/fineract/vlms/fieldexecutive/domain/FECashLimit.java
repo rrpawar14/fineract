@@ -73,6 +73,8 @@ public class FECashLimit extends AbstractPersistableCustom {
 
     }
 
+    public FECashLimit() {}
+
     private FECashLimit(final String feName, final BigDecimal cashInHand, final BigDecimal cashLimit, final Date requiredOnDate,
             final BigDecimal requiredAmount, final String status, final FieldExecutive fieldExecutive) {
         this.feName = feName; // MobileNo is stored in username column for authentication

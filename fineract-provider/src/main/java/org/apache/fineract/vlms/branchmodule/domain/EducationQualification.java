@@ -47,6 +47,8 @@ public class EducationQualification extends AbstractPersistableCustom {
     @Column(name = "passingyear")
     private String passingyear;
 
+    public EducationQualification() {}
+
     public static EducationQualification fromJson(final JsonCommand command, final String paramName) {
 
         JsonObject addressObject = command.parsedJson().getAsJsonObject();

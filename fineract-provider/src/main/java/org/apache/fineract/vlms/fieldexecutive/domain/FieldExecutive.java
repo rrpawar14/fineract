@@ -43,6 +43,8 @@ public class FieldExecutive extends AbstractPersistableCustom {
     @Column(name = "cash_limit", nullable = false, length = 100)
     private String cashLimit;
 
+    public FieldExecutive() {}
+
     public static FieldExecutive fromJson(final JsonCommand command) {
 
         final String name = command.stringValueOfParameterNamed("name");

@@ -57,6 +57,8 @@ public interface FEReadPlatformService {
 
     FieldExecutiveData retrieveFieldExecutive(String mobileNo);
 
+    FieldExecutiveData retrieveFieldExecutiveById(Long Id);
+
     Collection<FieldExecutiveData> retrieveAllFieldExecutive();
 
 }

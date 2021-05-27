@@ -111,7 +111,7 @@ public class FELoansApiResource {
                                                                               // @Schema(implementation =
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
-    public String retrievefeCashInHandByNumberAndDate(@Context final UriInfo uriInfo) {
+    public String retrieveAllFieldExecutiveData(@Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
@@ -132,12 +132,33 @@ public class FELoansApiResource {
                                                                               // @Schema(implementation =
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
-    public String retrievefeCashInHandByNumberAndDate(@Context final UriInfo uriInfo,
+    public String retrievefeildExecutiveByNumber(@Context final UriInfo uriInfo,
             @PathParam("mobileNumber") @Parameter(description = "mobileNumber") final String mobileNumber) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
         final FieldExecutiveData fieldExecutiveData = this.readPlatformService.retrieveFieldExecutive(mobileNumber);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApifieldExecutiveJsonSerializer.serialize(settings, fieldExecutiveData, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
+    @Path("byId/{id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve FieldExecutive", description = "Returns the list of Task.\n" + "\n" + "Example Requests:\n" + "\n"
+            + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrievefeCashInHandById(@Context final UriInfo uriInfo, @PathParam("id") @Parameter(description = "id") final Long id) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final FieldExecutiveData fieldExecutiveData = this.readPlatformService.retrieveFieldExecutiveById(id);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApifieldExecutiveJsonSerializer.serialize(settings, fieldExecutiveData, RESPONSE_DATA_PARAMETERS);
@@ -198,7 +219,7 @@ public class FELoansApiResource {
                                                                               // @Schema(implementation =
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
-    public String retrieveEnquiry(@Context final UriInfo uriInfo, @PathParam("id") @Parameter(description = "id") final Long id) {
+    public String retrieveEnquiryById(@Context final UriInfo uriInfo, @PathParam("id") @Parameter(description = "id") final Long id) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
@@ -239,7 +260,7 @@ public class FELoansApiResource {
                                                                               // })
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String customerEnquiry(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+    public String getAllEnquiry(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .createFEEnquiry().withJson(apiRequestBodyAsJson) //
@@ -323,7 +344,7 @@ public class FELoansApiResource {
                                                                               // @Schema(implementation =
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
-    public String retrieveEnroll(@Context final UriInfo uriInfo, @PathParam("id") @Parameter(description = "id") final Long id) {
+    public String retrieveEnrollById(@Context final UriInfo uriInfo, @PathParam("id") @Parameter(description = "id") final Long id) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 

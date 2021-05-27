@@ -50,6 +50,8 @@ public class LoanChangeRequest extends AbstractPersistableCustom {
     @Column(name = "loan_closure_amount", nullable = true)
     private BigDecimal loanClosureAmount;
 
+    public LoanChangeRequest() {}
+
     public static LoanChangeRequest fromJson(final JsonCommand command, final FELoanDetails loan) {
 
         final BigDecimal loanInterest = command.bigDecimalValueOfParameterNamed("loanInterest");

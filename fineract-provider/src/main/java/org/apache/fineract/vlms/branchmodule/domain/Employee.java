@@ -344,7 +344,7 @@ public class Employee extends AbstractPersistableCustom {
         if (command.isChangeInStringParameterNamed(agtnumberParamName, this.agtnumber)) {
             final String newValue = command.stringValueOfParameterNamed(agtnumberParamName);
             actualChanges.put(agtnumberParamName, newValue);
-            this.vehicleType = StringUtils.defaultIfEmpty(newValue, null);
+            this.agtnumber = StringUtils.defaultIfEmpty(newValue, null);
         }
 
         return actualChanges;

@@ -44,6 +44,8 @@ public class InsuranceDetails extends AbstractPersistableCustom {
     @Column(name = "policycoverage")
     private String policyCoverage;
 
+    public InsuranceDetails() {}
+
     public static InsuranceDetails fromJson(final JsonCommand command, final String paramName) {
 
         JsonObject addressObject = command.parsedJson().getAsJsonObject();
