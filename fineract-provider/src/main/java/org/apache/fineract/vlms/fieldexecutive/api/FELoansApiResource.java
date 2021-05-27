@@ -292,6 +292,27 @@ public class FELoansApiResource {
     }
 
     @GET
+    @Path("getEnroll/{id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Enroll", description = "Returns the list of Enroll.\n" + "\n" + "Example Requests:\n" + "\n"
+            + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveAllEnroll(@Context final UriInfo uriInfo, @PathParam("id") @Parameter(description = "id") final Long id) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final EnrollData enrollData = this.readPlatformService.retrieveEnrollById(id);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiEnrollJsonSerializer.serialize(settings, enrollData, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
     @Path("getEnrollByDate")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
@@ -632,7 +653,7 @@ public class FELoansApiResource {
     }
 
     @GET
-    @Path("getCompletedTask")
+    @Path("getTaskStatus")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Task", description = "Returns the list of Task.\n" + "\n" + "Example Requests:\n" + "\n" + "documents")
@@ -641,11 +662,12 @@ public class FELoansApiResource {
                                                                               // @Schema(implementation =
                                                                               // CodesApiResourceSwagger.GetCodesResponse.class))))
                                                                               // })
-    public String retrieveCompletedTask(@Context final UriInfo uriInfo) {
+    public String retrieveCompletedTask(@Context final UriInfo uriInfo,
+            @QueryParam("taskStatus") @Parameter(description = "taskStatus") final String taskStatus) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
-        final Collection<TaskData> documentsType = this.readPlatformService.retrieveAllCompletedTask();
+        final Collection<TaskData> documentsType = this.readPlatformService.retrieveAllTaskStatus(taskStatus);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiTaskJsonSerializer.serialize(settings, documentsType, RESPONSE_DATA_PARAMETERS);

@@ -121,13 +121,13 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
 
     @Override
     @Cacheable(value = "taskdata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
-    public Collection<TaskData> retrieveAllCompletedTask() {
+    public Collection<TaskData> retrieveAllTaskStatus(final String taskStatus) {
         this.context.authenticatedUser();
 
         final TaskDataMapper rm = new TaskDataMapper();
-        final String sql = "select " + rm.schema() + " from m_fe_task task where task.status = 'completed' ";
+        final String sql = "select " + rm.schema() + " from m_fe_task task where task.status = ? ";
 
-        return this.jdbcTemplate.query(sql, rm, new Object[] {});
+        return this.jdbcTemplate.query(sql, rm, new Object[] { taskStatus });
     }
 
     /*
@@ -243,6 +243,17 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
         final String sql = "select " + rm.schema() + " from m_feenroll erl ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
+    @Override
+    @Cacheable(value = "enrolldata by id", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public EnrollData retrieveEnrollById(Long id) {
+        this.context.authenticatedUser();
+
+        final EnrollDataMapper rm = new EnrollDataMapper();
+        final String sql = "select " + rm.schema() + " from m_feenroll erl where erl.id = ? ";
+
+        return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { id });
     }
 
     @Override

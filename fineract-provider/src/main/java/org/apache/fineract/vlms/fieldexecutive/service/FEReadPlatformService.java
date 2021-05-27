@@ -37,6 +37,8 @@ public interface FEReadPlatformService {
 
     Collection<EnrollData> retrieveAllEnroll();
 
+    EnrollData retrieveEnrollById(Long id);
+
     Collection<EnrollData> retrieveAllEnrollByDate(String fromdateParam, String todateParam);
 
     Collection<DocumentsData> retrieveAllDocumentsType();
@@ -45,7 +47,7 @@ public interface FEReadPlatformService {
 
     Collection<TaskData> retrieveAllTask();
 
-    Collection<TaskData> retrieveAllCompletedTask();
+    Collection<TaskData> retrieveAllTaskStatus(final String taskStatus);
 
     Collection<FeCashInHandLimit> retrieveAllfeCashLimitData();
 

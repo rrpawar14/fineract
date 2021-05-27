@@ -347,4 +347,8 @@ public class Employee extends AbstractPersistableCustom {
         return actualChanges;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
 }

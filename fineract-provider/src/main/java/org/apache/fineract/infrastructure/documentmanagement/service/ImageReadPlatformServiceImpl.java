@@ -46,6 +46,8 @@ import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetailsRepository
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleLoan;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
+import org.apache.fineract.vlms.branchmodule.domain.Employee;
+import org.apache.fineract.vlms.branchmodule.domain.EmployeeRepositoryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -66,6 +68,7 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
     private final CustomerGuarantorRepositoryWrapper customerGuarantorRepositoryWrapper;
     private final NewVehicleLoanRepositoryWrapper newVehicleLoanRepositoryWrapper;
     private final VehicleDetailsRepositoryWrapper vehicleDetailsRepositoryWrapper;
+    private final EmployeeRepositoryWrapper employeeRepositoryWrapper;
 
     @Autowired
     public ImageReadPlatformServiceImpl(final RoutingDataSource dataSource, final ContentRepositoryFactory documentStoreFactory,
@@ -74,7 +77,8 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
             final CustomerDetailsRepositoryWrapper customerDetailsRepositoryWrapper,
             final VehicleDetailsRepositoryWrapper vehicleDetailsRepositoryWrapper,
             final CustomerGuarantorRepositoryWrapper customerGuarantorRepositoryWrapper,
-            final DocumentImageRepository documentImageRepository, final NewVehicleLoanRepositoryWrapper newVehicleLoanRepositoryWrapper) {
+            final DocumentImageRepository documentImageRepository, final NewVehicleLoanRepositoryWrapper newVehicleLoanRepositoryWrapper,
+            final EmployeeRepositoryWrapper employeeRepositoryWrapper) {
         this.staffRepositoryWrapper = staffRepositoryWrapper;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.contentRepositoryFactory = documentStoreFactory;
@@ -86,6 +90,7 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
         this.customerGuarantorRepositoryWrapper = customerGuarantorRepositoryWrapper;
         this.documentImageRepository = documentImageRepository;
         this.newVehicleLoanRepositoryWrapper = newVehicleLoanRepositoryWrapper;
+        this.employeeRepositoryWrapper = employeeRepositoryWrapper;
     }
 
     private static final class ImageMapper implements RowMapper<ImageData> {
@@ -225,6 +230,24 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
                         " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_bank_details bd "
                                 + " where bd.id = docim.bank_id and docim.entity_name = 'bank' and bd.id=? ");
             }
+
+            else if (EntityTypeForImages.EMPLOYEE_ADHAR.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_employee em "
+                                + " where em.id = docim.employee_id and docim.entity_name = 'employee_adhar' and em.id=? ");
+            }
+
+            else if (EntityTypeForImages.EMPLOYEE_PANCARD.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_employee em "
+                                + " where em.id = docim.employee_id and docim.entity_name = 'employee_pancard' and em.id=? ");
+            }
+
+            else if (EntityTypeForImages.EMPLOYEE_VEHICLE_LICENCE.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_employee em "
+                                + " where em.id = docim.employee_id and docim.entity_name = 'employee_vehicle_licence' and em.id=? ");
+            }
             return builder.toString();
         }
 
@@ -303,7 +326,14 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
             } else if (EntityTypeForImages.BANK.toString().equals(entityType)) {
                 BankDetails owner = this.bankDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
                 displayName = owner.getAccountHolderName();
-            } else {
+            } else if (EntityTypeForImages.EMPLOYEE_ADHAR.toString().equals(entityType)
+                    || EntityTypeForImages.EMPLOYEE_PANCARD.toString().equals(entityType)
+                    || EntityTypeForImages.EMPLOYEE_VEHICLE_LICENCE.toString().equals(entityType)) {
+                Employee owner = this.employeeRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = owner.getName();
+            }
+
+            else {
                 displayName = "UnknownEntityType:" + entityType;
             }
             System.out.println("displayName: " + displayName);

@@ -226,7 +226,8 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             documentImage.setFeEnrollId(null);
 
         } else if (EntityTypeForImages.EMPLOYEE_ADHAR.toString().equals(entityName)
-                || EntityTypeForImages.EMPLOYEE_PANCARD.toString().equals(entityName)) {
+                || EntityTypeForImages.EMPLOYEE_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.EMPLOYEE_VEHICLE_LICENCE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
             System.out.println("-- GovernmentDocument--");
 
@@ -391,7 +392,8 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
         }
 
         if (EntityTypeForImages.EMPLOYEE_ADHAR.toString().equals(entityName)
-                || EntityTypeForImages.EMPLOYEE_PANCARD.toString().equals(entityName)) {
+                || EntityTypeForImages.EMPLOYEE_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.EMPLOYEE_VEHICLE_LICENCE.toString().equals(entityName)) {
             // if (EntityTypeForImages.NEWVEHICLE.toString().equals(entityName)) {
             System.out.println("--EMPLOYEE--");
             Employee employee = this.employeeRepositoryWrapper.findOneWithNotFoundDetection(entityId);
