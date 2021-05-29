@@ -116,6 +116,28 @@ public class EmployeeApiResource {
         return this.toApiEmployeeJsonSerializer.serialize(settings, employeeData, RESPONSE_DATA_PARAMETERS);
     }
 
+    @GET
+    @Path("getEmployees/{employeeId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Enquires", description = "Returns the list of Enquries.\n" + "\n" + "Example Requests:\n" + "\n"
+            + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveEmployee(@Context final UriInfo uriInfo,
+            @PathParam("employeeId") @Parameter(description = "employeeId") final Long employeeId) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final EmployeeData employeeData = this.branchModuleReadPlatformService.retrieveEmployeeById(employeeId);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiEmployeeJsonSerializer.serialize(settings, employeeData, RESPONSE_DATA_PARAMETERS);
+    }
+
     @POST
     @Path("createEmployee")
     @Operation(summary = "Create a User Loan Enquiry", description = "Removes the user and the associated roles and permissions.")

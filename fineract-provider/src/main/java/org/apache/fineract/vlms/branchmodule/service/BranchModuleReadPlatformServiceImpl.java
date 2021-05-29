@@ -58,7 +58,7 @@ public class BranchModuleReadPlatformServiceImpl implements BranchModuleReadPlat
                     + " emp.alternatenumber as alternateNumber, emp.officialnumber as officialNumber, emp.dob as dob, emp.gender as gender, emp.age as age,"
                     + " emp.maritalstatus as maritalstatus, emp.designation as designation, emp.spousename as spouseName, emp.bloodgroup as bloodgroup,"
                     + " emp.fathername as fathername, emp.vehiclenumber as vehiclenumber, emp.vehicleType as vehicleType,"
-                    + " emp.doj as doj, emp.agtnumber as agtnumber, "
+                    + " emp.doj as doj, emp.agtnumber as agtnumber, emp.status as status, "
 
                     + " commadd.id as commaddId, commadd.address_line_1 as commAddressLine1, commadd.address_line_2 as commAddressLine2, commadd.city as comcity, "
                     + " commadd.postal_code as comPostalCode, commadd.landmark as comlandmark, commadd.area as comarea, commadd.state as comstate, "
@@ -88,7 +88,7 @@ public class BranchModuleReadPlatformServiceImpl implements BranchModuleReadPlat
                     + " left join m_education_qualification sc on emp.schoolqualification_id = sc.id "
                     + " left join m_education_qualification cl on emp.collegequalification_id = cl.id "
                     + " left join m_education_qualification gd on emp.graduatequalification_id = gd.id "
-                    + " left join m_education_qualification pg on emp.postgraduatequalification_id = pg.id;";
+                    + " left join m_education_qualification pg on emp.postgraduatequalification_id = pg.id ";
         }
 
         @Override
@@ -117,6 +117,7 @@ public class BranchModuleReadPlatformServiceImpl implements BranchModuleReadPlat
             final LocalDate doj = JdbcSupport.getLocalDate(rs, "doj");
 
             final String agtnumber = rs.getString("agtnumber");
+            final String status = rs.getString("status");
 
             final Long commaddId = rs.getLong("commaddId");
             final String commAddressLine1 = rs.getString("commAddressLine1");
@@ -207,7 +208,7 @@ public class BranchModuleReadPlatformServiceImpl implements BranchModuleReadPlat
                     pgPercentage, pgPassingYear);
 
             return EmployeeData.instance(empId, empName, calledName, surName, mobileNumber, alternateNumber, officialNumber, dob, gender,
-                    age, maritalstatus, designation, spouseName, bloodgroup, fathername, vehiclenumber, vehicleType, doj, agtnumber,
+                    age, maritalstatus, designation, spouseName, bloodgroup, fathername, vehiclenumber, vehicleType, doj, agtnumber, status,
                     communicationAddressData, permanentAddressData, bankDetailsData, genInsuranceDetailsData, accInsuranceDetailsData,
                     scEducationQualificationData, clEducationQualificationData, gdEducationQualificationData, pgEducationQualificationData);
 
@@ -220,9 +221,20 @@ public class BranchModuleReadPlatformServiceImpl implements BranchModuleReadPlat
         this.context.authenticatedUser();
 
         final EmployeeMapper rm = new EmployeeMapper();
-        final String sql = "select " + rm.schema() + "from m_employee emp " + rm.schemaJoin();
+        final String sql = "select " + rm.schema() + "from m_employee emp " + rm.schemaJoin() + " ; ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
+    @Override
+    @Cacheable(value = "EmployeeData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public EmployeeData retrieveEmployeeById(Long employeeId) {
+        this.context.authenticatedUser();
+
+        final EmployeeMapper rm = new EmployeeMapper();
+        final String sql = "select " + rm.schema() + " from m_employee emp " + rm.schemaJoin() + " where emp.id = ? ";
+
+        return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { employeeId });
     }
 
     private static final class LoanApprovalLimitMapper implements RowMapper<LoanApprovalLimitData> {

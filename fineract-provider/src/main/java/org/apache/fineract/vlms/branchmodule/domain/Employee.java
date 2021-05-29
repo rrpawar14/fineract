@@ -92,6 +92,9 @@ public class Employee extends AbstractPersistableCustom {
     @Column(name = "agtnumber")
     private String agtnumber;
 
+    @Column(name = "status")
+    private String status;
+
     @OneToOne(optional = true)
     @JoinColumn(name = "communicationadd_id", nullable = true)
     private Address communicationAdd;
@@ -151,11 +154,12 @@ public class Employee extends AbstractPersistableCustom {
         final String vehicleType = command.stringValueOfParameterNamed("vehicleType");
         final Date doj = command.dateValueOfParameterNamed("doj");
         final String agtnumber = command.stringValueOfParameterNamed("agtnumber");
+        final String status = command.stringValueOfParameterNamed("status");
 
         return new Employee(name, calledName, surName, mobileNumber, altNumber, officialNumber, dob, gender, age, maritalStatus,
-                designation, spousename, bloodGroup, fatherName, vehicleNumber, vehicleType, doj, agtnumber, customerCommunicationAdd,
-                customerPermanentAdd, bankDetails, insuranceDetails, accidentalInsuranceDetails, schoolQualification, collegeQualification,
-                graduateQualification, postgraduateQualification);
+                designation, spousename, bloodGroup, fatherName, vehicleNumber, vehicleType, doj, agtnumber, status,
+                customerCommunicationAdd, customerPermanentAdd, bankDetails, insuranceDetails, accidentalInsuranceDetails,
+                schoolQualification, collegeQualification, graduateQualification, postgraduateQualification);
 
     }
 
@@ -164,7 +168,7 @@ public class Employee extends AbstractPersistableCustom {
     private Employee(final String name, final String calledName, final String surName, final String mobileNumber, final String altNumber,
             final String officialNumber, final Date dob, final String gender, final Integer age, final String maritalStatus,
             final String designation, final String spousename, final String bloodGroup, final String fatherName, final String vehicleNumber,
-            final String vehicleType, final Date doj, final String agtnumber, final Address customerCommunicationAdd,
+            final String vehicleType, final Date doj, final String agtnumber, final String status, final Address customerCommunicationAdd,
             final Address customerPermanentAdd, final BankDetails bankDetails, final InsuranceDetails insuranceDetails,
             final InsuranceDetails accidentalInsuranceDetails, final EducationQualification schoolQualification,
             final EducationQualification collegeQualification, final EducationQualification graduateQualification,
@@ -187,6 +191,7 @@ public class Employee extends AbstractPersistableCustom {
         this.vehicleType = vehicleType;
         this.doj = doj;
         this.agtnumber = agtnumber;
+        this.status = status;
         this.communicationAdd = customerCommunicationAdd;
         this.permanentAdd = customerPermanentAdd;
         this.bankDetails = bankDetails;
@@ -345,6 +350,13 @@ public class Employee extends AbstractPersistableCustom {
             final String newValue = command.stringValueOfParameterNamed(agtnumberParamName);
             actualChanges.put(agtnumberParamName, newValue);
             this.agtnumber = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String statusParamName = "status";
+        if (command.isChangeInStringParameterNamed(statusParamName, this.status)) {
+            final String newValue = command.stringValueOfParameterNamed(statusParamName);
+            actualChanges.put(statusParamName, newValue);
+            this.status = StringUtils.defaultIfEmpty(newValue, null);
         }
 
         return actualChanges;

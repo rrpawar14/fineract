@@ -67,6 +67,8 @@ public class EmployeeData {
 
     private String agtnumber;
 
+    private String status;
+
     private AddressData communicationAdd;
 
     private AddressData permanentAdd;
@@ -89,22 +91,22 @@ public class EmployeeData {
             final String mobileNumber, final String altNumber, final String officialNumber, final LocalDate dob, final String gender,
             final Long age, final String maritalStatus, final String designation, final String spousename, final String bloodGroup,
             final String fatherName, final String vehicleNumber, final String vehicleType, final LocalDate doj, final String agtnumber,
-            final AddressData communicationAdd, final AddressData permanentAdd, final BankDetailsData bankDetails,
+            final String status, final AddressData communicationAdd, final AddressData permanentAdd, final BankDetailsData bankDetails,
             final InsuranceDetailsData insuranceDetails, final InsuranceDetailsData accidentalInsuranceDetails,
             final EducationQualificationData schoolQualification, final EducationQualificationData collegeQualification,
             final EducationQualificationData graduateQualification, final EducationQualificationData postgraduateQualification) {
 
         return new EmployeeData(id, name, calledName, surName, mobileNumber, altNumber, officialNumber, dob, gender, age, maritalStatus,
-                designation, spousename, bloodGroup, fatherName, vehicleNumber, vehicleType, doj, agtnumber, communicationAdd, permanentAdd,
-                bankDetails, insuranceDetails, accidentalInsuranceDetails, schoolQualification, collegeQualification, graduateQualification,
-                postgraduateQualification);
+                designation, spousename, bloodGroup, fatherName, vehicleNumber, vehicleType, doj, agtnumber, status, communicationAdd,
+                permanentAdd, bankDetails, insuranceDetails, accidentalInsuranceDetails, schoolQualification, collegeQualification,
+                graduateQualification, postgraduateQualification);
 
     }
 
     private EmployeeData(final Long id, final String name, final String calledName, final String surName, final String mobileNumber,
             final String altNumber, final String officialNumber, final LocalDate dob, final String gender, final Long age,
             final String maritalStatus, final String designation, final String spousename, final String bloodGroup, final String fatherName,
-            final String vehicleNumber, final String vehicleType, final LocalDate doj, final String agtnumber,
+            final String vehicleNumber, final String vehicleType, final LocalDate doj, final String agtnumber, final String status,
             final AddressData communicationAdd, final AddressData permanentAdd, final BankDetailsData bankDetails,
             final InsuranceDetailsData insuranceDetails, final InsuranceDetailsData accidentalInsuranceDetails,
             final EducationQualificationData schoolQualification, final EducationQualificationData collegeQualification,
@@ -128,6 +130,7 @@ public class EmployeeData {
         this.vehicleType = vehicleType;
         this.doj = doj;
         this.agtnumber = agtnumber;
+        this.status = status;
         this.communicationAdd = communicationAdd;
         this.permanentAdd = permanentAdd;
         this.bankDetails = bankDetails;

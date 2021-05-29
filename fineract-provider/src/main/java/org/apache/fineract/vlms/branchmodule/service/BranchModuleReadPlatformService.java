@@ -28,6 +28,8 @@ public interface BranchModuleReadPlatformService {
 
     Collection<EmployeeData> retrieveAllEmployee();
 
+    EmployeeData retrieveEmployeeById(final Long employeeId);
+
     Collection<LoanApprovalLimitData> retrieveAllLoanApproval();
 
     Collection<LoanDisbursalLimitData> retrieveAllLoanDisbursal();

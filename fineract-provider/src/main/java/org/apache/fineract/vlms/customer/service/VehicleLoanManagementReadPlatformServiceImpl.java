@@ -462,7 +462,7 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
             final VehicleLoanMapper rm = new VehicleLoanMapper();
             final String sql = "select au.id as id, au.customer_id as customerId, " + rm.schema()
                     + " from  m_apply_vehicle_loan cnv left join m_appuser au  on cnv.customer_id = au.customer_id " + rm.schemaJoin()
-                    + " where cnv.customer_id=? order by cnv.customer_name";
+                    + " where cnv.customer_id=? order by cnv.created_date DESC ";
 
             return this.jdbcTemplate.query(sql, rm, new Object[] { userId });
         } catch (final EmptyResultDataAccessException e) {

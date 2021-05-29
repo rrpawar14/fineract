@@ -18,6 +18,9 @@
  */
 package org.apache.fineract.portfolio.loanaccount.domain;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -44,24 +47,8 @@ public class VehicleLoan extends AbstractPersistableCustom {
     @Column(name = "invoice_number", nullable = true, length = 100)
     private String invoiceNumber;
 
-    /*
-     * @OneToOne(optional = true)
-     *
-     * @JoinColumn(name = "invoice_image_id", nullable = true) private DocumentImages image;
-     *
-     *
-     * @ManyToOne private Address address;
-     */
-
-    /*
-     * @ManyToOne private CustomerDetails customerDetails;
-     *
-     * @ManyToOne private VehicleDetails vehicleDetails;
-     *
-     * @ManyToOne private CustomerGuarantor customerGuarantor;
-     *
-     * @ManyToOne private BankDetails bankDetails;
-     */
+    @Column(name = "created_date", nullable = true, length = 100)
+    private Date createdDate;
 
     @OneToOne(optional = true)
     @JoinColumn(name = "customerdetails_id", nullable = true)
@@ -97,22 +84,26 @@ public class VehicleLoan extends AbstractPersistableCustom {
         final String vehicleType = command.stringValueOfParameterNamed("vehicleType");
         final String dealer = command.stringValueOfParameterNamed("dealer");
         final String invoiceNumber = command.stringValueOfParameterNamed("invoiceNumber");
-        final String vehicleCondition = command.stringValueOfParameterNamed("vehicleCondition");//
+        final String vehicleCondition = command.stringValueOfParameterNamed("vehicleCondition");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Date createdDate = new Date();
 
         // final Integer image = command.stringValueOfParameterNamed("invoiceImageId");
 
-        return new VehicleLoan(customerName, vehicleType, dealer, invoiceNumber, customerDetails, vehicleDetails, customerGuarantor,
-                loanDetails, bankDetails, appuser);
+        return new VehicleLoan(customerName, vehicleType, dealer, invoiceNumber, createdDate, customerDetails, vehicleDetails,
+                customerGuarantor, loanDetails, bankDetails, appuser);
 
     }
 
     private VehicleLoan(final String customerName, final String vehicleType, final String dealer, final String invoiceNumber,
-            final CustomerDetails customerDetails, final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor,
-            final FELoanDetails loanDetails, final BankDetails bankDetails, final AppUser appuser) {
+            final Date createdDate, final CustomerDetails customerDetails, final VehicleDetails vehicleDetails,
+            final CustomerGuarantor customerGuarantor, final FELoanDetails loanDetails, final BankDetails bankDetails,
+            final AppUser appuser) {
         this.customerName = customerName;
         this.vehicleType = vehicleType;
         this.dealer = dealer;
         this.invoiceNumber = invoiceNumber;
+        this.createdDate = createdDate;
         this.customerDetails = customerDetails;
         this.vehicleDetails = vehicleDetails;
         this.customerGuarantor = customerGuarantor;
