@@ -97,6 +97,28 @@ public class CustomerLoansApiResource {
     }
 
     @GET
+    @Path("address")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve All Vehicle Loan Data", description = "Returns the list of Vehicle Loan Data.\n" + "\n"
+            + "Example Requests:\n" + "\n" + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveAddressData(@Context final UriInfo uriInfo,
+            @PathParam("encrypytedData") @Parameter(description = "encrypytedData") final String encrypytedData) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final AadharData aadharData = AadharDecodingReadPlatformServiceImpl.fetchAdharDetails(encrypytedData);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toAadharDataApiJsonSerializer.serialize(settings, aadharData, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
     @Path("aadharscanner/{encrypytedData}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })

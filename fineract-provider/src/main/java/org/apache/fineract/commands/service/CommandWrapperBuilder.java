@@ -1116,6 +1116,24 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createHLPayment() {
+        this.actionName = "CREATE";
+        this.entityName = "HLPAYMENT";
+        this.entityId = null;
+        this.loanId = null;
+        this.href = "/vlms/hlpayment";
+        return this;
+    }
+
+    public CommandWrapperBuilder createVoucher() {
+        this.actionName = "CREATE";
+        this.entityName = "VOUCHER";
+        this.entityId = null;
+        this.loanId = null;
+        this.href = "/vlms/voucher";
+        return this;
+    }
+
     public CommandWrapperBuilder deleteFETask(Long taskId) {
         this.actionName = "DELETE";
         this.entityName = "FETASK";

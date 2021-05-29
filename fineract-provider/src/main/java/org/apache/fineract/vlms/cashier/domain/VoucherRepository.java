@@ -16,19 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.vlms.cashier.service;
+package org.apache.fineract.vlms.cashier.domain;
 
-import java.util.Collection;
-import org.apache.fineract.vlms.cashier.data.CashierAnalyticsAllData;
-import org.apache.fineract.vlms.cashier.data.HLPaymentData;
-import org.apache.fineract.vlms.cashier.data.VoucherData;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface CashierModuleReadPlatformService {
-
-    Collection<CashierAnalyticsAllData> retrieveAllCashierAnalyticsData();
-
-    Collection<HLPaymentData> retrieveAllHLPaymentData();
-
-    Collection<VoucherData> retrieveAllVoucherData();
+public interface VoucherRepository extends JpaRepository<Voucher, Long>, JpaSpecificationExecutor<Voucher> {
 
 }

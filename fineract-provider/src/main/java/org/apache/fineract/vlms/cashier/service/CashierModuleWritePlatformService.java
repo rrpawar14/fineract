@@ -18,17 +18,13 @@
  */
 package org.apache.fineract.vlms.cashier.service;
 
-import java.util.Collection;
-import org.apache.fineract.vlms.cashier.data.CashierAnalyticsAllData;
-import org.apache.fineract.vlms.cashier.data.HLPaymentData;
-import org.apache.fineract.vlms.cashier.data.VoucherData;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
-public interface CashierModuleReadPlatformService {
+public interface CashierModuleWritePlatformService {
 
-    Collection<CashierAnalyticsAllData> retrieveAllCashierAnalyticsData();
+    CommandProcessingResult createHLPayment(JsonCommand command);
 
-    Collection<HLPaymentData> retrieveAllHLPaymentData();
-
-    Collection<VoucherData> retrieveAllVoucherData();
+    CommandProcessingResult createVoucher(JsonCommand command);
 
 }

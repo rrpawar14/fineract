@@ -18,12 +18,17 @@
  */
 package org.apache.fineract.vlms.cashier.service;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Collection;
+import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.vlms.cashier.data.CashierAnalyticsAllData;
+import org.apache.fineract.vlms.cashier.data.HLPaymentData;
+import org.apache.fineract.vlms.cashier.data.VoucherData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -76,6 +81,78 @@ public class CashierReadPlatformServiceImpl implements CashierModuleReadPlatform
         }
     }
 
+    private static final class HLPaymentAllDataMapper implements RowMapper<HLPaymentData> {
+
+        public String schema() {
+            return " hl.id as id, hl.agtno as AGTNO, hl.customerName as customerName,"
+                    + " hl.actualAmount as actualAmount, hl.postAmount as postAmount, hl.postDate as postDate,"
+                    + " hl.postType as postType, hl.agent as agent, hl.expiryDate as expiryDate,"
+                    + " hl.policyNo as policyNo, hl.insuranceCompany as insuranceCompany,  hl.remark as remark ";
+        }
+
+        @Override
+        public HLPaymentData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+
+            final String AGTNO = rs.getString("AGTNO");
+
+            final String customerName = rs.getString("customerName");
+
+            final BigDecimal actualAmount = rs.getBigDecimal("actualAmount");
+
+            final BigDecimal postAmount = rs.getBigDecimal("postAmount");
+
+            final LocalDate postDate = JdbcSupport.getLocalDate(rs, "postDate");
+
+            final String postType = rs.getString("postType");
+
+            final String agent = rs.getString("agent");
+
+            final LocalDate expiryDate = JdbcSupport.getLocalDate(rs, "expiryDate");
+
+            final String policyNo = rs.getString("policyNo");
+
+            final String insuranceCompany = rs.getString("insuranceCompany");
+
+            final String remark = rs.getString("remark");
+
+            return HLPaymentData.instance(id, AGTNO, customerName, actualAmount, postAmount, postDate, postType, agent, expiryDate,
+                    policyNo, insuranceCompany, remark);
+        }
+    }
+
+    private static final class VoucherDataMapper implements RowMapper<VoucherData> {
+
+        public String schema() {
+            return " v.id as id, v.created_date as createdDate, v.particulars as particulars,"
+                    + " v.voucher_type as voucherType, v.voucher_number as voucherNumber, v.credit as credit,"
+                    + " v.debit as debit, v.remarks as remarks ";
+        }
+
+        @Override
+        public VoucherData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+
+            final LocalDate createdDate = JdbcSupport.getLocalDate(rs, "createdDate");
+
+            final String particulars = rs.getString("particulars");
+
+            final String voucherType = rs.getString("voucherType");
+
+            final String voucherNumber = rs.getString("voucherNumber");
+
+            final BigDecimal credit = rs.getBigDecimal("credit");
+
+            final BigDecimal debit = rs.getBigDecimal("debit");
+
+            final String remarks = rs.getString("remarks");
+
+            return VoucherData.instance(id, createdDate, particulars, voucherType, voucherNumber, credit, debit, remarks);
+        }
+    }
+
     @Override
     @Cacheable(value = "CashierAnalyticsAllData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
     public Collection<CashierAnalyticsAllData> retrieveAllCashierAnalyticsData() {
@@ -83,6 +160,28 @@ public class CashierReadPlatformServiceImpl implements CashierModuleReadPlatform
 
         final CashierAnalyticsAllDataMapper rm = new CashierAnalyticsAllDataMapper();
         final String sql = "select " + rm.schema() + " from m_branchAnalytics_dummy_data ba ";
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
+    @Override
+    @Cacheable(value = "HLPaymentData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<HLPaymentData> retrieveAllHLPaymentData() {
+        this.context.authenticatedUser();
+
+        final HLPaymentAllDataMapper rm = new HLPaymentAllDataMapper();
+        final String sql = "select " + rm.schema() + " from m_hl_payment hl ";
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
+    @Override
+    @Cacheable(value = "HLPaymentData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<VoucherData> retrieveAllVoucherData() {
+        this.context.authenticatedUser();
+
+        final VoucherDataMapper rm = new VoucherDataMapper();
+        final String sql = "select " + rm.schema() + " from m_voucher v ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
     }
