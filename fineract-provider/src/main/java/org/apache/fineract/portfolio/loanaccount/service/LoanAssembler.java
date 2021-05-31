@@ -267,14 +267,14 @@ public class LoanAssembler {
          * collateral, syncDisbursementWithMeeting, fixedEmiAmount, disbursementDetails, maxOutstandingLoanBalance,
          * createStandingInstructionAtDisbursement, isFloatingInterestRate, interestRateDifferential, rates);
          *
-         * } else
-         */if (client != null) {
-            loanApplication = Loan.newIndividualLoanApplication(accountNo, client, loanType.getId().intValue(), loanProduct, fund,
-                    loanOfficer, loanPurpose, loanTransactionProcessingStrategy, loanProductRelatedDetail, loanCharges, collateral,
-                    fixedEmiAmount, disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement,
-                    isFloatingInterestRate, interestRateDifferential, rates);
+         * } else if (client != null) {
+         */
+        loanApplication = Loan.newIndividualLoanApplication(accountNo, client, loanType.getId().intValue(), loanProduct, fund, loanOfficer,
+                loanPurpose, loanTransactionProcessingStrategy, loanProductRelatedDetail, loanCharges, collateral, fixedEmiAmount,
+                disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement, isFloatingInterestRate,
+                interestRateDifferential, rates);
 
-        }
+        // }
         /*
          *
          *

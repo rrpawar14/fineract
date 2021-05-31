@@ -51,7 +51,7 @@ public class VehicleLoan extends AbstractPersistableCustom {
     @Column(name = "created_date", nullable = true, length = 100)
     private Date createdDate;
 
-    @OneToOne(optional = true , fetch = FetchType.LAZY)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "customerdetails_id", nullable = true)
     private CustomerDetails customerDetails;
 
@@ -98,8 +98,7 @@ public class VehicleLoan extends AbstractPersistableCustom {
 
     private VehicleLoan(final String customerName, final String vehicleType, final String dealer, final String invoiceNumber,
             final Date createdDate, final CustomerDetails customerDetails, final VehicleDetails vehicleDetails,
-            final CustomerGuarantor customerGuarantor, final FELoanDetails loanDetails, final BankDetails bankDetails,
-            final AppUser appuser) {
+            final CustomerGuarantor customerGuarantor, final Loan loanDetails, final BankDetails bankDetails, final AppUser appuser) {
         this.customerName = customerName;
         this.vehicleType = vehicleType;
         this.dealer = dealer;

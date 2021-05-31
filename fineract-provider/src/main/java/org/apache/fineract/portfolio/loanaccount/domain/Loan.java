@@ -4243,7 +4243,7 @@ public class Loan extends AbstractPersistableCustom {
         Long officeId = null;
         if (this.client != null) {
             officeId = this.client.officeId();
-        } else {
+        } else if (this.group != null) {
             officeId = this.group.officeId();
         }
         return officeId;
