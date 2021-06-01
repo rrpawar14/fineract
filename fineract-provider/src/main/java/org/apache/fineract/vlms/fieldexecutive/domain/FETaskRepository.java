@@ -21,6 +21,6 @@ package org.apache.fineract.vlms.fieldexecutive.domain;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface FETaskRepository extends JpaRepository<FETask, Long>, JpaSpecificationExecutor<FETask> {
+public interface FETaskRepository extends JpaRepository<Task, Long>, JpaSpecificationExecutor<Task> {
 
 }

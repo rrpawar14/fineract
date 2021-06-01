@@ -34,7 +34,7 @@ import org.apache.fineract.infrastructure.core.service.DateUtils;
 
 @Entity
 @Table(name = "m_fe_task")
-public class FETask extends AbstractPersistableCustom {
+public class Task extends AbstractPersistableCustom {
 
     @Column(name = "taskType", nullable = false, length = 100)
     private String taskType;
@@ -63,7 +63,7 @@ public class FETask extends AbstractPersistableCustom {
     @Column(name = "created_date", nullable = false, length = 100)
     private Date createdDate;
 
-    public static FETask fromJson(final JsonCommand command) {
+    public static Task fromJson(final JsonCommand command) {
 
         final String taskType = command.stringValueOfParameterNamed("taskType");
         final String customerRegNo = command.stringValueOfParameterNamed("customerRegNo");
@@ -76,13 +76,13 @@ public class FETask extends AbstractPersistableCustom {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Date createdDate = new Date();
 
-        return new FETask(taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, description, status, createdDate);
+        return new Task(taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, description, status, createdDate);
 
     }
 
-    public FETask() {}
+    public Task() {}
 
-    private FETask(final String taskType, final String customerRegNo, final String customerMobileNo, final String vehicleNumber,
+    private Task(final String taskType, final String customerRegNo, final String customerMobileNo, final String vehicleNumber,
             final Date dueDate, final String assignTo, final String description, final String status, final Date createdDate) {
         this.taskType = taskType;
         this.customerRegNo = customerRegNo;

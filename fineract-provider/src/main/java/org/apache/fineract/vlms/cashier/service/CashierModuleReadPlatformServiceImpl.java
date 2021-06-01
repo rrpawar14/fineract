@@ -29,6 +29,7 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.vlms.cashier.data.CashierAnalyticsAllData;
 import org.apache.fineract.vlms.cashier.data.HLPaymentData;
 import org.apache.fineract.vlms.cashier.data.VoucherData;
+import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -36,13 +37,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CashierReadPlatformServiceImpl implements CashierModuleReadPlatformService {
+public class CashierModuleReadPlatformServiceImpl implements CashierModuleReadPlatformService {
 
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
 
     @Autowired
-    public CashierReadPlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource) {
+    public CashierModuleReadPlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource) {
         this.context = context;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
@@ -153,6 +154,34 @@ public class CashierReadPlatformServiceImpl implements CashierModuleReadPlatform
         }
     }
 
+    private static final class TaskDataMapper implements RowMapper<TaskData> {
+
+        public String schema() {
+            return " task.id as id, task.taskType as taskType, task.customer_mobile_no as customerMobileNo, task.customer_reg_no as customerRegNo, task.vehicle_number as vehicleNumber, "
+                    + " task.due_date as dueDate, task.assign_to as assignTo, task.assign_by as assignBy, task.description as description, task.status as status, task.created_date as createdDate ";
+
+        }
+
+        @Override
+        public TaskData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final String taskType = rs.getString("taskType");
+            final String customerRegNo = rs.getString("customerRegNo");
+            final String customerMobileNo = rs.getString("customerMobileNo");
+            final String vehicleNumber = rs.getString("vehicleNumber");
+            final LocalDate dueDate = JdbcSupport.getLocalDate(rs, "dueDate");
+            final String assignTo = rs.getString("assignTo");
+            final String assignBy = rs.getString("assignBy");
+            final String description = rs.getString("description");
+            final String status = rs.getString("status");
+            final LocalDate createdDate = JdbcSupport.getLocalDate(rs, "createdDate");
+
+            return TaskData.instance(id, taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, assignBy, description,
+                    status, createdDate);
+        }
+    }
+
     @Override
     @Cacheable(value = "CashierAnalyticsAllData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
     public Collection<CashierAnalyticsAllData> retrieveAllCashierAnalyticsData() {
@@ -182,6 +211,17 @@ public class CashierReadPlatformServiceImpl implements CashierModuleReadPlatform
 
         final VoucherDataMapper rm = new VoucherDataMapper();
         final String sql = "select " + rm.schema() + " from m_voucher v ";
+
+        return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
+    @Override
+    @Cacheable(value = "taskdata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<TaskData> retrieveAllCashierTaskData() {
+        this.context.authenticatedUser();
+
+        final TaskDataMapper rm = new TaskDataMapper();
+        final String sql = "select " + rm.schema() + " from m_cashier_task task ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
     }

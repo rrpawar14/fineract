@@ -46,6 +46,7 @@ import org.apache.fineract.vlms.cashier.data.CashierAnalyticsAllData;
 import org.apache.fineract.vlms.cashier.data.HLPaymentData;
 import org.apache.fineract.vlms.cashier.data.VoucherData;
 import org.apache.fineract.vlms.cashier.service.CashierModuleReadPlatformService;
+import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -62,6 +63,7 @@ public class CashierModuleApiResource {
     private final DefaultToApiJsonSerializer<VoucherData> toApiVoucherJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
+    private final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer;
     private static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList("cashier"));
     private final String resourceNameForPermissions = "CASHIER";
 
@@ -72,7 +74,8 @@ public class CashierModuleApiResource {
             final DefaultToApiJsonSerializer<HLPaymentData> toApiHLPaymentAnalyticsJsonSerializer,
             final DefaultToApiJsonSerializer<VoucherData> toApiVoucherJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
-            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
+            final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer) {
         this.context = context;
         this.cashierModuleReadPlatformService = cashierModuleReadPlatformService;
         this.toApiCashierAnalyticsJsonSerializer = toApiCashierAnalyticsJsonSerializer;
@@ -80,6 +83,7 @@ public class CashierModuleApiResource {
         this.toApiVoucherJsonSerializer = toApiVoucherJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
+        this.toApiTaskJsonSerializer = toApiTaskJsonSerializer;
     }
 
     @GET
@@ -183,6 +187,27 @@ public class CashierModuleApiResource {
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
         return this.toApiVoucherJsonSerializer.serialize(result);
+    }
+
+    @GET
+    @Path("getCashierTaskData")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Cashier Data", description = "Returns the Data of Cashier DashBoard.\n" + "\n" + "Example Requests:\n"
+            + "\n" + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveCashierTaskData(@Context final UriInfo uriInfo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final Collection<TaskData> taskData = this.cashierModuleReadPlatformService.retrieveAllCashierTaskData();
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiTaskJsonSerializer.serialize(settings, taskData, RESPONSE_DATA_PARAMETERS);
     }
 
 }

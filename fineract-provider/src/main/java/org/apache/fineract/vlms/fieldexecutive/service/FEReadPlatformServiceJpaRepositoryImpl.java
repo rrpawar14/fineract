@@ -92,8 +92,8 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
             final String status = rs.getString("status");
             final LocalDate createdDate = JdbcSupport.getLocalDate(rs, "createdDate");
 
-            return TaskData.instance(id, taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, description, status,
-                    createdDate);
+            return TaskData.instance(id, taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, null, description,
+                    status, createdDate);
         }
     }
 
@@ -174,7 +174,7 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
     }
 
     @Override
-    @Cacheable(value = "taskdata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    @Cacheable(value = "Enquirydata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
     public Collection<EnquiryData> retrieveAllEnquires() {
         this.context.authenticatedUser();
 
@@ -185,7 +185,7 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
     }
 
     @Override
-    @Cacheable(value = "enquiryData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    @Cacheable(value = "Enquirydata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
     public EnquiryData retrieveEnquiry(Long id) {
         this.context.authenticatedUser();
 
@@ -196,7 +196,7 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
     }
 
     @Override
-    @Cacheable(value = "taskdata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    @Cacheable(value = "Enquirydata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
     public Collection<EnquiryData> retrieveAllEnquiresByDate(String fromdateParam, String todateParam) {
         this.context.authenticatedUser();
 
@@ -207,7 +207,7 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
     }
 
     @Override
-    @Cacheable(value = "taskdata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    @Cacheable(value = "Enquirydata", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
     public Collection<EnquiryData> retrieveAllEnquiresByMobileNumber(String mobileNo) {
         this.context.authenticatedUser();
 

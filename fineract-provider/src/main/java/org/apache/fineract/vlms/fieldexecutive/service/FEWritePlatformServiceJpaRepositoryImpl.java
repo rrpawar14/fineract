@@ -41,7 +41,6 @@ import org.apache.fineract.vlms.fieldexecutive.domain.FEEnroll;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnrollRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetailsRepository;
-import org.apache.fineract.vlms.fieldexecutive.domain.FETask;
 import org.apache.fineract.vlms.fieldexecutive.domain.FETaskRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FETransferDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.FETransferDetailsRepository;
@@ -56,6 +55,7 @@ import org.apache.fineract.vlms.fieldexecutive.domain.LoanChangeRequest;
 import org.apache.fineract.vlms.fieldexecutive.domain.LoanChangeRequestRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.NewLoan;
 import org.apache.fineract.vlms.fieldexecutive.domain.NewLoanRepository;
+import org.apache.fineract.vlms.fieldexecutive.domain.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -265,7 +265,7 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
 
             // this.fromApiJsonDeserializer.validateForCreate(command.json());
 
-            final FETask feTask = FETask.fromJson(command);
+            final Task feTask = Task.fromJson(command);
             this.feTaskRepository.save(feTask);
 
             return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(feTask.getId()).build();
@@ -295,7 +295,7 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
              * final Code code = retrieveCodeBy(codeId); final Map<String, Object> changes = code.update(command);
              */
 
-            final FETask feTask = retrieveTaskBy(taskId);
+            final Task feTask = retrieveTaskBy(taskId);
             final Map<String, Object> changes = feTask.update(command);
 
             if (!changes.isEmpty()) {
@@ -406,7 +406,7 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
 
     }
 
-    private FETask retrieveTaskBy(final Long taskId) {
+    private Task retrieveTaskBy(final Long taskId) {
         return this.feTaskRepository.findById(taskId).orElseThrow(() -> new CodeNotFoundException(taskId.toString()));
     }
 
@@ -423,7 +423,7 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
 
         // this.fromApiJsonDeserializer.validateForCreate(command.json());
 
-        final FETask feTask = retrieveTaskBy(taskId);
+        final Task feTask = retrieveTaskBy(taskId);
 
         try {
             this.feTaskRepository.delete(feTask);
