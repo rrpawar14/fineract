@@ -187,23 +187,30 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             final BankDetails bankDetailsObj = this.bankDetailsRepository.getOne(bankDetailsId);
             System.out.println("bankDetailsObj" + bankDetailsObj);
 
-            // final Loan loanDetails = Loan.fromJson(command);
             final Long userId = command.longValueOfParameterNamed("userId");
-            final AppUser appuser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
-            final Loan loanDetails = this.loanAssembler.assembleFrom(command, appuser);
-            this.loanRepositoryWrapper.save(loanDetails);
-            System.out.println("loanDetails" + loanDetails);
-            System.out.println("loanDetailsID" + loanDetails.getId());
-            // this.feLoanDetailsRepository.save(loanDetails);
-
-            final AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.LOAN);
-
-            String accountNumber = this.accountNumberGenerator.generate(loanDetails, accountNumberFormat);
-            loanDetails.updateAccountNo(accountNumber + "1");
-
+            AppUser appuser = null;
+            if (userId != null) {
+                appuser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
+            }
             System.out.println("userId" + userId);
-
             System.out.println("appuser" + appuser);
+
+            Loan loanDetails = null;
+            if (loanDetails != null) {
+                // final Loan loanDetails = Loan.fromJson(command);
+
+                loanDetails = this.loanAssembler.assembleFrom(command, appuser);
+                this.loanRepositoryWrapper.save(loanDetails);
+                System.out.println("loanDetails" + loanDetails);
+                System.out.println("loanDetailsID" + loanDetails.getId());
+                // this.feLoanDetailsRepository.save(loanDetails);
+
+                final AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository
+                        .findByAccountType(EntityAccountType.LOAN);
+
+                String accountNumber = this.accountNumberGenerator.generate(loanDetails, accountNumberFormat);
+                loanDetails.updateAccountNo(accountNumber + "1");
+            }
 
             final VehicleLoan newVehicleLoan = VehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj, customerGuarantorObj,
                     loanDetails, bankDetailsObj, appuser);
@@ -221,7 +228,7 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
                     .withCustomerDetailsId(customerDetailsObj.getId()) //
                     .withVehicleDetailsId(vehicleDetailsObj.getId()) //
                     .withCustomerGuarantorId(customerGuarantorObj.getId()).withBankDetailsId(bankDetailsObj.getId())//
-                    .withLoanId(loanDetails.getId()) //
+                    // .withLoanId(loanDetails.getId()) //
                     // .with(changes) //
                     .build();
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
