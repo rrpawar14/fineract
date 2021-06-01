@@ -1142,6 +1142,24 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createLoanApprovalLimit() {
+        this.actionName = "CREATE";
+        this.entityName = "APPROVALLIMIT";
+        this.entityId = null;
+        this.loanId = null;
+        this.href = "/loans/approvallimit";
+        return this;
+    }
+
+    public CommandWrapperBuilder createLoanDisbursalLimit() {
+        this.actionName = "CREATE";
+        this.entityName = "DISBURSALLIMIT";
+        this.entityId = null;
+        this.loanId = null;
+        this.href = "/loans/disbursallimit";
+        return this;
+    }
+
     public CommandWrapperBuilder updateLoanApplication(final Long loanId) {
         this.actionName = "UPDATE";
         this.entityName = "LOAN";

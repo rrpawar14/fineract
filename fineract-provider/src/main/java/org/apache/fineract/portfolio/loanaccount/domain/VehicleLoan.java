@@ -64,7 +64,7 @@ public class VehicleLoan extends AbstractPersistableCustom {
     private CustomerGuarantor customerGuarantor;
 
     @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "loandetails_id", nullable = true)
+    @JoinColumn(name = "loandetail_id", nullable = true)
     private Loan loanDetails;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)

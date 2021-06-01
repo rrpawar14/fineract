@@ -37,6 +37,10 @@ import org.apache.fineract.vlms.branchmodule.domain.Employee;
 import org.apache.fineract.vlms.branchmodule.domain.EmployeeRepository;
 import org.apache.fineract.vlms.branchmodule.domain.InsuranceDetails;
 import org.apache.fineract.vlms.branchmodule.domain.InsuranceRepository;
+import org.apache.fineract.vlms.branchmodule.domain.LoanApprovalLimit;
+import org.apache.fineract.vlms.branchmodule.domain.LoanApprovalLimitRepository;
+import org.apache.fineract.vlms.branchmodule.domain.LoanDisbursalLimit;
+import org.apache.fineract.vlms.branchmodule.domain.LoanDisbursalLimitRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEApplicantDetailsRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FECoApplicantDetailsRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnquiryRepository;
@@ -78,6 +82,8 @@ public class BranchModuleWritePlatformServiceImpl implements BranchModuleWritePl
     private final EducationQualificationRepository educationQualificationRepository;
     private final EmployeeRepository employeeRepository;
     private final BankDetailsRepository bankDetailsRepository;
+    private final LoanApprovalLimitRepository loanApprovalLimitRepository;
+    private final LoanDisbursalLimitRepository loanDisbursalLimitRepository;
 
     @Autowired
     public BranchModuleWritePlatformServiceImpl(final PlatformSecurityContext context, final FEEnquiryRepository feEnquiryRepository,
@@ -89,7 +95,8 @@ public class BranchModuleWritePlatformServiceImpl implements BranchModuleWritePl
             final FETransferDetailsRepository feTransferDetailsRepository, final FEEnrollRepository feEnrollRepository,
             final FETaskRepository feTaskRepository, final InsuranceRepository insuranceRepository,
             final EducationQualificationRepository educationQualificationRepository, final EmployeeRepository employeeRepository,
-            final BankDetailsRepository bankDetailsRepository) {
+            final BankDetailsRepository bankDetailsRepository, final LoanApprovalLimitRepository loanApprovalLimitRepository,
+            final LoanDisbursalLimitRepository loanDisbursalLimitRepository) {
         this.context = context;
         this.feEnquiryRepository = feEnquiryRepository;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
@@ -107,6 +114,8 @@ public class BranchModuleWritePlatformServiceImpl implements BranchModuleWritePl
         this.educationQualificationRepository = educationQualificationRepository;
         this.employeeRepository = employeeRepository;
         this.bankDetailsRepository = bankDetailsRepository;
+        this.loanApprovalLimitRepository = loanApprovalLimitRepository;
+        this.loanDisbursalLimitRepository = loanDisbursalLimitRepository;
     }
 
     @Transactional
@@ -154,6 +163,51 @@ public class BranchModuleWritePlatformServiceImpl implements BranchModuleWritePl
             this.employeeRepository.save(employee);
 
             return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(employee.getId()).build();
+            // .withEntityId(code.getId())
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException ee) {
+            Throwable throwable = ExceptionUtils.getRootCause(ee.getCause());
+            handleDataIntegrityIssues(command, throwable, ee);
+            return CommandProcessingResult.empty();
+        }
+
+    }
+
+    @Transactional
+    @Override
+    @CacheEvict(value = "employee", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult createLoanApprovalLimit(final JsonCommand command) {
+
+        try {
+
+            LoanApprovalLimit loanApprovalLimit = LoanApprovalLimit.fromJson(command);
+            this.loanApprovalLimitRepository.save(loanApprovalLimit);
+
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(loanApprovalLimit.getId()).build();
+            // .withEntityId(code.getId())
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException ee) {
+            Throwable throwable = ExceptionUtils.getRootCause(ee.getCause());
+            handleDataIntegrityIssues(command, throwable, ee);
+            return CommandProcessingResult.empty();
+        }
+
+    }
+
+    @Transactional
+    @Override
+    @CacheEvict(value = "employee", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult createLoanDisbursalLimit(final JsonCommand command) {
+
+        try {
+            LoanDisbursalLimit loanDisbursalLimit = LoanDisbursalLimit.fromJson(command);
+            this.loanDisbursalLimitRepository.save(loanDisbursalLimit);
+
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(loanDisbursalLimit.getId()).build();
             // .withEntityId(code.getId())
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
