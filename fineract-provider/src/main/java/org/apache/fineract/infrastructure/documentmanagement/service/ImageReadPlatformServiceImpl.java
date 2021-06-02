@@ -130,12 +130,44 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
                         " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_details cd "
                                 + " where cd.id = docim.customerdetails_id  and docim.entity_name = 'pancard' and cd.id=? ");
 
+            } else if (EntityTypeForImages.FRONT_ADHARCARD.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_details cd "
+                                + " where cd.id = docim.customerdetails_id and docim.entity_name = 'front_adharcard' and cd.id=? ");
+
+            } else if (EntityTypeForImages.BACK_ADHARCARD.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_details cd "
+                                + " where cd.id = docim.customerdetails_id  and docim.entity_name = 'back_adharcard' and cd.id=? ");
+
+            } else if (EntityTypeForImages.FRONT_PANCARD.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_details cd "
+                                + " where cd.id = docim.customerdetails_id and docim.entity_name = 'front_pancard' and cd.id=? ");
+
+            } else if (EntityTypeForImages.BACK_PANCARD.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_details cd "
+                                + " where cd.id = docim.customerdetails_id  and docim.entity_name = 'back_pancard' and cd.id=? ");
+
             } else if (EntityTypeForImages.VEHICLE_LICENCE.toString().equals(entityType)) {
                 builder.append(
                         " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_details cd "
                                 + " where docim.entity_name = 'vehicle_licence' and cd.id = docim.customerdetails_id and cd.id=? ");
 
-            } else if (EntityTypeForImages.GUARANTORIMAGE.toString().equalsIgnoreCase(entityType)) {
+            } else if (EntityTypeForImages.FRONT_VEHICLE_LICENCE.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_details cd "
+                                + " where docim.entity_name = 'front_vehicle_licence' and cd.id = docim.customerdetails_id and cd.id=? ");
+
+            } else if (EntityTypeForImages.BACK_VEHICLE_LICENCE.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_details cd "
+                                + " where docim.entity_name = 'back_vehicle_licence' and cd.id = docim.customerdetails_id and cd.id=? ");
+
+            }
+
+            else if (EntityTypeForImages.GUARANTORIMAGE.toString().equalsIgnoreCase(entityType)) {
                 System.out.println("CUSTOMERIMAGE-Entity");
                 builder.append(
                         " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_guarantor gd "

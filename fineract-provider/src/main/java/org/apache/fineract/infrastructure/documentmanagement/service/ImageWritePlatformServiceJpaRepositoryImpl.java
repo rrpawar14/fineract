@@ -184,6 +184,12 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
 
         } else if (EntityTypeForImages.ADHARPHOTO.toString().equals(entityName) || EntityTypeForImages.PANCARD.toString().equals(entityName)
                 || EntityTypeForImages.VEHICLE_LICENCE.toString().equals(entityName)
+                || EntityTypeForImages.FRONT_ADHARCARD.toString().equals(entityName)
+                || EntityTypeForImages.BACK_ADHARCARD.toString().equals(entityName)
+                || EntityTypeForImages.FRONT_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.BACK_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.FRONT_VEHICLE_LICENCE.toString().equals(entityName)
+                || EntityTypeForImages.BACK_VEHICLE_LICENCE.toString().equals(entityName)
                 || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
             System.out.println("-- GovernmentDocument--");
