@@ -471,6 +471,23 @@ public class VehicleLoanManagementReadPlatformServiceImpl implements VehicleLoan
     }
 
     @Override
+    @Cacheable(value = "VehicleLoanData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<VehicleLoanData> retrieveVehicleLoanByMobileNumber(final String mobileNo) {
+        try {
+            this.context.authenticatedUser();
+
+            final VehicleLoanMapper rm = new VehicleLoanMapper();
+            final String sql = "select au.id as id, au.customer_id as customerId, " + rm.schema()
+                    + " from  m_apply_vehicle_loan cnv left join m_appuser au  on cnv.customer_id = au.customer_id " + rm.schemaJoin()
+                    + " where cd.mobile_number=? order by cnv.created_date DESC ";
+
+            return this.jdbcTemplate.query(sql, rm, new Object[] { mobileNo });
+        } catch (final EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
     @Cacheable(value = "CustomerDetailsData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
     public Collection<CustomerDetailsData> retrieveCustomerData() {
         try {

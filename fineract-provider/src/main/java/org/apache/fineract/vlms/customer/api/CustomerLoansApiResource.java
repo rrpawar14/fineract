@@ -248,6 +248,28 @@ public class CustomerLoansApiResource {
     }
 
     @GET
+    @Path("loanByMobileNo/{mobileNo}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Vehicle Loan Data", description = "Returns the Vehicle Loan Data Based on UserId/CustomerId.\n" + "\n"
+            + "Example Requests:\n" + "\n" + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveVehicleLoanDataByMobileNo(@Context final UriInfo uriInfo,
+            @PathParam("mobileNo") @Parameter(description = "mobileNo") final String mobileNo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final Collection<VehicleLoanData> vehicleLoanData = this.readPlatformService.retrieveVehicleLoanByMobileNumber(mobileNo);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiJsonSerializer.serialize(settings, vehicleLoanData, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
     @Path("loanByLoanId/{loanId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })

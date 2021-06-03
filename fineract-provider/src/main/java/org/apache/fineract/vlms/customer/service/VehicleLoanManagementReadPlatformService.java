@@ -30,6 +30,8 @@ public interface VehicleLoanManagementReadPlatformService {
 
     Collection<VehicleLoanData> retrieveVehicleLoanByUserId(final Long userId);
 
+    Collection<VehicleLoanData> retrieveVehicleLoanByMobileNumber(final String mobileNo);
+
     Collection<CustomerDetailsData> retrieveCustomerData();
 
     VehicleLoanData retrieveVehicleLoanByLoanId(final Long loanId);
