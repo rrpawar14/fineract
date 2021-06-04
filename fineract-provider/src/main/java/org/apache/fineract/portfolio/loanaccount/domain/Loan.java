@@ -4253,7 +4253,7 @@ public class Loan extends AbstractPersistableCustom {
         Office office = null;
         if (this.client != null) {
             office = this.client.getOffice();
-        } else {
+        } else if (this.group != null) {
             office = this.group.getOffice();
         }
         return office;

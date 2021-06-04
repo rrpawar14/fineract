@@ -203,7 +203,7 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
                 loanDetails.updateAccountNo(accountNumber + "1");
             } else {
 
-                loanDetails = this.loanRepositoryWrapper.findOneWithNotFoundDetection(1L);
+                loanDetails = this.loanRepositoryWrapper.findOneWithNotFoundDetection(17L);
             }
 
             final VehicleLoan newVehicleLoan = VehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj, customerGuarantorObj,

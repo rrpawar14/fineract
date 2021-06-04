@@ -623,7 +623,7 @@ public class LoanTransaction extends AbstractPersistableCustom {
         final LoanTransactionEnumData transactionType = LoanEnumerations.transactionType(this.typeOf);
 
         thisTransactionData.put("id", getId());
-        thisTransactionData.put("officeId", this.office.getId());
+        // thisTransactionData.put("officeId", this.office.getId());
         thisTransactionData.put("type", transactionType);
         thisTransactionData.put("reversed", Boolean.valueOf(isReversed()));
         thisTransactionData.put("date", getTransactionDate());

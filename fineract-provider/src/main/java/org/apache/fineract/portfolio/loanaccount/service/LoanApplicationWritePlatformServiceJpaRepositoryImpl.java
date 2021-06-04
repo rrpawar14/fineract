@@ -1433,8 +1433,10 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                 this.noteRepository.save(note);
             }
 
-            this.businessEventNotifierService.notifyBusinessEventWasExecuted(BusinessEvents.LOAN_APPROVED,
-                    constructEntityMap(BusinessEntity.LOAN, loan));
+            /*
+             * this.businessEventNotifierService.notifyBusinessEventWasExecuted(BusinessEvents.LOAN_APPROVED,
+             * constructEntityMap(BusinessEntity.LOAN, loan));
+             */
         }
 
         return new CommandProcessingResultBuilder() //
