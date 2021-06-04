@@ -109,7 +109,6 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
         try {
             this.context.authenticatedUser();
 
-            System.out.println("-------------New Request-------------");
             Address customerAdd = Address.fromJson(command, "customer_communicationAddress");
             this.addressRepository.save(customerAdd);
             Long addressid = customerAdd.getId();
@@ -128,25 +127,21 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             // createcustomerdetails
             final CustomerDetails customerDetails = CustomerDetails.fromJson(command, customerCommunicationAdd, customerPermanentAdd,
                     customerOfficeAdd); // add 3 address object
-            System.out.println("customerDetails" + customerDetails);
+
             this.customerDetailsRepository.save(customerDetails);
-            System.out.println("customerDetailsRepository");
 
             final Long customerDetailsId = customerDetails.getId();
-            System.out.println("customerDetailsId" + customerDetailsId);
+
             final CustomerDetails customerDetailsObj = this.customerDetailsRepository.getOne(customerDetailsId);
-            System.out.println("customerDetailsObj" + customerDetailsObj);
 
             // createVehicleDetails
             final VehicleDetails vehicleDetails = VehicleDetails.fromJson(command);
-            System.out.println("vehicleDetails " + vehicleDetails);
+
             this.vehicleDetailsRepository.save(vehicleDetails);
-            System.out.println("vehicleDetailsRepository" + vehicleDetailsRepository);
 
             final Long vehicleDetailsId = vehicleDetails.getId();
-            System.out.println("vehicleDetailsId" + vehicleDetailsId);
+
             final VehicleDetails vehicleDetailsObj = this.vehicleDetailsRepository.getOne(vehicleDetailsId);
-            System.out.println("vehicleDetailsObj" + vehicleDetailsObj);
 
             // createguarantordetails
 
@@ -167,36 +162,32 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
 
             final CustomerGuarantor customerGuarantor = CustomerGuarantor.fromJson(command, guarantorCommunicationAdd,
                     guarantorPermanentAdd, guarantorOfficeAdd); // add 3 address object
-            System.out.println("customerGuarantor" + customerGuarantor);
+
             this.customerGuarantorRepository.save(customerGuarantor);
-            System.out.println("customerGuarantorRepository" + customerGuarantorRepository);
 
             final Long customerGuarantorId = customerGuarantor.getId();
-            System.out.println("customerGuarantorId" + customerGuarantorId);
+
             final CustomerGuarantor customerGuarantorObj = this.customerGuarantorRepository.getOne(customerGuarantorId);
-            System.out.println("customerGuarantorObj" + customerGuarantorObj);
 
             // createbankdetails
             final BankDetails bankDetails = BankDetails.fromJson(command);
-            System.out.println("bankDetails" + bankDetails);
+
             this.bankDetailsRepository.save(bankDetails);
-            System.out.println("bankDetailsRepository" + bankDetailsRepository);
 
             final Long bankDetailsId = bankDetails.getId();
-            System.out.println("bankDetailsId" + bankDetailsId);
+
             final BankDetails bankDetailsObj = this.bankDetailsRepository.getOne(bankDetailsId);
-            System.out.println("bankDetailsObj" + bankDetailsObj);
 
             final Long userId = command.longValueOfParameterNamed("userId");
             AppUser appuser = null;
             if (userId != null) {
                 appuser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
             }
-            System.out.println("userId" + userId);
-            System.out.println("appuser" + appuser);
 
             Loan loanDetails = null;
-            if (loanDetails != null) {
+            String productIdParamName = "productId";
+
+            if (command.hasParameter(productIdParamName)) {
                 // final Loan loanDetails = Loan.fromJson(command);
 
                 loanDetails = this.loanAssembler.assembleFrom(command, appuser);
@@ -210,6 +201,9 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
 
                 String accountNumber = this.accountNumberGenerator.generate(loanDetails, accountNumberFormat);
                 loanDetails.updateAccountNo(accountNumber + "1");
+            } else {
+
+                loanDetails = this.loanRepositoryWrapper.findOneWithNotFoundDetection(1L);
             }
 
             final VehicleLoan newVehicleLoan = VehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj, customerGuarantorObj,
@@ -228,7 +222,7 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
                     .withCustomerDetailsId(customerDetailsObj.getId()) //
                     .withVehicleDetailsId(vehicleDetailsObj.getId()) //
                     .withCustomerGuarantorId(customerGuarantorObj.getId()).withBankDetailsId(bankDetailsObj.getId())//
-                    // .withLoanId(loanDetails.getId()) //
+                    .withLoanId(loanDetails.getId()) //
                     // .with(changes) //
                     .build();
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
