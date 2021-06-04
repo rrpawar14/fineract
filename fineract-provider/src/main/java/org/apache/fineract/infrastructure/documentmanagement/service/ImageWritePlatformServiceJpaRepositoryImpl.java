@@ -202,7 +202,13 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
         } else if (EntityTypeForImages.GUARANTORIMAGE.toString().equals(entityName)
                 || EntityTypeForImages.G_ADHARPHOTO.toString().equals(entityName)
                 || EntityTypeForImages.G_PANCARD.toString().equals(entityName)
-                || EntityTypeForImages.G_VEHICLE_LICENCE.toString().equals(entityName)) {
+                || EntityTypeForImages.G_VEHICLE_LICENCE.toString().equals(entityName)
+                || EntityTypeForImages.G_FRONT_ADHARCARD.toString().equals(entityName)
+                || EntityTypeForImages.G_BACK_ADHARCARD.toString().equals(entityName)
+                || EntityTypeForImages.G_FRONT_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.G_BACK_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.G_FRONT_VEHICLE_LICENCE.toString().equals(entityName)
+                || EntityTypeForImages.G_BACK_VEHICLE_LICENCE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
             System.out.println("-- GovernmentDocument--");
 
@@ -222,7 +228,13 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
 
         } else if (EntityTypeForImages.ENROLL_CUSTOMERIMAGE.toString().equals(entityName)
                 || EntityTypeForImages.ENROLL_ADHARPHOTO.toString().equals(entityName)
-                || EntityTypeForImages.ENROLL_PANCARD.toString().equals(entityName)) {
+                || EntityTypeForImages.ENROLL_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_FRONT_ADHARCARD.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_BACK_ADHARCARD.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_FRONT_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_BACK_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_FRONT_VEHICLE_LICENCE.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_BACK_VEHICLE_LICENCE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
             System.out.println("-- GovernmentDocument--");
 

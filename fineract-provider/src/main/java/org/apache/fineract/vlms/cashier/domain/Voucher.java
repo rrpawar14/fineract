@@ -18,7 +18,6 @@
  */
 package org.apache.fineract.vlms.cashier.domain;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,38 +41,22 @@ public class Voucher extends AbstractPersistableCustom {
     @Column(name = "voucher_number", nullable = false, length = 100)
     private String voucherNumber;
 
-    @Column(name = "credit", nullable = false, length = 100)
-    private BigDecimal credit;
-
-    @Column(name = "debit", nullable = false, length = 100)
-    private BigDecimal debit;
-
-    @Column(name = "remarks", nullable = false, length = 100)
-    private String remarks;
-
     public static Voucher fromJson(final JsonCommand command) {
 
         final Date createdDate = command.dateValueOfParameterNamed("createdDate");
         final String particulars = command.stringValueOfParameterNamed("particulars");
         final String voucherType = command.stringValueOfParameterNamed("voucherType");
         final String voucherNumber = command.stringValueOfParameterNamed("voucherNumber");
-        final BigDecimal credit = command.bigDecimalValueOfParameterNamed("credit");
-        final BigDecimal debit = command.bigDecimalValueOfParameterNamed("debit");
-        final String remarks = command.stringValueOfParameterNamed("remarks");
 
-        return new Voucher(createdDate, particulars, voucherType, voucherNumber, credit, debit, remarks);
+        return new Voucher(createdDate, particulars, voucherType, voucherNumber);
 
     }
 
-    private Voucher(final Date createdDate, final String particulars, final String voucherType, final String voucherNumber,
-            final BigDecimal credit, final BigDecimal debit, final String remarks) {
+    private Voucher(final Date createdDate, final String particulars, final String voucherType, final String voucherNumber) {
         this.createdDate = createdDate;
         this.particulars = particulars;
         this.voucherType = voucherType;
         this.voucherNumber = voucherNumber;
-        this.credit = credit;
-        this.debit = debit;
-        this.remarks = remarks;
     }
 
 }

@@ -18,42 +18,40 @@
  */
 package org.apache.fineract.vlms.cashier.domain;
 
-import java.util.Date;
+import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
 @Entity
-@Table(name = "m_hl_payment")
-public class HLPayment extends AbstractPersistableCustom {
+@Table(name = "m_voucher_data")
+public class VoucherDetails extends AbstractPersistableCustom {
 
-    @Column(name = "post_date", nullable = false, length = 100)
-    private Date postDate;
+    @ManyToOne
+    @JoinColumn(name = "voucher_id")
+    private Voucher voucher;
 
-    @Column(name = "post_type", nullable = false, length = 100)
-    private String postType;
+    @Column(name = "credit", length = 100)
+    private BigDecimal credit;
 
-    @Column(name = "agent", nullable = false, length = 100)
-    private String agent;
+    @Column(name = "debit", length = 100)
+    private BigDecimal debit;
 
-    public HLPayment() {}
+    @Column(name = "particulars", length = 100)
+    private String particulars;
 
-    public static HLPayment fromJson(final JsonCommand command) {
-
-        final Date postDate = command.dateValueOfParameterNamed("postDate");
-        final String postType = command.stringValueOfParameterNamed("postType");
-        final String agent = command.stringValueOfParameterNamed("agent");
-
-        return new HLPayment(postDate, postType, agent);
+    protected VoucherDetails() {
 
     }
 
-    private HLPayment(final Date postDate, final String postType, final String agent) {
-        this.postDate = postDate;
-        this.postType = postType;
-        this.agent = agent;
+    public VoucherDetails(final Voucher voucher, final BigDecimal credit, final BigDecimal debit, final String particulars) {
+        this.voucher = voucher;
+        this.credit = credit;
+        this.debit = debit;
+        this.particulars = particulars;
     }
 
 }

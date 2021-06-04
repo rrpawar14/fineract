@@ -186,6 +186,32 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
                 builder.append(
                         " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_guarantor gd "
                                 + " where gd.id = docim.guarantor_id and gd.id=? where docim.entity_name = g_vehicle_licence");
+            } else if (EntityTypeForImages.G_FRONT_ADHARCARD.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType  from m_documents_images docim , m_customer_guarantor gd "
+                                + "   where gd.id = docim.guarantor_id  and docim.entity_name = 'g_front_adharcard' and gd.id=? ");
+
+            } else if (EntityTypeForImages.G_BACK_ADHARCARD.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_guarantor gd "
+                                + " where gd.id = docim.guarantor_id and docim.entity_name = 'g_back_adharcard' and gd.id=? ");
+
+            } else if (EntityTypeForImages.G_FRONT_PANCARD.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_guarantor gd "
+                                + " where gd.id = docim.guarantor_id and gd.id=? where docim.entity_name = g_front_pancard");
+            } else if (EntityTypeForImages.G_BACK_PANCARD.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_guarantor gd "
+                                + " where gd.id = docim.guarantor_id and gd.id=? where docim.entity_name = g_back_pancard");
+            } else if (EntityTypeForImages.G_FRONT_VEHICLE_LICENCE.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_guarantor gd "
+                                + " where gd.id = docim.guarantor_id and gd.id=? where docim.entity_name = g_front_vehicle_licence");
+            } else if (EntityTypeForImages.G_BACK_VEHICLE_LICENCE.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_customer_guarantor gd "
+                                + " where gd.id = docim.guarantor_id and gd.id=? where docim.entity_name = g_back_vehicle_licence");
             } else if (EntityTypeForImages.INVOICEIMAGE.toString().equalsIgnoreCase(entityType)) {
                 builder.append(
                         " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_apply_vehicle_loan vl "
@@ -225,6 +251,34 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
                 builder.append(
                         " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_feenroll enr "
                                 + " where enr.id = docim.feEnroll_id and docim.entity_name = 'enroll_pancard' and enr.id=? ");
+            } else if (EntityTypeForImages.ENROLL_FRONT_ADHARCARD.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_feenroll enr "
+                                + " where enr.id = docim.feEnroll_id and docim.entity_name = 'enroll_front_adharcard' and enr.id=? ");
+            } else if (EntityTypeForImages.ENROLL_BACK_ADHARCARD.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_feenroll enr "
+                                + " where enr.id = docim.feEnroll_id and docim.entity_name = 'enroll_back_adharcard' and enr.id=? ");
+            }
+
+            else if (EntityTypeForImages.ENROLL_FRONT_PANCARD.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_feenroll enr "
+                                + " where enr.id = docim.feEnroll_id and docim.entity_name = 'enroll_front_pancard' and enr.id=? ");
+            } else if (EntityTypeForImages.ENROLL_BACK_PANCARD.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_feenroll enr "
+                                + " where enr.id = docim.feEnroll_id and docim.entity_name = 'enroll_back_pancard' and enr.id=? ");
+            }
+
+            else if (EntityTypeForImages.ENROLL_FRONT_VEHICLE_LICENCE.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_feenroll enr "
+                                + " where enr.id = docim.feEnroll_id and docim.entity_name = 'enroll_front_vehicle_licence' and enr.id=? ");
+            } else if (EntityTypeForImages.ENROLL_BACK_VEHICLE_LICENCE.toString().equals(entityType)) {
+                builder.append(
+                        " docim.id as id, docim.location as location, docim.storage_type_enum as storageType from m_documents_images docim , m_feenroll enr "
+                                + " where enr.id = docim.feEnroll_id and docim.entity_name = 'enroll_back_vehicle_licence' and enr.id=? ");
             }
 
             else if (EntityTypeForImages.RCBOOK.toString().equals(entityType)) {
