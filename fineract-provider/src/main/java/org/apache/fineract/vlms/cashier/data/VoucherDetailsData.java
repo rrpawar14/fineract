@@ -19,34 +19,32 @@
 package org.apache.fineract.vlms.cashier.data;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @SuppressWarnings("unused")
-public class VoucherData implements Serializable {
+public class VoucherDetailsData implements Serializable {
 
-    private final long id;
+    private final Long id;
 
-    private final LocalDate createdDate;
+    private final BigDecimal credit;
 
-    private final String remarks;
+    private final BigDecimal debit;
 
-    private final String voucherType;
+    private final String particulars;
 
-    private final String voucherNumber;
+    private final VoucherData voucherData;
 
-    public static VoucherData instance(final Long id, final LocalDate createdDate, final String remarks, final String voucherType,
-            final String voucherNumber) {
-        return new VoucherData(id, createdDate, remarks, voucherType, voucherNumber);
-
+    public static VoucherDetailsData instance(final Long id, final BigDecimal credit, final BigDecimal debit, final String particulars,
+            final VoucherData voucherData) {
+        return new VoucherDetailsData(id, credit, debit, particulars, voucherData);
     }
 
-    private VoucherData(final Long id, final LocalDate createdDate, final String remarks, final String voucherType,
-            final String voucherNumber) {
+    private VoucherDetailsData(final Long id, final BigDecimal credit, final BigDecimal debit, final String particulars,
+            final VoucherData voucherData) {
         this.id = id;
-        this.createdDate = createdDate;
-        this.remarks = remarks;
-        this.voucherType = voucherType;
-        this.voucherNumber = voucherNumber;
+        this.credit = credit;
+        this.debit = debit;
+        this.particulars = particulars;
+        this.voucherData = voucherData;
     }
-
 }

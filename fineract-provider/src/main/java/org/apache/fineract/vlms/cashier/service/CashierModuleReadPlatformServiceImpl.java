@@ -29,6 +29,7 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.vlms.cashier.data.CashierAnalyticsAllData;
 import org.apache.fineract.vlms.cashier.data.HLPaymentData;
 import org.apache.fineract.vlms.cashier.data.VoucherData;
+import org.apache.fineract.vlms.cashier.data.VoucherDetailsData;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -85,10 +86,10 @@ public class CashierModuleReadPlatformServiceImpl implements CashierModuleReadPl
     private static final class HLPaymentAllDataMapper implements RowMapper<HLPaymentData> {
 
         public String schema() {
-            return " hl.id as id, hl.agtno as AGTNO, hl.customerName as customerName,"
-                    + " hl.actualAmount as actualAmount, hl.postAmount as postAmount, hl.postDate as postDate,"
-                    + " hl.postType as postType, hl.agent as agent, hl.expiryDate as expiryDate,"
-                    + " hl.policyNo as policyNo, hl.insuranceCompany as insuranceCompany,  hl.remark as remark ";
+            return " hl.id as id, hl.post_date as postDate,  hl.agent as agent, hl.post_type as postType, "
+                    + " hld.actual_amount as actualAmount, hld.post_amount as postAmount, hld.expiry_date as expiryDate, "
+                    + " hld.agtno as AGTNO, hld.customer_name as customerName,  hld.policy_no as policyNo, "
+                    + " hld.insurance_company as insuranceCompany,  hld.remark as remark ";
         }
 
         @Override
@@ -123,34 +124,42 @@ public class CashierModuleReadPlatformServiceImpl implements CashierModuleReadPl
         }
     }
 
-    private static final class VoucherDataMapper implements RowMapper<VoucherData> {
+    private static final class VoucherDataMapper implements RowMapper<VoucherDetailsData> {
 
         public String schema() {
-            return " v.id as id, v.created_date as createdDate, v.particulars as particulars,"
-                    + " v.voucher_type as voucherType, v.voucher_number as voucherNumber, v.credit as credit,"
-                    + " v.debit as debit, v.remarks as remarks ";
+            return "v.id as id, v.created_date as createdDate, v.remarks as remarks, "
+                    + " v.voucher_type as voucherType, v.voucher_number as voucherNumber, vd.id as vid, vd.credit as credit, "
+                    + " vd.debit as debit , vd.particulars as particulars ";
         }
 
         @Override
-        public VoucherData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public VoucherDetailsData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
 
             final Long id = rs.getLong("id");
 
             final LocalDate createdDate = JdbcSupport.getLocalDate(rs, "createdDate");
 
-            final String particulars = rs.getString("particulars");
+            final String remarks = rs.getString("remarks");
 
             final String voucherType = rs.getString("voucherType");
 
             final String voucherNumber = rs.getString("voucherNumber");
 
+            VoucherData voucherData = VoucherData.instance(id, createdDate, remarks, voucherType, voucherNumber);// particulars,
+                                                                                                                 // credit,
+                                                                                                                 // debit,
+                                                                                                                 // );
+
+            final Long vid = rs.getLong("vid");
+
             final BigDecimal credit = rs.getBigDecimal("credit");
 
             final BigDecimal debit = rs.getBigDecimal("debit");
 
-            final String remarks = rs.getString("remarks");
+            final String particulars = rs.getString("particulars");
 
-            return VoucherData.instance(id, createdDate, particulars, voucherType, voucherNumber, credit, debit, remarks);
+            return VoucherDetailsData.instance(vid, credit, debit, particulars, voucherData);
+
         }
     }
 
@@ -199,18 +208,18 @@ public class CashierModuleReadPlatformServiceImpl implements CashierModuleReadPl
         this.context.authenticatedUser();
 
         final HLPaymentAllDataMapper rm = new HLPaymentAllDataMapper();
-        final String sql = "select " + rm.schema() + " from m_hl_payment hl ";
+        final String sql = "select " + rm.schema() + " from m_hl_payment hl " + " join m_hl_payment_data hld on hl.id = hld.hl_payment_id ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
     }
 
     @Override
     @Cacheable(value = "HLPaymentData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
-    public Collection<VoucherData> retrieveAllVoucherData() {
+    public Collection<VoucherDetailsData> retrieveAllVoucherData() {
         this.context.authenticatedUser();
 
         final VoucherDataMapper rm = new VoucherDataMapper();
-        final String sql = "select " + rm.schema() + " from m_voucher v ";
+        final String sql = "select " + rm.schema() + " from m_voucher v " + " join m_voucher_data vd on v.id = vd.voucher_id ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
     }

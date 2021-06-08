@@ -45,6 +45,7 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.vlms.cashier.data.CashierAnalyticsAllData;
 import org.apache.fineract.vlms.cashier.data.HLPaymentData;
 import org.apache.fineract.vlms.cashier.data.VoucherData;
+import org.apache.fineract.vlms.cashier.data.VoucherDetailsData;
 import org.apache.fineract.vlms.cashier.service.CashierModuleReadPlatformService;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,7 @@ public class CashierModuleApiResource {
     private final DefaultToApiJsonSerializer<CashierAnalyticsAllData> toApiCashierAnalyticsJsonSerializer;
     private final DefaultToApiJsonSerializer<HLPaymentData> toApiHLPaymentAnalyticsJsonSerializer;
     private final DefaultToApiJsonSerializer<VoucherData> toApiVoucherJsonSerializer;
+    private final DefaultToApiJsonSerializer<VoucherDetailsData> toApiVoucherDetailsJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer;
@@ -73,6 +75,7 @@ public class CashierModuleApiResource {
             final DefaultToApiJsonSerializer<CashierAnalyticsAllData> toApiCashierAnalyticsJsonSerializer,
             final DefaultToApiJsonSerializer<HLPaymentData> toApiHLPaymentAnalyticsJsonSerializer,
             final DefaultToApiJsonSerializer<VoucherData> toApiVoucherJsonSerializer,
+            final DefaultToApiJsonSerializer<VoucherDetailsData> toApiVoucherDetailsJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
             final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer) {
@@ -81,6 +84,7 @@ public class CashierModuleApiResource {
         this.toApiCashierAnalyticsJsonSerializer = toApiCashierAnalyticsJsonSerializer;
         this.toApiHLPaymentAnalyticsJsonSerializer = toApiHLPaymentAnalyticsJsonSerializer;
         this.toApiVoucherJsonSerializer = toApiVoucherJsonSerializer;
+        this.toApiVoucherDetailsJsonSerializer = toApiVoucherDetailsJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
         this.toApiTaskJsonSerializer = toApiTaskJsonSerializer;
@@ -163,10 +167,10 @@ public class CashierModuleApiResource {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
-        final Collection<VoucherData> voucherData = this.cashierModuleReadPlatformService.retrieveAllVoucherData();
+        final Collection<VoucherDetailsData> voucherDetailsData = this.cashierModuleReadPlatformService.retrieveAllVoucherData();
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.toApiVoucherJsonSerializer.serialize(settings, voucherData, RESPONSE_DATA_PARAMETERS);
+        return this.toApiVoucherDetailsJsonSerializer.serialize(settings, voucherDetailsData, RESPONSE_DATA_PARAMETERS);
     }
 
     @POST

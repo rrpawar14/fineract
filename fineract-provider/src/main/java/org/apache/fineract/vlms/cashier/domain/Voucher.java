@@ -32,8 +32,8 @@ public class Voucher extends AbstractPersistableCustom {
     @Column(name = "created_date", nullable = false, length = 100)
     private Date createdDate;
 
-    @Column(name = "particulars", nullable = false, length = 100)
-    private String particulars;
+    @Column(name = "remarks", nullable = false, length = 100)
+    private String remarks;
 
     @Column(name = "voucher_type", nullable = false, length = 100)
     private String voucherType;
@@ -44,17 +44,17 @@ public class Voucher extends AbstractPersistableCustom {
     public static Voucher fromJson(final JsonCommand command) {
 
         final Date createdDate = command.dateValueOfParameterNamed("createdDate");
-        final String particulars = command.stringValueOfParameterNamed("particulars");
+        final String remarks = command.stringValueOfParameterNamed("remarks");
         final String voucherType = command.stringValueOfParameterNamed("voucherType");
         final String voucherNumber = command.stringValueOfParameterNamed("voucherNumber");
 
-        return new Voucher(createdDate, particulars, voucherType, voucherNumber);
+        return new Voucher(createdDate, remarks, voucherType, voucherNumber);
 
     }
 
-    private Voucher(final Date createdDate, final String particulars, final String voucherType, final String voucherNumber) {
+    private Voucher(final Date createdDate, final String remarks, final String voucherType, final String voucherNumber) {
         this.createdDate = createdDate;
-        this.particulars = particulars;
+        this.remarks = remarks;
         this.voucherType = voucherType;
         this.voucherNumber = voucherNumber;
     }
