@@ -75,4 +75,11 @@ public class FEEnquiry extends AbstractPersistableCustom {
         this.createdDate = date;
     }
 
+    public void updateEnquiryId(final String enquiryId) {
+        this.enquiryId = enquiryId;
+    }
+
+    public String getEnquiryId() {
+        return this.enquiryId;
+    }
 }

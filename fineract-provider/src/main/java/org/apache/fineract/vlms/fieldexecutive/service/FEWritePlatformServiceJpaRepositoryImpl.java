@@ -21,6 +21,9 @@ package org.apache.fineract.vlms.fieldexecutive.service;
 import java.util.Map;
 import javax.persistence.PersistenceException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormat;
+import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatRepositoryWrapper;
+import org.apache.fineract.infrastructure.accountnumberformat.domain.EntityAccountType;
 import org.apache.fineract.infrastructure.codes.exception.CodeNotFoundException;
 import org.apache.fineract.infrastructure.codes.serialization.CodeCommandFromApiJsonDeserializer;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
@@ -30,6 +33,7 @@ import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityEx
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.address.domain.Address;
 import org.apache.fineract.portfolio.address.domain.AddressRepository;
+import org.apache.fineract.portfolio.client.domain.AccountNumberGenerator;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEApplicantDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEApplicantDetailsRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FECashLimit;
@@ -86,6 +90,8 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
     private final FeCashLimitRepository feCashLimitRepository;
     private final LoanChangeRequestRepository loanChangeRequestRepository;
     private final FieldExecutiveRepository fieldExecutiveRepository;
+    private final AccountNumberGenerator accountNumberGenerator;
+    private final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository;
 
     @Autowired
     public FEWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context, final FEEnquiryRepository feEnquiryRepository,
@@ -96,7 +102,8 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
             final FEVehicleDetailsRepository feVehicleDetailsRepository, final FELoanDetailsRepository feLoanDetailsRepository,
             final FETransferDetailsRepository feTransferDetailsRepository, final FEEnrollRepository feEnrollRepository,
             final FETaskRepository feTaskRepository, final FeCashLimitRepository feCashLimitRepository,
-            final LoanChangeRequestRepository loanChangeRequestRepository, final FieldExecutiveRepository fieldExecutiveRepository) {
+            final LoanChangeRequestRepository loanChangeRequestRepository, final FieldExecutiveRepository fieldExecutiveRepository,
+            final AccountNumberGenerator accountNumberGenerator, final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository) {
         this.context = context;
         this.feEnquiryRepository = feEnquiryRepository;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
@@ -113,6 +120,8 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
         this.feCashLimitRepository = feCashLimitRepository;
         this.loanChangeRequestRepository = loanChangeRequestRepository;
         this.fieldExecutiveRepository = fieldExecutiveRepository;
+        this.accountNumberGenerator = accountNumberGenerator;
+        this.accountNumberFormatRepository = accountNumberFormatRepository;
     }
 
     @Transactional
@@ -128,7 +137,14 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
             final FEEnquiry feEnquiry = FEEnquiry.fromJson(command);
             this.feEnquiryRepository.save(feEnquiry);
 
-            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(feEnquiry.getId()).build();
+            final AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.LOAN);
+
+            String generatedId = this.accountNumberGenerator.generate(feEnquiry, accountNumberFormat);
+            feEnquiry.updateEnquiryId("KF-" + generatedId + "1");
+            String enquiryId = feEnquiry.getEnquiryId();
+
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(feEnquiry.getId())
+                    .withResourceIdAsString(enquiryId).build();
             // .withEntityId(code.getId())
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
