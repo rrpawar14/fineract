@@ -20,7 +20,7 @@ package org.apache.fineract.vlms.cashier.service;
 
 import java.util.Collection;
 import org.apache.fineract.vlms.cashier.data.CashierAnalyticsAllData;
-import org.apache.fineract.vlms.cashier.data.HLPaymentData;
+import org.apache.fineract.vlms.cashier.data.HLPaymentDetailsData;
 import org.apache.fineract.vlms.cashier.data.VoucherDetailsData;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 
@@ -28,7 +28,7 @@ public interface CashierModuleReadPlatformService {
 
     Collection<CashierAnalyticsAllData> retrieveAllCashierAnalyticsData();
 
-    Collection<HLPaymentData> retrieveAllHLPaymentData();
+    Collection<HLPaymentDetailsData> retrieveAllHLPaymentData();
 
     Collection<VoucherDetailsData> retrieveAllVoucherData();
 

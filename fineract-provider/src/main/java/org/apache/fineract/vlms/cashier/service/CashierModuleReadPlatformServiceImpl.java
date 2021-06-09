@@ -28,6 +28,7 @@ import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.vlms.cashier.data.CashierAnalyticsAllData;
 import org.apache.fineract.vlms.cashier.data.HLPaymentData;
+import org.apache.fineract.vlms.cashier.data.HLPaymentDetailsData;
 import org.apache.fineract.vlms.cashier.data.VoucherData;
 import org.apache.fineract.vlms.cashier.data.VoucherDetailsData;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
@@ -83,17 +84,17 @@ public class CashierModuleReadPlatformServiceImpl implements CashierModuleReadPl
         }
     }
 
-    private static final class HLPaymentAllDataMapper implements RowMapper<HLPaymentData> {
+    private static final class HLPaymentAllDataMapper implements RowMapper<HLPaymentDetailsData> {
 
         public String schema() {
             return " hl.id as id, hl.post_date as postDate,  hl.agent as agent, hl.post_type as postType, "
-                    + " hld.actual_amount as actualAmount, hld.post_amount as postAmount, hld.expiry_date as expiryDate, "
+                    + " hld.id as hldId, hld.actual_amount as actualAmount, hld.post_amount as postAmount, hld.expiry_date as expiryDate, "
                     + " hld.agtno as AGTNO, hld.customer_name as customerName,  hld.policy_no as policyNo, "
                     + " hld.insurance_company as insuranceCompany,  hld.remark as remark ";
         }
 
         @Override
-        public HLPaymentData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public HLPaymentDetailsData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
 
             final Long id = rs.getLong("id");
 
@@ -105,12 +106,6 @@ public class CashierModuleReadPlatformServiceImpl implements CashierModuleReadPl
 
             final BigDecimal postAmount = rs.getBigDecimal("postAmount");
 
-            final LocalDate postDate = JdbcSupport.getLocalDate(rs, "postDate");
-
-            final String postType = rs.getString("postType");
-
-            final String agent = rs.getString("agent");
-
             final LocalDate expiryDate = JdbcSupport.getLocalDate(rs, "expiryDate");
 
             final String policyNo = rs.getString("policyNo");
@@ -119,8 +114,19 @@ public class CashierModuleReadPlatformServiceImpl implements CashierModuleReadPl
 
             final String remark = rs.getString("remark");
 
-            return HLPaymentData.instance(id, AGTNO, customerName, actualAmount, postAmount, postDate, postType, agent, expiryDate,
-                    policyNo, insuranceCompany, remark);
+            HLPaymentData hlPaymentData = HLPaymentData.instance(id, AGTNO, customerName, actualAmount, postAmount, expiryDate, policyNo,
+                    insuranceCompany, remark);
+
+            final Long hldId = rs.getLong("hldId");
+
+            final LocalDate postDate = JdbcSupport.getLocalDate(rs, "postDate");
+
+            final String postType = rs.getString("postType");
+
+            final String agent = rs.getString("agent");
+
+            return HLPaymentDetailsData.instance(hldId, postDate, postType, agent, hlPaymentData);
+
         }
     }
 
@@ -203,8 +209,8 @@ public class CashierModuleReadPlatformServiceImpl implements CashierModuleReadPl
     }
 
     @Override
-    @Cacheable(value = "HLPaymentData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
-    public Collection<HLPaymentData> retrieveAllHLPaymentData() {
+    @Cacheable(value = "HLPaymentDetailsData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public Collection<HLPaymentDetailsData> retrieveAllHLPaymentData() {
         this.context.authenticatedUser();
 
         final HLPaymentAllDataMapper rm = new HLPaymentAllDataMapper();
@@ -219,7 +225,7 @@ public class CashierModuleReadPlatformServiceImpl implements CashierModuleReadPl
         this.context.authenticatedUser();
 
         final VoucherDataMapper rm = new VoucherDataMapper();
-        final String sql = "select " + rm.schema() + " from m_voucher v " + " join m_voucher_data vd on v.id = vd.voucher_id ";
+        final String sql = "select " + rm.schema() + " from m_voucher v " + " right join m_voucher_data vd on v.id = vd.voucher_id ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
     }

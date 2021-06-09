@@ -140,7 +140,9 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
             final AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.LOAN);
 
             String generatedId = this.accountNumberGenerator.generate(feEnquiry, accountNumberFormat);
-            feEnquiry.updateEnquiryId("KF-" + generatedId + "1");
+            String trimInitialDigit = generatedId.substring(3); // for creating enquiryid of 6 Digits
+
+            feEnquiry.updateEnquiryId("KF-" + trimInitialDigit);
             String enquiryId = feEnquiry.getEnquiryId();
 
             return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(feEnquiry.getId())
@@ -170,7 +172,16 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
             final FEEnroll feEnroll = FEEnroll.fromJson(command);
             this.feEnrollRepository.save(feEnroll);
 
-            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(feEnroll.getId()).build();
+            final AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.LOAN);
+
+            String generatedId = this.accountNumberGenerator.generate(feEnroll, accountNumberFormat);
+            String trimInitialDigit = generatedId.substring(3); // for creating enquiryid of 6 Digits
+
+            feEnroll.updateEnrollId("KF-" + trimInitialDigit);
+            String enrollId = feEnroll.getEnrollId();
+
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(feEnroll.getId())
+                    .withResourceIdAsString(enrollId).build();
             // .withEntityId(code.getId())
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);

@@ -29,6 +29,7 @@ import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.shareaccounts.domain.ShareAccount;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnquiry;
+import org.apache.fineract.vlms.fieldexecutive.domain.FEEnroll;
 import org.springframework.stereotype.Component;
 
 /**
@@ -69,6 +70,14 @@ public class AccountNumberGenerator {
     public String generate(FEEnquiry enquiry, AccountNumberFormat accountNumberFormat) {
         Map<String, String> propertyMap = new HashMap<>();
         propertyMap.put(ID, enquiry.getId().toString());
+        // propertyMap.put(OFFICE_NAME, loan.getOffice().getName());
+        // propertyMap.put(LOAN_PRODUCT_SHORT_NAME, loan.loanProduct().getShortName());
+        return generateAccountNumber(propertyMap, accountNumberFormat);
+    }
+
+    public String generate(FEEnroll feEnroll, AccountNumberFormat accountNumberFormat) {
+        Map<String, String> propertyMap = new HashMap<>();
+        propertyMap.put(ID, feEnroll.getId().toString());
         // propertyMap.put(OFFICE_NAME, loan.getOffice().getName());
         // propertyMap.put(LOAN_PRODUCT_SHORT_NAME, loan.loanProduct().getShortName());
         return generateAccountNumber(propertyMap, accountNumberFormat);

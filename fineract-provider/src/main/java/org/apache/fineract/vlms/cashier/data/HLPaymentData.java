@@ -35,12 +35,6 @@ public class HLPaymentData implements Serializable {
 
     private final BigDecimal postAmount;
 
-    private final LocalDate postDate;
-
-    private final String postType;
-
-    private final String agent;
-
     private final LocalDate expiryDate;
 
     private final String policyNo;
@@ -50,16 +44,13 @@ public class HLPaymentData implements Serializable {
     private final String remark;
 
     private HLPaymentData(final long id, final String agtNo, final String customerName, final BigDecimal actualAmount,
-            final BigDecimal postAmount, final LocalDate postDate, final String postType, final String agent, final LocalDate expiryDate,
-            final String policyNo, final String insuranceCompany, final String remark) {
+            final BigDecimal postAmount, final LocalDate expiryDate, final String policyNo, final String insuranceCompany,
+            final String remark) {
         this.id = id;
         this.agtNo = agtNo;
         this.customerName = customerName;
         this.actualAmount = actualAmount;
         this.postAmount = postAmount;
-        this.postDate = postDate;
-        this.postType = postType;
-        this.agent = agent;
         this.expiryDate = expiryDate;
         this.policyNo = policyNo;
         this.insuranceCompany = insuranceCompany;
@@ -67,10 +58,9 @@ public class HLPaymentData implements Serializable {
     }
 
     public static HLPaymentData instance(final long id, final String agtNo, final String customerName, final BigDecimal actualAmount,
-            final BigDecimal postAmount, final LocalDate postDate, final String postType, final String agent, final LocalDate expiryDate,
-            final String policyNo, final String insuranceCompany, final String remark) {
-        return new HLPaymentData(id, agtNo, customerName, actualAmount, postAmount, postDate, postType, agent, expiryDate, policyNo,
-                insuranceCompany, remark);
+            final BigDecimal postAmount, final LocalDate expiryDate, final String policyNo, final String insuranceCompany,
+            final String remark) {
+        return new HLPaymentData(id, agtNo, customerName, actualAmount, postAmount, expiryDate, policyNo, insuranceCompany, remark);
     }
 
 }

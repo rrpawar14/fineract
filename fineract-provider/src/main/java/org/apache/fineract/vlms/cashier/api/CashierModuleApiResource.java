@@ -44,6 +44,7 @@ import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSer
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.vlms.cashier.data.CashierAnalyticsAllData;
 import org.apache.fineract.vlms.cashier.data.HLPaymentData;
+import org.apache.fineract.vlms.cashier.data.HLPaymentDetailsData;
 import org.apache.fineract.vlms.cashier.data.VoucherData;
 import org.apache.fineract.vlms.cashier.data.VoucherDetailsData;
 import org.apache.fineract.vlms.cashier.service.CashierModuleReadPlatformService;
@@ -61,6 +62,7 @@ public class CashierModuleApiResource {
     private final CashierModuleReadPlatformService cashierModuleReadPlatformService;
     private final DefaultToApiJsonSerializer<CashierAnalyticsAllData> toApiCashierAnalyticsJsonSerializer;
     private final DefaultToApiJsonSerializer<HLPaymentData> toApiHLPaymentAnalyticsJsonSerializer;
+    private final DefaultToApiJsonSerializer<HLPaymentDetailsData> toApiHLPaymentDetailsAnalyticsJsonSerializer;
     private final DefaultToApiJsonSerializer<VoucherData> toApiVoucherJsonSerializer;
     private final DefaultToApiJsonSerializer<VoucherDetailsData> toApiVoucherDetailsJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
@@ -74,6 +76,7 @@ public class CashierModuleApiResource {
             final CashierModuleReadPlatformService cashierModuleReadPlatformService,
             final DefaultToApiJsonSerializer<CashierAnalyticsAllData> toApiCashierAnalyticsJsonSerializer,
             final DefaultToApiJsonSerializer<HLPaymentData> toApiHLPaymentAnalyticsJsonSerializer,
+            final DefaultToApiJsonSerializer<HLPaymentDetailsData> toApiHLPaymentDetailsAnalyticsJsonSerializer,
             final DefaultToApiJsonSerializer<VoucherData> toApiVoucherJsonSerializer,
             final DefaultToApiJsonSerializer<VoucherDetailsData> toApiVoucherDetailsJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
@@ -83,6 +86,7 @@ public class CashierModuleApiResource {
         this.cashierModuleReadPlatformService = cashierModuleReadPlatformService;
         this.toApiCashierAnalyticsJsonSerializer = toApiCashierAnalyticsJsonSerializer;
         this.toApiHLPaymentAnalyticsJsonSerializer = toApiHLPaymentAnalyticsJsonSerializer;
+        this.toApiHLPaymentDetailsAnalyticsJsonSerializer = toApiHLPaymentDetailsAnalyticsJsonSerializer;
         this.toApiVoucherJsonSerializer = toApiVoucherJsonSerializer;
         this.toApiVoucherDetailsJsonSerializer = toApiVoucherDetailsJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
@@ -126,10 +130,10 @@ public class CashierModuleApiResource {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
-        final Collection<HLPaymentData> hlPaymentData = this.cashierModuleReadPlatformService.retrieveAllHLPaymentData();
+        final Collection<HLPaymentDetailsData> hlPaymentData = this.cashierModuleReadPlatformService.retrieveAllHLPaymentData();
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.toApiHLPaymentAnalyticsJsonSerializer.serialize(settings, hlPaymentData, RESPONSE_DATA_PARAMETERS);
+        return this.toApiHLPaymentDetailsAnalyticsJsonSerializer.serialize(settings, hlPaymentData, RESPONSE_DATA_PARAMETERS);
     }
 
     @POST

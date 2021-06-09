@@ -70,6 +70,9 @@ public class FEEnroll extends AbstractPersistableCustom {
     @Column(name = "created_date", nullable = false, length = 100)
     private Date createdDate;
 
+    @Column(name = "enroll_id", nullable = false, length = 100)
+    private String enrollId;
+
     public FEEnroll() {}
 
     public static FEEnroll fromJson(final JsonCommand command) {
@@ -192,6 +195,14 @@ public class FEEnroll extends AbstractPersistableCustom {
         }
 
         return actualChanges;
+    }
+
+    public void updateEnrollId(final String enrollId) {
+        this.enrollId = enrollId;
+    }
+
+    public String getEnrollId() {
+        return this.enrollId;
     }
 
 }
