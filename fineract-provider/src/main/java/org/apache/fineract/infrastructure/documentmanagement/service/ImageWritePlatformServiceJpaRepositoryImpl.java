@@ -343,7 +343,13 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
         // if (entityName.equals("AdharPhoto") || entityName.equals("GovernmentDocument")) {
         if (EntityTypeForImages.ADHARPHOTO.toString().equals(entityName) || EntityTypeForImages.PANCARD.toString().equals(entityName)
                 || EntityTypeForImages.VEHICLE_LICENCE.toString().equals(entityName)
-                || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityName)) {
+                || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityName)
+                || EntityTypeForImages.FRONT_ADHARCARD.toString().equals(entityName)
+                || EntityTypeForImages.BACK_ADHARCARD.toString().equals(entityName)
+                || EntityTypeForImages.FRONT_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.BACK_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.FRONT_VEHICLE_LICENCE.toString().equals(entityName)
+                || EntityTypeForImages.BACK_VEHICLE_LICENCE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
             System.out.println("--AdharPhoto GovernmentDocument--");
             CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
@@ -381,7 +387,13 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
         if (EntityTypeForImages.GUARANTORIMAGE.toString().equals(entityName)
                 || EntityTypeForImages.G_ADHARPHOTO.toString().equals(entityName)
                 || EntityTypeForImages.G_PANCARD.toString().equals(entityName)
-                || EntityTypeForImages.G_VEHICLE_LICENCE.toString().equals(entityName)) {
+                || EntityTypeForImages.G_VEHICLE_LICENCE.toString().equals(entityName)
+                || EntityTypeForImages.G_FRONT_ADHARCARD.toString().equals(entityName)
+                || EntityTypeForImages.G_BACK_ADHARCARD.toString().equals(entityName)
+                || EntityTypeForImages.G_FRONT_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.G_BACK_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.G_FRONT_VEHICLE_LICENCE.toString().equals(entityName)
+                || EntityTypeForImages.G_BACK_VEHICLE_LICENCE.toString().equals(entityName)) {
             // else if (EntityTypeForImages.GUARANTOR.toString().equals(entityName)) {
             System.out.println("--GUARANTOR--");
             CustomerGuarantor customerGuarantor = this.customerGuarantorRepositoryWrapper.findOneWithNotFoundDetection(entityId);
@@ -395,7 +407,13 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             owner = bankDetails;
         } else if (EntityTypeForImages.ENROLL_CUSTOMERIMAGE.toString().equals(entityName)
                 || EntityTypeForImages.ENROLL_ADHARPHOTO.toString().equals(entityName)
-                || EntityTypeForImages.ENROLL_PANCARD.toString().equals(entityName)) {
+                || EntityTypeForImages.ENROLL_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_FRONT_ADHARCARD.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_BACK_ADHARCARD.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_FRONT_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_BACK_PANCARD.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_FRONT_VEHICLE_LICENCE.toString().equals(entityName)
+                || EntityTypeForImages.ENROLL_BACK_VEHICLE_LICENCE.toString().equals(entityName)) {
             System.out.println("--FEENROLL--");
             FEEnroll feEnroll = this.feEnrollRepositoryWrapper.findOneWithNotFoundDetection(entityId);
             // documentImage = bankDetails.getImage();
