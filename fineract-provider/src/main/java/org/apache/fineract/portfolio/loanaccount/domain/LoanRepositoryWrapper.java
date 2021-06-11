@@ -238,4 +238,13 @@ public class LoanRepositoryWrapper {
         }
         return loan;
     }
+
+    @Transactional(readOnly = true)
+    public Loan findNonClosedLoan(@Param("loanId") Long loanId) {
+        Loan loan = this.repository.findNonClosedLoan(loanId);
+        if (loan != null) {
+            loan.initilizeTransactions();
+        }
+        return loan;
+    }
 }

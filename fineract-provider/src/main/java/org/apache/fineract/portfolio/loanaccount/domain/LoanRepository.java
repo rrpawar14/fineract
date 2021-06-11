@@ -71,6 +71,8 @@ public interface LoanRepository extends JpaRepository<Loan, Long>, JpaSpecificat
 
     String FIND_NON_CLOSED_LOAN_THAT_BELONGS_TO_CLIENT = "select loan from Loan loan where loan.id = :loanId and loan.loanStatus = 300 and loan.client.id = :clientId";
 
+    String FIND_NON_CLOSED_LOAN = "select loan from Loan loan where loan.id = :loanId and loan.loanStatus = 300 ";
+
     @Query(FIND_GROUP_LOANS_DISBURSED_AFTER)
     List<Loan> getGroupLoansDisbursedAfter(@Param("disbursementDate") Date disbursementDate, @Param("groupId") Long groupId,
             @Param("loanType") Integer loanType);
@@ -155,5 +157,8 @@ public interface LoanRepository extends JpaRepository<Loan, Long>, JpaSpecificat
 
     @Query(FIND_NON_CLOSED_LOAN_THAT_BELONGS_TO_CLIENT)
     Loan findNonClosedLoanThatBelongsToClient(@Param("loanId") Long loanId, @Param("clientId") Long clientId);
+
+    @Query(FIND_NON_CLOSED_LOAN)
+    Loan findNonClosedLoan(@Param("loanId") Long loanId);
 
 }
