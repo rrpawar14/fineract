@@ -40,6 +40,9 @@ public class CustomerDetails extends AbstractPersistableCustom {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "age")
+    private Integer age;
+
     @Column(name = "gender")
     private String gender;
 
@@ -98,6 +101,7 @@ public class CustomerDetails extends AbstractPersistableCustom {
             final Address customerPermanentAdd, final Address customerOfficeAdd) {
 
         final String name = command.stringValueOfParameterNamed("customerName");
+        final Integer age = command.integerValueOfParameterNamed("customerAge");
         final String gender = command.stringValueOfParameterNamed("gender");
         final String mobileNo = command.stringValueOfParameterNamed("mobileNo");//
         final String fatherName = command.stringValueOfParameterNamed("fatherName");//
@@ -113,7 +117,7 @@ public class CustomerDetails extends AbstractPersistableCustom {
         final String spousename = command.stringValueOfParameterNamed("spouseName");
         final String profession = command.stringValueOfParameterNamed("profession");
 
-        return new CustomerDetails(name, gender, mobileNo, fatherName, altNumber, applicantType, refBy, companyName, monthlyIncome,
+        return new CustomerDetails(name, age, gender, mobileNo, fatherName, altNumber, applicantType, refBy, companyName, monthlyIncome,
                 salaryDate, salaryPeriod, dob, maritalStatus, spousename, profession, customerCommunicationAdd, customerPermanentAdd,
                 customerOfficeAdd);
 
@@ -121,11 +125,13 @@ public class CustomerDetails extends AbstractPersistableCustom {
 
     public CustomerDetails() {}
 
-    private CustomerDetails(final String name, final String gender, final String mobileNo, final String fatherName, final String altNumber,
-            final String applicantType, final String refBy, final String companyName, final String monthlyIncome, final Date salaryDate,
-            final String salaryPeriod, final Date dob, final String maritalStatus, final String spousename, final String profession,
-            final Address customerCommunicationAdd, final Address customerPermanentAdd, final Address customerOfficeAdd) {
+    private CustomerDetails(final String name, final Integer age, final String gender, final String mobileNo, final String fatherName,
+            final String altNumber, final String applicantType, final String refBy, final String companyName, final String monthlyIncome,
+            final Date salaryDate, final String salaryPeriod, final Date dob, final String maritalStatus, final String spousename,
+            final String profession, final Address customerCommunicationAdd, final Address customerPermanentAdd,
+            final Address customerOfficeAdd) {
         this.name = name;
+        this.age = age;
         this.gender = gender;
         this.mobileNo = mobileNo;
         this.fatherName = fatherName;
@@ -155,6 +161,13 @@ public class CustomerDetails extends AbstractPersistableCustom {
             final String newValue = command.stringValueOfParameterNamed(customerNameParamName);
             actualChanges.put(customerNameParamName, newValue);
             this.name = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String customerAgeParamName = "customerAge";
+        if (command.isChangeInIntegerParameterNamed(customerAgeParamName, this.age)) {
+            final Integer newValue = command.integerValueOfParameterNamed(customerAgeParamName);
+            actualChanges.put(customerAgeParamName, newValue);
+            this.age = newValue;
         }
 
         final String genderParamName = "gender";

@@ -688,10 +688,10 @@ public class FELoansApiResource {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
-        final Collection<TaskData> documentsType = this.readPlatformService.retrieveAllTask();
+        final Collection<TaskData> taskData = this.readPlatformService.retrieveAllTask();
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.toApiTaskJsonSerializer.serialize(settings, documentsType, RESPONSE_DATA_PARAMETERS);
+        return this.toApiTaskJsonSerializer.serialize(settings, taskData, RESPONSE_DATA_PARAMETERS);
     }
 
     @GET

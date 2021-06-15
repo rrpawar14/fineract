@@ -18,16 +18,13 @@
  */
 package org.apache.fineract.vlms.loantransfer.service;
 
-import java.util.Collection;
-import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
-import org.apache.fineract.vlms.loantransfer.data.LoanTransferDashboardData;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
-public interface LoanTransferReadPlatformService {
+public interface LoanTransferWritePlatformService {
 
-    Collection<LoanTransferDashboardData> retrieveAllLoanTransferDashboardData();
+    CommandProcessingResult createLoanTransferTeamTask(JsonCommand command);
 
-    Collection<TaskData> retrieveAllTask();
-
-    Collection<TaskData> retrieveAllTaskStatus(final String taskStatus);
+    CommandProcessingResult editLoanTransferTask(Long taskId, JsonCommand command);
 
 }

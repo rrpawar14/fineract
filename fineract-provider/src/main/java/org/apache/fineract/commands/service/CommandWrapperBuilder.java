@@ -1092,6 +1092,22 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createLoanTransferTask() {
+        this.actionName = "CREATE";
+        this.entityName = "LOANTRANSFERTASK";
+        this.entityId = null;
+        this.href = "/task/template";
+        return this;
+    }
+
+    public CommandWrapperBuilder editLoanTransferTask(Long taskId) {
+        this.actionName = "UPDATE";
+        this.entityName = "LOANTRANSFERTASK";
+        this.entityId = taskId;
+        this.href = "/task/template";
+        return this;
+    }
+
     public CommandWrapperBuilder createFECashLimit() {
         this.actionName = "CREATE";
         this.entityName = "FECASHLIMIT";

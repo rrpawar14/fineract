@@ -16,18 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.vlms.loantransfer.service;
+package org.apache.fineract.vlms.loantransfer.domain;
 
-import java.util.Collection;
-import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
-import org.apache.fineract.vlms.loantransfer.data.LoanTransferDashboardData;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface LoanTransferReadPlatformService {
-
-    Collection<LoanTransferDashboardData> retrieveAllLoanTransferDashboardData();
-
-    Collection<TaskData> retrieveAllTask();
-
-    Collection<TaskData> retrieveAllTaskStatus(final String taskStatus);
+public interface LoanTransferTeamRepository extends JpaRepository<LoanTransferTask, Long>, JpaSpecificationExecutor<LoanTransferTask> {
 
 }

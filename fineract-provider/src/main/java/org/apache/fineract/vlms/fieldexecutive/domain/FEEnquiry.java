@@ -43,6 +43,12 @@ public class FEEnquiry extends AbstractPersistableCustom {
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
+    @Column(name = "pincode", nullable = false, length = 100)
+    private String pincode;
+
+    @Column(name = "notes", nullable = false, length = 100)
+    private String notes;
+
     @Column(name = "enquiry_id", nullable = false, length = 100)
     private String enquiryId;
 
@@ -54,24 +60,27 @@ public class FEEnquiry extends AbstractPersistableCustom {
         final String mobileNumber = command.stringValueOfParameterNamed("mobileNumber");
         final String customerName = command.stringValueOfParameterNamed("customerName");
         final String vehicleNumber = command.stringValueOfParameterNamed("vehicleNumber");
+        final String notes = command.stringValueOfParameterNamed("notes");
+        final String pincode = command.stringValueOfParameterNamed("pincode");
         final String email = command.stringValueOfParameterNamed("email");
-        final String enquiryId = command.stringValueOfParameterNamed("enquiryId");
+        // final String enquiryId = command.stringValueOfParameterNamed("enquiryId");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Date dateobj = new Date();
 
-        return new FEEnquiry(mobileNumber, customerName, vehicleNumber, email, enquiryId, dateobj);
+        return new FEEnquiry(mobileNumber, customerName, vehicleNumber, email, dateobj, pincode);
 
     }
 
     public FEEnquiry() {}
 
-    private FEEnquiry(final String mobileNumber, final String customerName, final String vehicleNumber, final String email,
-            final String enquiryId, final Date date) {
+    private FEEnquiry(final String mobileNumber, final String customerName, final String vehicleNumber, final String email, final Date date,
+            final String pincode) {
         this.mobileNumber = mobileNumber; // MobileNo is stored in username column for authentication
         this.customerName = customerName;
         this.vehicleNumber = vehicleNumber;
         this.email = email;
-        this.enquiryId = enquiryId;
+        this.pincode = pincode;
+        this.email = email;
         this.createdDate = date;
     }
 

@@ -43,6 +43,9 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
     @Column(name = "guarantor_name")
     private String guarantorName;
 
+    @Column(name = "age")
+    private Integer age;
+
     @Column(name = "mobile_number")
     private String mobileNumber;
 
@@ -104,6 +107,7 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
             final Address customerPermanentAdd, final Address customerOfficeAdd) {
 
         final String guarantorName = command.stringValueOfParameterNamed("guarantor_name");
+        final Integer age = command.integerValueOfParameterNamed("guarantor_age");
         final String mobileNumber = command.stringValueOfParameterNamed("guarantor_mobile_number");
         final String gender = command.stringValueOfParameterNamed("guarantor_gender");
         final Date dob = command.dateValueOfParameterNamed("guarantor_dob");
@@ -117,18 +121,19 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
         final String companyName = command.stringValueOfParameterNamed("guarantor_companyName");
         final Date salaryDate = command.dateValueOfParameterNamed("guarantor_salaryDate");
 
-        return new CustomerGuarantor(guarantorName, mobileNumber, gender, dob, maritalStatus, spouseName, fatherName, profession,
+        return new CustomerGuarantor(guarantorName, age, mobileNumber, gender, dob, maritalStatus, spouseName, fatherName, profession,
                 salaryType, applicantType, netIncome, companyName, salaryDate, customerCommunicationAdd, customerPermanentAdd,
                 customerOfficeAdd);
     }
 
     public CustomerGuarantor() {}
 
-    private CustomerGuarantor(final String guarantorName, final String mobileNumber, final String gender, final Date dob,
+    private CustomerGuarantor(final String guarantorName, final Integer age, final String mobileNumber, final String gender, final Date dob,
             final String maritalStatus, final String spouseName, final String fatherName, final String profession, final String salaryType,
             final String applicantType, final Integer netIncome, final String companyName, final Date salaryDate,
             final Address customerCommunicationAdd, final Address customerPermanentAdd, final Address customerOfficeAdd) {
         this.guarantorName = guarantorName;
+        this.age = age;
         this.mobileNumber = mobileNumber;
         this.gender = gender;
         this.dob = dob;
@@ -159,6 +164,13 @@ public class CustomerGuarantor extends AbstractPersistableCustom {
             final String newValue = command.stringValueOfParameterNamed(guarantorNameParamName);
             actualChanges.put(guarantorNameParamName, newValue);
             this.guarantorName = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String guarantorAgeParamName = "guarantor_age";
+        if (command.isChangeInIntegerParameterNamed(guarantorAgeParamName, this.age)) {
+            final Integer newValue = command.integerValueOfParameterNamed(guarantorAgeParamName);
+            actualChanges.put(guarantorAgeParamName, newValue);
+            this.age = newValue;
         }
 
         final String genderParamName = "guarantor_gender";
