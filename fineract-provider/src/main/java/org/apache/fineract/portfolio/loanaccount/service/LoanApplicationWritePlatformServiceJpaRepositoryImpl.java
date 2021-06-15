@@ -290,19 +290,20 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                 officeSpecificLoanProductValidation(productId, group.getOffice().getId());
             }
 
-            this.fromApiJsonDeserializer.validateForCreate(command.json(), isMeetingMandatoryForJLGLoans, loanProduct);
+            // this.fromApiJsonDeserializer.validateForCreate(command.json(), isMeetingMandatoryForJLGLoans,
+            // loanProduct);
 
             final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
             final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("loan");
 
             if (loanProduct.useBorrowerCycle()) {
                 Integer cycleNumber = 0;
-                if (clientId != null) {
-                    cycleNumber = this.loanReadPlatformService.retriveLoanCounter(clientId, loanProduct.getId());
-                } else if (groupId != null) {
-                    cycleNumber = this.loanReadPlatformService.retriveLoanCounter(groupId, AccountType.GROUP.getValue(),
-                            loanProduct.getId());
-                }
+                /*
+                 * if (clientId != null) { cycleNumber = this.loanReadPlatformService.retriveLoanCounter(clientId,
+                 * loanProduct.getId()); } else if (groupId != null) { cycleNumber =
+                 * this.loanReadPlatformService.retriveLoanCounter(groupId, AccountType.GROUP.getValue(),
+                 * loanProduct.getId()); }
+                 */
                 this.loanProductCommandFromApiJsonDeserializer.validateMinMaxConstraints(command.parsedJson(), baseDataValidator,
                         loanProduct, cycleNumber);
             } else {
@@ -330,7 +331,8 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                     productRelatedDetail.getRepayEvery(), productRelatedDetail.getRepaymentPeriodFrequencyType().getValue(),
                     newLoanApplication);
 
-            if (loanProduct.canUseForTopup() && clientId != null) {
+            // if (loanProduct.canUseForTopup() && clientId != null) {
+            if (loanProduct.canUseForTopup()) {
                 final Boolean isTopup = command.booleanObjectValueOfParameterNamed(LoanApiConstants.isTopup);
                 if (null == isTopup) {
                     newLoanApplication.setIsTopup(false);
@@ -340,7 +342,9 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 
                 if (newLoanApplication.isTopup()) {
                     final Long loanIdToClose = command.longValueOfParameterNamed(LoanApiConstants.loanIdToClose);
-                    final Loan loanToClose = this.loanRepositoryWrapper.findNonClosedLoanThatBelongsToClient(loanIdToClose, clientId);
+                    // final Loan loanToClose =
+                    // this.loanRepositoryWrapper.findNonClosedLoanThatBelongsToClient(loanIdToClose, clientId);
+                    final Loan loanToClose = this.loanRepositoryWrapper.findNonClosedLoan(loanIdToClose);
                     if (loanToClose == null) {
                         throw new GeneralPlatformDomainRuleException(
                                 "error.msg.loan.loanIdToClose.no.active.loan.associated.to.client.found",
@@ -575,8 +579,10 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                     StatusEnum.CREATE.getCode().longValue(), EntityTables.LOAN.getForeignKeyColumnNameOnDatatable(),
                     newLoanApplication.productId());
 
-            this.businessEventNotifierService.notifyBusinessEventWasExecuted(BusinessEvents.LOAN_CREATE,
-                    constructEntityMap(BusinessEntity.LOAN, newLoanApplication));
+            /*
+             * this.businessEventNotifierService.notifyBusinessEventWasExecuted(BusinessEvents.LOAN_CREATE,
+             * constructEntityMap(BusinessEntity.LOAN, newLoanApplication));
+             */
 
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
