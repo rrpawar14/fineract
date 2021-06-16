@@ -27,4 +27,6 @@ public interface LoanTransferWritePlatformService {
 
     CommandProcessingResult editLoanTransferTask(Long taskId, JsonCommand command);
 
+    CommandProcessingResult deleteLoanTransferTask(final Long Id);
+
 }

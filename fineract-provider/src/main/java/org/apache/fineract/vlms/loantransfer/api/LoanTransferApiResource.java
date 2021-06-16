@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -170,6 +171,26 @@ public class LoanTransferApiResource {
             @PathParam("taskId") @Parameter(description = "taskId") final Long taskId) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().editLoanTransferTask(taskId).withJson(apiRequestBodyAsJson)
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiLoanTransferAnalyticsJsonSerializer.serialize(result);
+    }
+
+    @DELETE
+    @Path("deleteTask/{id}")
+    @Operation(summary = "Create a User Loan Enquiry", description = "Removes the user and the associated roles and permissions.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(schema =
+                                                                              // @Schema(implementation =
+                                                                              // UsersApiResourceSwagger.DeleteUsersUserIdResponse.class)))
+                                                                              // })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String customerDeleteEnquiry(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("id") @Parameter(description = "id") final Long id) {
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .deleteLoanTransferTask(id) //
                 .build();
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);

@@ -173,6 +173,26 @@ public class LoanTransferWritePlatformServiceImpl implements LoanTransferWritePl
 
     }
 
+    @Transactional
+    @Override
+    @CacheEvict(value = "fetask", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult deleteLoanTransferTask(final Long taskId) {
+
+        this.context.authenticatedUser();
+
+        final LoanTransferTask loanTransfer = retrieveTaskBy(taskId);
+        try {
+            this.loanTransferTeamRepository.delete(loanTransfer);
+            this.loanTransferTeamRepository.flush();
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            throw new PlatformDataIntegrityException("error.msg.cund.unknown.data.integrity.issue",
+                    "Unknown data integrity issue with resource: " + dve.getMostSpecificCause(), dve);
+        }
+        return new CommandProcessingResultBuilder().withEntityId(loanTransfer.getId()).build();
+        // .withEntityId(code.getId())
+
+    }
+
     private LoanTransferTask retrieveTaskBy(final Long taskId) {
         return this.loanTransferTeamRepository.findById(taskId).orElseThrow(() -> new CodeNotFoundException(taskId.toString()));
     }

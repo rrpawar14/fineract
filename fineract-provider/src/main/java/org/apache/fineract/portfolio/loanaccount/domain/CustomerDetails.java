@@ -43,6 +43,9 @@ public class CustomerDetails extends AbstractPersistableCustom {
     @Column(name = "age")
     private Integer age;
 
+    @Column(name = "addressType")
+    private String addressType;
+
     @Column(name = "gender")
     private String gender;
 
@@ -68,7 +71,7 @@ public class CustomerDetails extends AbstractPersistableCustom {
     private String monthlyIncome;
 
     @Column(name = "salary_date")
-    private Date salaryDate;
+    private Integer salaryDate;
 
     @Column(name = "salary_period")
     private String salaryPeriod;
@@ -101,7 +104,8 @@ public class CustomerDetails extends AbstractPersistableCustom {
             final Address customerPermanentAdd, final Address customerOfficeAdd) {
 
         final String name = command.stringValueOfParameterNamed("customerName");
-        final Integer age = command.integerValueOfParameterNamed("customerAge");
+        final Integer age = command.integerValueOfParameterNamed("customerAge"); //
+        final String addressType = command.stringValueOfParameterNamed("addressType"); //
         final String gender = command.stringValueOfParameterNamed("gender");
         final String mobileNo = command.stringValueOfParameterNamed("mobileNo");//
         final String fatherName = command.stringValueOfParameterNamed("fatherName");//
@@ -110,7 +114,7 @@ public class CustomerDetails extends AbstractPersistableCustom {
         final String refBy = command.stringValueOfParameterNamed("refBy");//
         final String companyName = command.stringValueOfParameterNamed("companyName");//
         final String monthlyIncome = command.stringValueOfParameterNamed("monthlyIncome");//
-        final Date salaryDate = command.dateValueOfParameterNamed("salaryDate");//
+        final Integer salaryDate = command.integerValueOfParameterNamed("customerSalaryDate"); //
         final String salaryPeriod = command.stringValueOfParameterNamed("salaryPeriod");//
         final Date dob = command.dateValueOfParameterNamed("dob");
         final String maritalStatus = command.stringValueOfParameterNamed("maritalStatus");
@@ -127,7 +131,7 @@ public class CustomerDetails extends AbstractPersistableCustom {
 
     private CustomerDetails(final String name, final Integer age, final String gender, final String mobileNo, final String fatherName,
             final String altNumber, final String applicantType, final String refBy, final String companyName, final String monthlyIncome,
-            final Date salaryDate, final String salaryPeriod, final Date dob, final String maritalStatus, final String spousename,
+            final Integer salaryDate, final String salaryPeriod, final Date dob, final String maritalStatus, final String spousename,
             final String profession, final Address customerCommunicationAdd, final Address customerPermanentAdd,
             final Address customerOfficeAdd) {
         this.name = name;
@@ -187,17 +191,21 @@ public class CustomerDetails extends AbstractPersistableCustom {
         final String dateFormatAsInput = command.dateFormat();
         final String localeAsInput = command.locale();
 
+        /*
+         * final String salaryDateParamName = "salaryDate"; final String localeParamName = "locale"; final String
+         * dateFormatParamName = "dateFormat"; if (command.isChangeInDateParameterNamed(salaryDateParamName,
+         * this.salaryDate)) { final String valueAsInput = command.stringValueOfParameterNamed(salaryDateParamName);
+         * actualChanges.put(salaryDateParamName, valueAsInput); actualChanges.put(dateFormatParamName,
+         * dateFormatAsInput); actualChanges.put(localeParamName, localeAsInput);
+         *
+         * final LocalDate newValue = command.localDateValueOfParameterNamed(salaryDateParamName); this.salaryDate =
+         * Date.from(newValue.atStartOfDay(DateUtils.getDateTimeZoneOfTenant()).toInstant()); }
+         */
         final String salaryDateParamName = "salaryDate";
-        final String localeParamName = "locale";
-        final String dateFormatParamName = "dateFormat";
-        if (command.isChangeInDateParameterNamed(salaryDateParamName, this.salaryDate)) {
-            final String valueAsInput = command.stringValueOfParameterNamed(salaryDateParamName);
-            actualChanges.put(salaryDateParamName, valueAsInput);
-            actualChanges.put(dateFormatParamName, dateFormatAsInput);
-            actualChanges.put(localeParamName, localeAsInput);
-
-            final LocalDate newValue = command.localDateValueOfParameterNamed(salaryDateParamName);
-            this.salaryDate = Date.from(newValue.atStartOfDay(DateUtils.getDateTimeZoneOfTenant()).toInstant());
+        if (command.isChangeInIntegerParameterNamed(salaryDateParamName, this.salaryDate)) {
+            final Integer newValue = command.integerValueOfParameterNamed(salaryDateParamName);
+            actualChanges.put(salaryDateParamName, newValue);
+            this.salaryDate = newValue;
         }
 
         final String dobParamName = "dob";
