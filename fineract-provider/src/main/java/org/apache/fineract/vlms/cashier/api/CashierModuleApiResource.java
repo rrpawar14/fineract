@@ -29,7 +29,9 @@ import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -216,6 +218,38 @@ public class CashierModuleApiResource {
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiTaskJsonSerializer.serialize(settings, taskData, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @POST
+    @Path("task")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Create a Task", description = "Creates a Field Executive Task. FE created through api are always 'user defined' and so system defined is marked as false.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String createLoanTransferTask(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().createCashierModuleTask().withJson(apiRequestBodyAsJson).build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiTaskJsonSerializer.serialize(result);
+    }
+
+    @PUT
+    @Path("editTask/{taskId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Create a Task", description = "Creates a Field Executive Task. FE created through api are always 'user defined' and so system defined is marked as false.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String updateLoanTransferTask(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("taskId") @Parameter(description = "taskId") final Long taskId) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().editCashierModuleTask(taskId).withJson(apiRequestBodyAsJson)
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiTaskJsonSerializer.serialize(result);
     }
 
 }

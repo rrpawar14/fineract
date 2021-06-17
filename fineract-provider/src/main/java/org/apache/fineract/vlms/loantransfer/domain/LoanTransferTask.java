@@ -60,6 +60,9 @@ public class LoanTransferTask extends AbstractPersistableCustom {
     @Column(name = "status", nullable = false, length = 100)
     private String status;
 
+    @Column(name = "branch", nullable = false, length = 100)
+    private String branch;
+
     @Column(name = "created_date", nullable = false, length = 100)
     private Date createdDate;
 
@@ -73,18 +76,20 @@ public class LoanTransferTask extends AbstractPersistableCustom {
         final String assignTo = command.stringValueOfParameterNamed("assignTo");
         final String description = command.stringValueOfParameterNamed("description");
         final String status = command.stringValueOfParameterNamed("status");
+        final String branch = command.stringValueOfParameterNamed("branch");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Date createdDate = new Date();
 
         return new LoanTransferTask(taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, description, status,
-                createdDate);
+                branch, createdDate);
 
     }
 
     public LoanTransferTask() {}
 
     private LoanTransferTask(final String taskType, final String customerRegNo, final String customerMobileNo, final String vehicleNumber,
-            final Date dueDate, final String assignTo, final String description, final String status, final Date createdDate) {
+            final Date dueDate, final String assignTo, final String description, final String status, final String branch,
+            final Date createdDate) {
         this.taskType = taskType;
         this.customerRegNo = customerRegNo;
         this.customerMobileNo = customerMobileNo;
@@ -93,6 +98,7 @@ public class LoanTransferTask extends AbstractPersistableCustom {
         this.assignTo = assignTo;
         this.description = description;
         this.status = status;
+        this.branch = branch;
         this.createdDate = createdDate;
     }
 
@@ -163,6 +169,13 @@ public class LoanTransferTask extends AbstractPersistableCustom {
             final String newValue = command.stringValueOfParameterNamed(statusParamName);
             actualChanges.put(statusParamName, newValue);
             this.status = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String branchParamName = "branch";
+        if (command.isChangeInStringParameterNamed(branchParamName, this.branch)) {
+            final String newValue = command.stringValueOfParameterNamed(branchParamName);
+            actualChanges.put(branchParamName, newValue);
+            this.branch = StringUtils.defaultIfEmpty(newValue, null);
         }
 
         return actualChanges;

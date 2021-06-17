@@ -1116,6 +1116,22 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createCashierModuleTask() {
+        this.actionName = "CREATE";
+        this.entityName = "CASHIERMODULETASK";
+        this.entityId = null;
+        this.href = "/task/template";
+        return this;
+    }
+
+    public CommandWrapperBuilder editCashierModuleTask(Long taskId) {
+        this.actionName = "UPDATE";
+        this.entityName = "CASHIERMODULETASK";
+        this.entityId = taskId;
+        this.href = "/task/template";
+        return this;
+    }
+
     public CommandWrapperBuilder createFECashLimit() {
         this.actionName = "CREATE";
         this.entityName = "FECASHLIMIT";

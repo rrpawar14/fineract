@@ -27,14 +27,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.PersistenceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.fineract.infrastructure.codes.exception.CodeNotFoundException;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.vlms.cashier.domain.CashierModuleTask;
+import org.apache.fineract.vlms.cashier.domain.CashierModuleTaskRepository;
 import org.apache.fineract.vlms.cashier.domain.HLPayment;
 import org.apache.fineract.vlms.cashier.domain.HLPaymentDetails;
 import org.apache.fineract.vlms.cashier.domain.HLPaymentDetailsRepository;
@@ -60,16 +64,18 @@ public class CashierModuleWritePlatformServiceImpl implements CashierModuleWrite
     private final HLPaymentDetailsRepository hlPaymentDetailsRepository;
     private final VoucherRepository voucherRepository;
     private final VoucherDetailsRepository voucherDetailsRepository;
+    private final CashierModuleTaskRepository cashierModuleTaskRepository;
 
     @Autowired
     public CashierModuleWritePlatformServiceImpl(final PlatformSecurityContext context, final HLPaymentRepository hlPaymentRepository,
             final VoucherRepository voucherRepository, final VoucherDetailsRepository voucherDetailsRepository,
-            final HLPaymentDetailsRepository hlPaymentDetailsRepository) {
+            final HLPaymentDetailsRepository hlPaymentDetailsRepository, final CashierModuleTaskRepository cashierModuleTaskRepository) {
         this.context = context;
         this.hlPaymentRepository = hlPaymentRepository;
         this.voucherRepository = voucherRepository;
         this.voucherDetailsRepository = voucherDetailsRepository;
         this.hlPaymentDetailsRepository = hlPaymentDetailsRepository;
+        this.cashierModuleTaskRepository = cashierModuleTaskRepository;
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(CashierModuleWritePlatformServiceImpl.class);
@@ -277,6 +283,48 @@ public class CashierModuleWritePlatformServiceImpl implements CashierModuleWrite
             }
         }
         return hlPaymentDatas;
+    }
+
+    @Transactional
+    @Override
+    @CacheEvict(value = "fetask", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult editCashierModuleTask(final Long taskId, final JsonCommand command) {
+
+        try {
+            this.context.authenticatedUser();
+
+            // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+            /*
+             * final Code code = retrieveCodeBy(codeId); final Map<String, Object> changes = code.update(command);
+             */
+
+            final CashierModuleTask cashierModuleTask = retrieveTaskBy(taskId);
+            final Map<String, Object> changes = cashierModuleTask.update(command);
+
+            if (!changes.isEmpty()) {
+                this.cashierModuleTaskRepository.save(cashierModuleTask);
+            }
+
+            /*
+             * final FETask feTask = FETask.fromJson(command); this.feTaskRepository.save(feTask);
+             */
+
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(taskId).build();
+            // .withEntityId(code.getId())
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException ee) {
+            Throwable throwable = ExceptionUtils.getRootCause(ee.getCause());
+            handleDataIntegrityIssues(command, throwable, ee);
+            return CommandProcessingResult.empty();
+        }
+
+    }
+
+    private CashierModuleTask retrieveTaskBy(final Long taskId) {
+        return this.cashierModuleTaskRepository.findById(taskId).orElseThrow(() -> new CodeNotFoundException(taskId.toString()));
     }
 
     private void handleDataIntegrityIssues(final JsonCommand command, final Throwable realCause, final Exception dve) {

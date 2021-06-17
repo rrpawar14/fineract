@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.vlms.fieldexecutive.domain;
+package org.apache.fineract.vlms.cashier.domain;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -33,8 +33,8 @@ import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 
 @Entity
-@Table(name = "m_fe_task")
-public class Task extends AbstractPersistableCustom {
+@Table(name = "m_cashiermodule_task")
+public class CashierModuleTask extends AbstractPersistableCustom {
 
     @Column(name = "taskType", nullable = false, length = 100)
     private String taskType;
@@ -60,16 +60,13 @@ public class Task extends AbstractPersistableCustom {
     @Column(name = "description", nullable = false, length = 100)
     private String description;
 
-    @Column(name = "branch", nullable = false, length = 100)
-    private String branch;
-
     @Column(name = "status", nullable = false, length = 100)
     private String status;
 
     @Column(name = "created_date", nullable = false, length = 100)
     private Date createdDate;
 
-    public static Task fromJson(final JsonCommand command) {
+    public static CashierModuleTask fromJson(final JsonCommand command) {
 
         final String taskType = command.stringValueOfParameterNamed("taskType");
         final String customerRegNo = command.stringValueOfParameterNamed("customerRegNo");
@@ -79,21 +76,20 @@ public class Task extends AbstractPersistableCustom {
         final String assignTo = command.stringValueOfParameterNamed("assignTo");
         final String assignBy = command.stringValueOfParameterNamed("assignBy");
         final String description = command.stringValueOfParameterNamed("description");
-        final String branch = command.stringValueOfParameterNamed("branch");
         final String status = command.stringValueOfParameterNamed("status");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Date createdDate = new Date();
 
-        return new Task(taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, assignBy, description, branch, status,
-                createdDate);
+        return new CashierModuleTask(taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, assignBy, description,
+                status, createdDate);
 
     }
 
-    public Task() {}
+    public CashierModuleTask() {}
 
-    private Task(final String taskType, final String customerRegNo, final String customerMobileNo, final String vehicleNumber,
-            final Date dueDate, final String assignTo, final String assignBy, final String description, final String branch,
-            final String status, final Date createdDate) {
+    private CashierModuleTask(final String taskType, final String customerRegNo, final String customerMobileNo, final String vehicleNumber,
+            final Date dueDate, final String assignTo, final String assignBy, final String description, final String status,
+            final Date createdDate) {
         this.taskType = taskType;
         this.customerRegNo = customerRegNo;
         this.customerMobileNo = customerMobileNo;
@@ -102,7 +98,6 @@ public class Task extends AbstractPersistableCustom {
         this.assignTo = assignTo;
         this.assignBy = assignBy;
         this.description = description;
-        this.branch = branch;
         this.status = status;
         this.createdDate = createdDate;
     }
@@ -174,13 +169,6 @@ public class Task extends AbstractPersistableCustom {
             final String newValue = command.stringValueOfParameterNamed(descriptionParamName);
             actualChanges.put(descriptionParamName, newValue);
             this.description = StringUtils.defaultIfEmpty(newValue, null);
-        }
-
-        final String branchParamName = "branch";
-        if (command.isChangeInStringParameterNamed(branchParamName, this.branch)) {
-            final String newValue = command.stringValueOfParameterNamed(branchParamName);
-            actualChanges.put(branchParamName, newValue);
-            this.branch = StringUtils.defaultIfEmpty(newValue, null);
         }
 
         final String statusParamName = "status";

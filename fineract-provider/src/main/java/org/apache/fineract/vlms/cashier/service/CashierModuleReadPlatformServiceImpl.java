@@ -173,7 +173,7 @@ public class CashierModuleReadPlatformServiceImpl implements CashierModuleReadPl
 
         public String schema() {
             return " task.id as id, task.taskType as taskType, task.customer_mobile_no as customerMobileNo, task.customer_reg_no as customerRegNo, task.vehicle_number as vehicleNumber, "
-                    + " task.due_date as dueDate, task.assign_to as assignTo, task.assign_by as assignBy, task.description as description, task.status as status, task.created_date as createdDate ";
+                    + " task.due_date as dueDate, task.assign_to as assignTo, task.assign_by as assignBy, task.description as description, task.status as status, task.branch as branch, task.created_date as createdDate ";
 
         }
 
@@ -189,11 +189,12 @@ public class CashierModuleReadPlatformServiceImpl implements CashierModuleReadPl
             final String assignTo = rs.getString("assignTo");
             final String assignBy = rs.getString("assignBy");
             final String description = rs.getString("description");
+            final String branch = rs.getString("branch");
             final String status = rs.getString("status");
             final LocalDate createdDate = JdbcSupport.getLocalDate(rs, "createdDate");
 
-            return TaskData.instance(id, taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, assignBy, description,
-                    status, createdDate);
+            return TaskData.instance(id, taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, assignBy, branch,
+                    description, status, createdDate);
         }
     }
 

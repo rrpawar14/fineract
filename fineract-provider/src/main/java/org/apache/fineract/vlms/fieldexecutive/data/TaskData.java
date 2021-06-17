@@ -57,18 +57,21 @@ public class TaskData implements Serializable {
     private final String status;
 
     @SuppressWarnings("unused")
+    private final String branch;
+
+    @SuppressWarnings("unused")
     private final LocalDate createdDate;
 
     public static TaskData instance(final Long id, final String taskType, final String customerRegNo, final String customerMobileNo,
-            final String vehicleNumber, final LocalDate dueDate, final String assignTo, final String assignBy, final String description,
-            final String status, final LocalDate createdDate) {
-        return new TaskData(id, taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, assignBy, description, status,
-                createdDate);
+            final String vehicleNumber, final LocalDate dueDate, final String assignTo, final String assignBy, final String branch,
+            final String description, final String status, final LocalDate createdDate) {
+        return new TaskData(id, taskType, customerRegNo, customerMobileNo, vehicleNumber, dueDate, assignTo, assignBy, branch, description,
+                status, createdDate);
     }
 
     private TaskData(final Long id, final String taskType, final String customerRegNo, final String customerMobileNo,
-            final String vehicleNumber, final LocalDate dueDate, final String assignTo, final String assignBy, final String description,
-            final String status, final LocalDate createdDate) {
+            final String vehicleNumber, final LocalDate dueDate, final String assignTo, final String assignBy, final String branch,
+            final String description, final String status, final LocalDate createdDate) {
         this.id = id;
         this.taskType = taskType;
         this.customerRegNo = customerRegNo;
@@ -77,6 +80,7 @@ public class TaskData implements Serializable {
         this.dueDate = dueDate;
         this.assignTo = assignTo;
         this.assignBy = assignBy;
+        this.branch = branch;
         this.description = description;
         this.status = status;
         this.createdDate = createdDate;

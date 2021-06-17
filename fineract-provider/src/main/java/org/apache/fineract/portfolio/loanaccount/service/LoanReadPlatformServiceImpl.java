@@ -288,6 +288,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
     @Override
     public Page<LoanAccountData> retrieveAll(final SearchParameters searchParameters) {
 
+        System.out.println("retreiving all");
         final AppUser currentUser = this.context.authenticatedUser();
         final String hierarchy = currentUser.getOffice().getHierarchy();
         final String hierarchySearchString = hierarchy + "%";
@@ -302,8 +303,10 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
         // probably require a UNION query
         // but that at present is an edge case
         sqlBuilder.append(" join m_office o on (o.id = c.office_id or o.id = g.office_id) ");
+        sqlBuilder.append(" join m_office o on ( o.id = g.office_id) ");
         sqlBuilder.append(" left join m_office transferToOffice on transferToOffice.id = c.transfer_to_office_id ");
         sqlBuilder.append(" where ( o.hierarchy like ? or transferToOffice.hierarchy like ?)");
+        // sqlBuilder.append(" where ( o.hierarchy like ? )");
 
         int arrayPos = 2;
         List<Object> extraCriterias = new ArrayList<>();
@@ -635,7 +638,8 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                     + " join m_product_loan lp on lp.id = l.product_id" //
                     + " left join m_loan_recalculation_details lir on lir.loan_id = l.id "
                     + " join m_currency rc on rc.`code` = l.currency_code" //
-                    + " left join m_client c on c.id = l.client_id" //
+                    // + " left join m_client c on c.id = l.client_id" //
+
                     + " left join m_group g on g.id = l.group_id" //
                     + " left join m_loan_arrears_aging la on la.loan_id = l.id" //
                     + " left join m_fund f on f.id = l.fund_id" //

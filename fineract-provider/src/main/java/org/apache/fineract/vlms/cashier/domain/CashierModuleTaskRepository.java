@@ -16,17 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.vlms.cashier.service;
+package org.apache.fineract.vlms.cashier.domain;
 
-import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface CashierModuleWritePlatformService {
-
-    CommandProcessingResult createHLPayment(JsonCommand command);
-
-    CommandProcessingResult createVoucher(JsonCommand command);
-
-    CommandProcessingResult editCashierModuleTask(final Long taskId, final JsonCommand command);
+public interface CashierModuleTaskRepository extends JpaRepository<CashierModuleTask, Long>, JpaSpecificationExecutor<CashierModuleTask> {
 
 }
