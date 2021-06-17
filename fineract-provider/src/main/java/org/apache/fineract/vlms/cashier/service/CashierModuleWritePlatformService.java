@@ -29,4 +29,8 @@ public interface CashierModuleWritePlatformService {
 
     CommandProcessingResult editCashierModuleTask(final Long taskId, final JsonCommand command);
 
+    CommandProcessingResult deleteVoucher(final Long voucherId);
+
+    CommandProcessingResult deleteHLPayment(final Long paymentId);
+
 }

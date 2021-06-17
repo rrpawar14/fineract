@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -156,6 +157,38 @@ public class CashierModuleApiResource {
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
         return this.toApiHLPaymentAnalyticsJsonSerializer.serialize(result);
+    }
+
+    @DELETE
+    @Path("deleteHL/{Id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Create a Task", description = "Creates a Field Executive Task. FE created through api are always 'user defined' and so system defined is marked as false.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String deleteHLPayment(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("Id") @Parameter(description = "Id") final Long Id) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().deleteHLPayment(Id).withJson(apiRequestBodyAsJson).build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiHLPaymentDetailsAnalyticsJsonSerializer.serialize(result);
+    }
+
+    @DELETE
+    @Path("deleteVoucher/{Id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Create a Task", description = "Creates a Field Executive Task. FE created through api are always 'user defined' and so system defined is marked as false.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String deleteVoucher(@Parameter(hidden = true) final String apiRequestBodyAsJson,
+            @PathParam("Id") @Parameter(description = "Id") final Long Id) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().deleteVoucher(Id).withJson(apiRequestBodyAsJson).build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiVoucherDetailsJsonSerializer.serialize(result);
     }
 
     @GET

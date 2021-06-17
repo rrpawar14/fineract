@@ -288,6 +288,48 @@ public class CashierModuleWritePlatformServiceImpl implements CashierModuleWrite
     @Transactional
     @Override
     @CacheEvict(value = "fetask", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult deleteVoucher(final Long Id) {
+
+        this.context.authenticatedUser();
+
+        final VoucherDetails voucher = this.voucherDetailsRepository.getOne(Id);
+
+        try {
+            this.voucherDetailsRepository.delete(voucher);
+            this.voucherDetailsRepository.flush();
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            throw new PlatformDataIntegrityException("error.msg.cund.unknown.data.integrity.issue",
+                    "Unknown data integrity issue with resource: " + dve.getMostSpecificCause(), dve);
+        }
+        return new CommandProcessingResultBuilder().withEntityId(Id).build();
+        // .withEntityId(code.getId())
+
+    }
+
+    @Transactional
+    @Override
+    @CacheEvict(value = "fetask", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
+    public CommandProcessingResult deleteHLPayment(final Long Id) {
+
+        this.context.authenticatedUser();
+
+        final HLPaymentDetails hlpayment = this.hlPaymentDetailsRepository.getOne(Id);
+
+        try {
+            this.hlPaymentDetailsRepository.delete(hlpayment);
+            this.hlPaymentDetailsRepository.flush();
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            throw new PlatformDataIntegrityException("error.msg.cund.unknown.data.integrity.issue",
+                    "Unknown data integrity issue with resource: " + dve.getMostSpecificCause(), dve);
+        }
+        return new CommandProcessingResultBuilder().withEntityId(Id).build();
+        // .withEntityId(code.getId())
+
+    }
+
+    @Transactional
+    @Override
+    @CacheEvict(value = "fetask", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('cv')")
     public CommandProcessingResult editCashierModuleTask(final Long taskId, final JsonCommand command) {
 
         try {

@@ -237,7 +237,7 @@ public class CashierModuleReadPlatformServiceImpl implements CashierModuleReadPl
         this.context.authenticatedUser();
 
         final TaskDataMapper rm = new TaskDataMapper();
-        final String sql = "select " + rm.schema() + " from m_cashier_task task ";
+        final String sql = "select " + rm.schema() + " from m_cashiermodule_task task ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
     }

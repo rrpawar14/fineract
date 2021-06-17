@@ -1182,6 +1182,22 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder deleteVoucher(Long voucherId) {
+        this.actionName = "DELETE";
+        this.entityName = "VOUCHER";
+        this.entityId = voucherId;
+        this.href = "/task/template";
+        return this;
+    }
+
+    public CommandWrapperBuilder deleteHLPayment(Long paymentId) {
+        this.actionName = "DELETE";
+        this.entityName = "HLPAYMENT";
+        this.entityId = paymentId;
+        this.href = "/task/template";
+        return this;
+    }
+
     public CommandWrapperBuilder createLoanApprovalLimit() {
         this.actionName = "CREATE";
         this.entityName = "APPROVALLIMIT";
