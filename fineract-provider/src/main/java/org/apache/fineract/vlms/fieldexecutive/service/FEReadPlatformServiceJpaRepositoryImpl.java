@@ -308,6 +308,16 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
             sql = "select " + rm.schema() + " from m_documents_images doc where customerdetails_id= ? ";
         } else if (commandParam.equals("guarantorData")) {
             sql = "select " + rm.schema() + " from m_documents_images doc  where guarantor_id= ? ";
+        } else if (commandParam.equals("employeeData")) {
+            sql = "select " + rm.schema() + " from m_documents_images doc  where employee_id= ? ";
+        } else if (commandParam.equals("enrollData")) {
+            sql = "select " + rm.schema() + " from m_documents_images doc  where feEnroll_id= ? ";
+        } else if (commandParam.equals("bankData")) {
+            sql = "select " + rm.schema() + " from m_documents_images doc  where bank_id= ? ";
+        } else if (commandParam.equals("loanData")) {
+            sql = "select " + rm.schema() + " from m_documents_images doc  where loan_id= ? ";
+        } else if (commandParam.equals("vehicleData")) {
+            sql = "select " + rm.schema() + " from m_vehicle_images doc  where vehicle_id= ? ";
         }
 
         return this.jdbcTemplate.query(sql, rm, new Object[] { clientId });
