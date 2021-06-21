@@ -25,6 +25,15 @@ public enum LoanStatus {
 
     INVALID(0, "loanStatusType.invalid"), //
     SUBMITTED_AND_PENDING_APPROVAL(100, "loanStatusType.submitted.and.pending.approval"), //
+
+    LOANTRANSFER_AND_BENEFICIARY_ADDED(101, "loanStatusType.loantransfer.and.beneficiary.added"), //
+    DCTRANSFER_AND_BENEFICIARY_ADDED(102, "loanStatusType.dctransfer.and.beneficiary.added"), //
+    LOANTRANSFER_REQUEST(103, "loanStatusType.loantransfer.request"), //
+    DCTRANSFER_REQUEST(104, "loanStatusType.dctransfer.request"), //
+    CHANGE_REQUEST(105, "loanStatusType.change.request"), //
+    REMINDER_REQUEST(106, "loanStatusType.reminder.request"), //
+    ADDITIONAL_TRANSFERDOC_REQUEST(107, "loanStatusType.additional.transferdoc.request"), //
+
     APPROVED(200, "loanStatusType.approved"), //
     ACTIVE(300, "loanStatusType.active"), //
     TRANSFER_IN_PROGRESS(303, "loanStatusType.transfer.in.progress"), //
@@ -45,6 +54,27 @@ public enum LoanStatus {
         switch (statusValue) {
             case 100:
                 enumeration = LoanStatus.SUBMITTED_AND_PENDING_APPROVAL;
+            break;
+            case 101:
+                enumeration = LoanStatus.LOANTRANSFER_AND_BENEFICIARY_ADDED;
+            break;
+            case 102:
+                enumeration = LoanStatus.DCTRANSFER_AND_BENEFICIARY_ADDED;
+            break;
+            case 103:
+                enumeration = LoanStatus.LOANTRANSFER_REQUEST;
+            break;
+            case 104:
+                enumeration = LoanStatus.DCTRANSFER_REQUEST;
+            break;
+            case 105:
+                enumeration = LoanStatus.CHANGE_REQUEST;
+            break;
+            case 106:
+                enumeration = LoanStatus.REMINDER_REQUEST;
+            break;
+            case 107:
+                enumeration = LoanStatus.ADDITIONAL_TRANSFERDOC_REQUEST;
             break;
             case 200:
                 enumeration = LoanStatus.APPROVED;

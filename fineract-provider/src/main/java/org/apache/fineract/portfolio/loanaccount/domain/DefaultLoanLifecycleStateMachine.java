@@ -44,11 +44,54 @@ public class DefaultLoanLifecycleStateMachine implements LoanLifecycleStateMachi
                     newState = stateOf(LoanStatus.REJECTED, this.allowedLoanStatuses);
                 }
             break;
+
             case LOAN_APPROVED:
                 if (from.hasStateOf(LoanStatus.SUBMITTED_AND_PENDING_APPROVAL)) {
                     newState = stateOf(LoanStatus.APPROVED, this.allowedLoanStatuses);
                 }
             break;
+
+            case LOAN_TRANSFER:
+                if (from.hasStateOf(LoanStatus.APPROVED)) {
+                    newState = stateOf(LoanStatus.LOANTRANSFER_AND_BENEFICIARY_ADDED, this.allowedLoanStatuses);
+                }
+            break;
+
+            case DC_TRANSFER:
+                if (from.hasStateOf(LoanStatus.LOANTRANSFER_AND_BENEFICIARY_ADDED)) {
+                    newState = stateOf(LoanStatus.DCTRANSFER_AND_BENEFICIARY_ADDED, this.allowedLoanStatuses);
+                }
+            break;
+            case LOAN_TRANSFER_REQUEST:
+                if (from.hasStateOf(LoanStatus.DCTRANSFER_AND_BENEFICIARY_ADDED)) {
+                    newState = stateOf(LoanStatus.LOANTRANSFER_REQUEST, this.allowedLoanStatuses);
+                }
+            break;
+
+            case DC_TRANSFER_REQUEST:
+                if (from.hasStateOf(LoanStatus.LOANTRANSFER_REQUEST)) {
+                    newState = stateOf(LoanStatus.DCTRANSFER_REQUEST, this.allowedLoanStatuses);
+                }
+            break;
+
+            case CHANGE_REQUEST:
+                if (from.hasStateOf(LoanStatus.DCTRANSFER_REQUEST)) {
+                    newState = stateOf(LoanStatus.CHANGE_REQUEST, this.allowedLoanStatuses);
+                }
+            break;
+
+            case REMINDER_REQUEST:
+                if (from.hasStateOf(LoanStatus.CHANGE_REQUEST)) {
+                    newState = stateOf(LoanStatus.REMINDER_REQUEST, this.allowedLoanStatuses);
+                }
+            break;
+
+            case ADDITIONAL_TRANSFER:
+                if (from.hasStateOf(LoanStatus.REMINDER_REQUEST)) {
+                    newState = stateOf(LoanStatus.ADDITIONAL_TRANSFERDOC_REQUEST, this.allowedLoanStatuses);
+                }
+            break;
+
             case LOAN_WITHDRAWN:
                 if (anyOfAllowedWhenComingFrom(from, LoanStatus.SUBMITTED_AND_PENDING_APPROVAL)) {
                     newState = stateOf(LoanStatus.WITHDRAWN_BY_CLIENT, this.allowedLoanStatuses);

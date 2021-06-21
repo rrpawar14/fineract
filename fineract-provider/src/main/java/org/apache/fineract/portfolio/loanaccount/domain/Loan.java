@@ -2165,6 +2165,8 @@ public class Loan extends AbstractPersistableCustom {
          * not equal to invalidateState, instead of check new value is same as present value.
          */
 
+        System.out.println("loanstatus : " + newStatusEnum.hasStateOf(LoanStatus.fromInt(this.loanStatus)));
+
         if (!newStatusEnum.hasStateOf(LoanStatus.fromInt(this.loanStatus))) {
             this.loanStatus = newStatusEnum.getValue();
             actualChanges.put("status", LoanEnumerations.status(this.loanStatus));
@@ -2265,6 +2267,131 @@ public class Loan extends AbstractPersistableCustom {
                         this.loanOfficer, approvedOn);
                 this.loanOfficerHistory.add(loanOfficerAssignmentHistory);
             }
+        }
+
+        return actualChanges;
+    }
+
+    public Map<String, Object> loanApplicationTransfer(final AppUser currentUser, final JsonCommand command,
+            final JsonArray disbursementDataArray, final LoanLifecycleStateMachine loanLifecycleStateMachine) {
+
+        validateAccountStatus(LoanEvent.LOAN_TRANSFER);
+
+        final Map<String, Object> actualChanges = new LinkedHashMap<>();
+
+        /*
+         * statusEnum is holding the possible new status derived from loanLifecycleStateMachine.transition.
+         */
+
+        final LoanStatus newStatusEnum = loanLifecycleStateMachine.transition(LoanEvent.LOAN_TRANSFER, LoanStatus.fromInt(this.loanStatus));
+
+        /*
+         * FIXME: There is no need to check below condition, if loanLifecycleStateMachine.transition is doing it's
+         * responsibility properly. Better implementation approach is, if code passes invalid combination of states
+         * (fromState and toState), state machine should return invalidate state and below if condition should check for
+         * not equal to invalidateState, instead of check new value is same as present value.
+         */
+
+        System.out.println("loan status check");
+
+        System.out.println("loanstatus : " + newStatusEnum.hasStateOf(LoanStatus.fromInt(this.loanStatus)));
+        if (newStatusEnum.hasStateOf(LoanStatus.fromInt(this.loanStatus))) {
+            this.loanStatus = newStatusEnum.getValue();
+            actualChanges.put("status", LoanEnumerations.status(this.loanStatus));
+
+            // only do below if status has changed in the 'approval' case
+            LocalDate approvedOn = command.localDateValueOfParameterNamed("approvedOnDate");
+            String approvedOnDateChange = command.stringValueOfParameterNamed("approvedOnDate");
+
+            if (approvedOn == null) {
+                approvedOn = command.localDateValueOfParameterNamed("eventDate");
+                approvedOnDateChange = command.stringValueOfParameterNamed("eventDate");
+            }
+
+            LocalDate expecteddisbursementDate = command.localDateValueOfParameterNamed("expectedDisbursementDate");
+
+            BigDecimal approvedLoanAmount = command.bigDecimalValueOfParameterNamed(LoanApiConstants.approvedLoanAmountParameterName);
+
+            String branchName = command.stringValueOfParameterNamed("branchName");
+            String insuranceName = command.stringValueOfParameterNamed("insuranceName");
+            System.out.println("branchname: " + branchName + "insuranceName: " + insuranceName);
+
+            actualChanges.put("branchName", branchName);
+            actualChanges.put("insuranceName", insuranceName);
+
+            /*
+             * if (approvedLoanAmount != null) {
+             *
+             * // Approved amount has to be less than or equal to principal // amount demanded
+             *
+             * if (approvedLoanAmount.compareTo(this.proposedPrincipal) < 0) {
+             *
+             * this.approvedPrincipal = approvedLoanAmount;
+             *
+             * /* All the calculations are done based on the principal amount, so it is necessary to set principal
+             * amount to approved amount
+             */
+
+            // this.loanRepaymentScheduleDetail.setPrincipal(approvedLoanAmount);
+
+            // actualChanges.put(LoanApiConstants.approvedLoanAmountParameterName, approvedLoanAmount);
+            // actualChanges.put(LoanApiConstants.disbursementPrincipalParameterName, approvedLoanAmount);
+
+            /*
+             * } else if (approvedLoanAmount.compareTo(this.proposedPrincipal) > 0) { final String errorMessage =
+             * "Loan approved amount can't be greater than loan amount demanded."; throw new
+             * InvalidLoanStateTransitionException("approval", "amount.can't.be.greater.than.loan.amount.demanded",
+             * errorMessage, this.proposedPrincipal, approvedLoanAmount); }
+             *
+             * /* Update disbursement details
+             */
+            /*
+             * if (disbursementDataArray != null) { updateDisbursementDetails(command, actualChanges); } }
+             */
+
+            recalculateAllCharges();
+
+            /*
+             * if (loanProduct.isMultiDisburseLoan()) {
+             *
+             * if (this.disbursementDetails.isEmpty()) { final String errorMessage =
+             * "For this loan product, disbursement details must be provided"; throw new
+             * MultiDisbursementDataRequiredException(LoanApiConstants.disbursementDataParameterName, errorMessage); }
+             *
+             * if (this.disbursementDetails.size() > loanProduct.maxTrancheCount()) { final String errorMessage =
+             * "Number of tranche shouldn't be greter than " + loanProduct.maxTrancheCount(); throw new
+             * ExceedingTrancheCountException(LoanApiConstants.disbursementDataParameterName, errorMessage,
+             * loanProduct.maxTrancheCount(), disbursementDetails.size()); } } this.approvedOnDate =
+             * Date.from(approvedOn.atStartOfDay(DateUtils.getDateTimeZoneOfTenant()).toInstant()); this.approvedBy =
+             * currentUser; actualChanges.put("locale", command.locale()); actualChanges.put("dateFormat",
+             * command.dateFormat()); actualChanges.put("approvedOnDate", approvedOnDateChange);
+             *
+             * final LocalDate submittalDate = LocalDate.ofInstant(this.submittedOnDate.toInstant(),
+             * DateUtils.getDateTimeZoneOfTenant()); if (approvedOn.isBefore(submittalDate)) { final String errorMessage
+             * = "The date on which a loan is approved cannot be before its submittal date: " +
+             * submittalDate.toString(); throw new InvalidLoanStateTransitionException("approval",
+             * "cannot.be.before.submittal.date", errorMessage, getApprovedOnDate(), submittalDate); }
+             *
+             * if (expecteddisbursementDate != null) { this.expectedDisbursementDate = Date
+             * .from(expecteddisbursementDate.atStartOfDay(DateUtils.getDateTimeZoneOfTenant()).toInstant());
+             * actualChanges.put("expectedDisbursementDate", expectedDisbursementDate);
+             *
+             * if (expecteddisbursementDate.isBefore(approvedOn)) { final String errorMessage =
+             * "The expected disbursement date should be either on or after the approval date: " +
+             * approvedOn.toString(); throw new InvalidLoanStateTransitionException("expecteddisbursal",
+             * "should.be.on.or.after.approval.date", errorMessage, getApprovedOnDate(), expecteddisbursementDate); } }
+             *
+             * validateActivityNotBeforeClientOrGroupTransferDate(LoanEvent.LOAN_APPROVED, approvedOn);
+             *
+             * if (approvedOn.isAfter(DateUtils.getLocalDateOfTenant())) { final String errorMessage =
+             * "The date on which a loan is approved cannot be in the future."; throw new
+             * InvalidLoanStateTransitionException("approval", "cannot.be.a.future.date", errorMessage,
+             * getApprovedOnDate()); }
+             *
+             * if (this.loanOfficer != null) { final LoanOfficerAssignmentHistory loanOfficerAssignmentHistory =
+             * LoanOfficerAssignmentHistory.createNew(this, this.loanOfficer, approvedOn);
+             * this.loanOfficerHistory.add(loanOfficerAssignmentHistory); }
+             */
         }
 
         return actualChanges;

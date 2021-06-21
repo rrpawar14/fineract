@@ -31,6 +31,20 @@ public interface LoanApplicationWritePlatformService {
 
     CommandProcessingResult approveApplication(Long loanId, JsonCommand command);
 
+    CommandProcessingResult loanTransferApplication(final Long loanId, final JsonCommand command); //
+
+    CommandProcessingResult dcTransferApplication(final Long loanId, final JsonCommand command); //
+
+    CommandProcessingResult loanTransferRequestApplication(final Long loanId, final JsonCommand command); //
+
+    CommandProcessingResult dcTransferRequestApplication(final Long loanId, final JsonCommand command); //
+
+    CommandProcessingResult changeRequestApplication(final Long loanId, final JsonCommand command); //
+
+    CommandProcessingResult reminderRequestApplication(final Long loanId, final JsonCommand command); //
+
+    CommandProcessingResult additionalTransferDocumentRequestApplication(final Long loanId, final JsonCommand command); //
+
     CommandProcessingResult undoApplicationApproval(Long loanId, JsonCommand command);
 
     CommandProcessingResult rejectApplication(Long loanId, JsonCommand command);

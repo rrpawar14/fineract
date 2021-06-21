@@ -442,6 +442,36 @@ public final class LoanEnumerations {
             case APPROVED:
                 optionData = new LoanStatusEnumData(LoanStatus.APPROVED.getValue().longValue(), LoanStatus.APPROVED.getCode(), "Approved");
             break;
+
+            case LOANTRANSFER_AND_BENEFICIARY_ADDED:
+                optionData = new LoanStatusEnumData(LoanStatus.LOANTRANSFER_AND_BENEFICIARY_ADDED.getValue().longValue(),
+                        LoanStatus.LOANTRANSFER_AND_BENEFICIARY_ADDED.getCode(), "Loan Transfer and Beneficiary Added");
+            break;
+            case DCTRANSFER_AND_BENEFICIARY_ADDED:
+                optionData = new LoanStatusEnumData(LoanStatus.DCTRANSFER_AND_BENEFICIARY_ADDED.getValue().longValue(),
+                        LoanStatus.DCTRANSFER_AND_BENEFICIARY_ADDED.getCode(), "DC Transfer and Beneficiary Added");
+            break;
+            case LOANTRANSFER_REQUEST:
+                optionData = new LoanStatusEnumData(LoanStatus.LOANTRANSFER_REQUEST.getValue().longValue(),
+                        LoanStatus.LOANTRANSFER_REQUEST.getCode(), "Loan Transfer Request");
+            break;
+            case DCTRANSFER_REQUEST:
+                optionData = new LoanStatusEnumData(LoanStatus.DCTRANSFER_REQUEST.getValue().longValue(),
+                        LoanStatus.DCTRANSFER_REQUEST.getCode(), "DC Transfer Request");
+            break;
+            case CHANGE_REQUEST:
+                optionData = new LoanStatusEnumData(LoanStatus.CHANGE_REQUEST.getValue().longValue(), LoanStatus.CHANGE_REQUEST.getCode(),
+                        "Change Request");
+            break;
+            case REMINDER_REQUEST:
+                optionData = new LoanStatusEnumData(LoanStatus.REMINDER_REQUEST.getValue().longValue(),
+                        LoanStatus.REMINDER_REQUEST.getCode(), "Reminder Request");
+            break;
+            case ADDITIONAL_TRANSFERDOC_REQUEST:
+                optionData = new LoanStatusEnumData(LoanStatus.ADDITIONAL_TRANSFERDOC_REQUEST.getValue().longValue(),
+                        LoanStatus.ADDITIONAL_TRANSFERDOC_REQUEST.getCode(), "Additional Transfer Document Request");
+            break;
+
             case ACTIVE:
                 optionData = new LoanStatusEnumData(LoanStatus.ACTIVE.getValue().longValue(), LoanStatus.ACTIVE.getCode(), "Active");
             break;

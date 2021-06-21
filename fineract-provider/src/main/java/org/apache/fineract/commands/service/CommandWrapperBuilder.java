@@ -1116,6 +1116,62 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder LoanTransferApplication(Long loanId) {
+        this.actionName = "UPDATE";
+        this.entityName = "LOANAPPLICATIONTRANSFER";
+        this.entityId = loanId;
+        this.href = "/task/template";
+        return this;
+    }
+
+    public CommandWrapperBuilder DCTransferApplication(Long loanId) {
+        this.actionName = "UPDATE";
+        this.entityName = "DCAPPLICATIONTRANSFER";
+        this.entityId = loanId;
+        this.href = "/task/template";
+        return this;
+    }
+
+    public CommandWrapperBuilder LoanTransferRequest(Long loanId) {
+        this.actionName = "UPDATE";
+        this.entityName = "LOANTRANSFERREQUEST";
+        this.entityId = loanId;
+        this.href = "/task/template";
+        return this;
+    }
+
+    public CommandWrapperBuilder DCTransferRequest(Long loanId) {
+        this.actionName = "UPDATE";
+        this.entityName = "DCAPPLICATIONREQUEST";
+        this.entityId = loanId;
+        this.href = "/task/template";
+        return this;
+    }
+
+    public CommandWrapperBuilder changeRequest(Long loanId) {
+        this.actionName = "UPDATE";
+        this.entityName = "CHANGEAPPLICATIONREQUEST";
+        this.entityId = loanId;
+        this.href = "/task/template";
+        return this;
+    }
+
+    public CommandWrapperBuilder reminderRequest(Long loanId) {
+        this.actionName = "UPDATE";
+        this.entityName = "REMINDERREQUEST";
+        this.entityId = loanId;
+        this.href = "/task/template";
+        return this;
+    }
+
+    public CommandWrapperBuilder additionalDocumentRequest(Long loanId) {
+        this.actionName = "UPDATE";
+        this.entityName = "ADDITIONALDOCREQUEST";
+        this.entityId = loanId;
+        this.href = "/task/template";
+        return this;
+    }
+
     public CommandWrapperBuilder createCashierModuleTask() {
         this.actionName = "CREATE";
         this.entityName = "CASHIERMODULETASK";

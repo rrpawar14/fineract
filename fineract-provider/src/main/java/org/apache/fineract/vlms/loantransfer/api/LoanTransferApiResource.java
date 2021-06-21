@@ -38,6 +38,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
@@ -196,6 +197,61 @@ public class LoanTransferApiResource {
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
         return this.toApiLoanTransferAnalyticsJsonSerializer.serialize(result);
+    }
+
+    @POST
+    @Path("{loanId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String stateTransitions(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId,
+            @QueryParam("command") @Parameter(description = "command") final String commandParam,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
+
+        CommandProcessingResult result = null;
+
+        if (is(commandParam, "loanTransfer")) {
+            final CommandWrapper commandRequest = builder.LoanTransferApplication(loanId).build();
+            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        }
+
+        else if (is(commandParam, "dcTransfer")) {
+            final CommandWrapper commandRequest = builder.DCTransferApplication(loanId).build();
+            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        }
+
+        else if (is(commandParam, "loanTransferRequest")) {
+            final CommandWrapper commandRequest = builder.LoanTransferRequest(loanId).build();
+            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        }
+
+        else if (is(commandParam, "dcTransferRequest")) {
+            final CommandWrapper commandRequest = builder.DCTransferRequest(loanId).build();
+            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        }
+
+        else if (is(commandParam, "changeRequest")) {
+            final CommandWrapper commandRequest = builder.changeRequest(loanId).build();
+            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        }
+
+        else if (is(commandParam, "reminderRequest")) {
+            final CommandWrapper commandRequest = builder.reminderRequest(loanId).build();
+            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        }
+
+        else if (is(commandParam, "additionalDocumentRequest")) {
+            final CommandWrapper commandRequest = builder.additionalDocumentRequest(loanId).build();
+            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        }
+
+        return this.toApiLoanTransferAnalyticsJsonSerializer.serialize(result);
+    }
+
+    private boolean is(final String commandParam, final String commandValue) {
+        return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
     }
 
 }

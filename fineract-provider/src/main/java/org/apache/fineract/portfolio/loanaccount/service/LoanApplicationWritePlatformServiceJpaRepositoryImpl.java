@@ -1458,6 +1458,198 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 
     @Transactional
     @Override
+    public CommandProcessingResult loanTransferApplication(final Long loanId, final JsonCommand command) {
+
+        final AppUser currentUser = getAppUserIfPresent();
+        System.out.println("loantransferapplication");
+
+        final JsonArray disbursementDataArray = command.arrayOfParameterNamed(LoanApiConstants.disbursementDataParameterName);
+
+        final Loan loan = retrieveLoanBy(loanId);
+        System.out.println("loan: " + loan);
+
+        /*
+         * final Map<String, Object> changes = loan.loanApplicationTransfer(currentUser, command, disbursementDataArray,
+         * defaultLoanLifecycleStateMachine());
+         *
+         * System.out.println("changes: " + changes);
+         */
+
+        // saveAndFlushLoanWithDataIntegrityViolationChecks(loan);
+
+        // final Map<String, Object> changes =
+        loan.setLoanStatus(LoanStatus.LOANTRANSFER_AND_BENEFICIARY_ADDED.getValue());
+        this.loanRepositoryWrapper.saveAndFlush(loan);
+
+        return new CommandProcessingResultBuilder() //
+                .withCommandId(command.commandId()) //
+                .withEntityId(loan.getId()) //
+                .withOfficeId(loan.getOfficeId()) //
+                .withClientId(loan.getClientId()) //
+                .withGroupId(loan.getGroupId()) //
+                .withLoanId(loanId) //
+                // .with(changes) //
+                .build();
+
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult dcTransferApplication(final Long loanId, final JsonCommand command) {
+
+        final AppUser currentUser = getAppUserIfPresent();
+
+        final JsonArray disbursementDataArray = command.arrayOfParameterNamed(LoanApiConstants.disbursementDataParameterName);
+
+        final Loan loan = retrieveLoanBy(loanId);
+
+        loan.setLoanStatus(LoanStatus.DCTRANSFER_AND_BENEFICIARY_ADDED.getValue());
+        this.loanRepositoryWrapper.saveAndFlush(loan);
+
+        return new CommandProcessingResultBuilder() //
+                .withCommandId(command.commandId()) //
+                .withEntityId(loan.getId()) //
+                .withOfficeId(loan.getOfficeId()) //
+                .withClientId(loan.getClientId()) //
+                .withGroupId(loan.getGroupId()) //
+                .withLoanId(loanId) //
+                // .with(changes) //
+                .build();
+
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult loanTransferRequestApplication(final Long loanId, final JsonCommand command) {
+
+        final AppUser currentUser = getAppUserIfPresent();
+        System.out.println("loantransferapplication");
+
+        final JsonArray disbursementDataArray = command.arrayOfParameterNamed(LoanApiConstants.disbursementDataParameterName);
+
+        final Loan loan = retrieveLoanBy(loanId);
+
+        loan.setLoanStatus(LoanStatus.LOANTRANSFER_REQUEST.getValue());
+        this.loanRepositoryWrapper.saveAndFlush(loan);
+
+        return new CommandProcessingResultBuilder() //
+                .withCommandId(command.commandId()) //
+                .withEntityId(loan.getId()) //
+                .withOfficeId(loan.getOfficeId()) //
+                .withClientId(loan.getClientId()) //
+                .withGroupId(loan.getGroupId()) //
+                .withLoanId(loanId) //
+                // .with(changes) //
+                .build();
+
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult dcTransferRequestApplication(final Long loanId, final JsonCommand command) {
+
+        final AppUser currentUser = getAppUserIfPresent();
+        System.out.println("loantransferapplication");
+
+        final JsonArray disbursementDataArray = command.arrayOfParameterNamed(LoanApiConstants.disbursementDataParameterName);
+
+        final Loan loan = retrieveLoanBy(loanId);
+
+        loan.setLoanStatus(LoanStatus.DCTRANSFER_REQUEST.getValue());
+        this.loanRepositoryWrapper.saveAndFlush(loan);
+
+        return new CommandProcessingResultBuilder() //
+                .withCommandId(command.commandId()) //
+                .withEntityId(loan.getId()) //
+                .withOfficeId(loan.getOfficeId()) //
+                .withClientId(loan.getClientId()) //
+                .withGroupId(loan.getGroupId()) //
+                .withLoanId(loanId) //
+                // .with(changes) //
+                .build();
+
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult changeRequestApplication(final Long loanId, final JsonCommand command) {
+
+        final AppUser currentUser = getAppUserIfPresent();
+        System.out.println("loantransferapplication");
+
+        final JsonArray disbursementDataArray = command.arrayOfParameterNamed(LoanApiConstants.disbursementDataParameterName);
+
+        final Loan loan = retrieveLoanBy(loanId);
+
+        loan.setLoanStatus(LoanStatus.CHANGE_REQUEST.getValue());
+        this.loanRepositoryWrapper.saveAndFlush(loan);
+
+        return new CommandProcessingResultBuilder() //
+                .withCommandId(command.commandId()) //
+                .withEntityId(loan.getId()) //
+                .withOfficeId(loan.getOfficeId()) //
+                .withClientId(loan.getClientId()) //
+                .withGroupId(loan.getGroupId()) //
+                .withLoanId(loanId) //
+                // .with(changes) //
+                .build();
+
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult reminderRequestApplication(final Long loanId, final JsonCommand command) {
+
+        final AppUser currentUser = getAppUserIfPresent();
+        System.out.println("loantransferapplication");
+
+        final JsonArray disbursementDataArray = command.arrayOfParameterNamed(LoanApiConstants.disbursementDataParameterName);
+
+        final Loan loan = retrieveLoanBy(loanId);
+
+        loan.setLoanStatus(LoanStatus.REMINDER_REQUEST.getValue());
+        this.loanRepositoryWrapper.saveAndFlush(loan);
+
+        return new CommandProcessingResultBuilder() //
+                .withCommandId(command.commandId()) //
+                .withEntityId(loan.getId()) //
+                .withOfficeId(loan.getOfficeId()) //
+                .withClientId(loan.getClientId()) //
+                .withGroupId(loan.getGroupId()) //
+                .withLoanId(loanId) //
+                // .with(changes) //
+                .build();
+
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult additionalTransferDocumentRequestApplication(final Long loanId, final JsonCommand command) {
+
+        final AppUser currentUser = getAppUserIfPresent();
+        System.out.println("loantransferapplication");
+
+        final JsonArray disbursementDataArray = command.arrayOfParameterNamed(LoanApiConstants.disbursementDataParameterName);
+
+        final Loan loan = retrieveLoanBy(loanId);
+
+        loan.setLoanStatus(LoanStatus.ADDITIONAL_TRANSFERDOC_REQUEST.getValue());
+        this.loanRepositoryWrapper.saveAndFlush(loan);
+
+        return new CommandProcessingResultBuilder() //
+                .withCommandId(command.commandId()) //
+                .withEntityId(loan.getId()) //
+                .withOfficeId(loan.getOfficeId()) //
+                .withClientId(loan.getClientId()) //
+                .withGroupId(loan.getGroupId()) //
+                .withLoanId(loanId) //
+                // .with(changes) //
+                .build();
+
+    }
+
+    @Transactional
+    @Override
     public CommandProcessingResult undoGLIMLoanApplicationApproval(final Long loanId, final JsonCommand command) {
 
         // GroupLoanIndividualMonitoringAccount
