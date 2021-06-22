@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
+import org.apache.fineract.organisation.office.domain.Office;
 import org.apache.fineract.portfolio.address.domain.Address;
 
 @Entity
@@ -87,6 +88,10 @@ public class CustomerDetails extends AbstractPersistableCustom {
 
     @Column(name = "profession")
     private String profession;
+
+    @OneToOne(optional = true)
+    @JoinColumn(name = "branch", nullable = true)
+    private Office office;
 
     @OneToOne(optional = true)
     @JoinColumn(name = "communicationadd_id", nullable = true)
