@@ -51,6 +51,8 @@ public class LoanDisbursalLimit extends AbstractPersistableCustom {
     @Column(name = "status")
     private String status;
 
+    protected LoanDisbursalLimit() {}
+
     public static LoanDisbursalLimit fromJson(final JsonCommand command) {
         final String branchName = command.stringValueOfParameterNamed("branchName");
         final BigDecimal cashLimit = command.bigDecimalValueOfParameterNamed("cashLimit");

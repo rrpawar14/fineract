@@ -41,6 +41,8 @@ public class Voucher extends AbstractPersistableCustom {
     @Column(name = "voucher_number", nullable = false, length = 100)
     private String voucherNumber;
 
+    protected Voucher() {}
+
     public static Voucher fromJson(final JsonCommand command) {
 
         final Date createdDate = command.dateValueOfParameterNamed("createdDate");
