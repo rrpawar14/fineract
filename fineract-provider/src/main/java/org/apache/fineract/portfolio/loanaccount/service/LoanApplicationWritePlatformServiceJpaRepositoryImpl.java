@@ -331,8 +331,15 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                     productRelatedDetail.getRepayEvery(), productRelatedDetail.getRepaymentPeriodFrequencyType().getValue(),
                     newLoanApplication);
 
+            Boolean childLoan = command.booleanObjectValueOfParameterNamed("isChildLoan");
+            System.out.println("childLoan " + childLoan);
+            Boolean handLoan = command.booleanObjectValueOfParameterNamed("isHandLoan");
+            System.out.println("handLoan " + handLoan);
+
+            Long parentId = null;
             // if (loanProduct.canUseForTopup() && clientId != null) {
             if (loanProduct.canUseForTopup()) {
+                System.out.println("Topuploan: ");
                 final Boolean isTopup = command.booleanObjectValueOfParameterNamed(LoanApiConstants.isTopup);
                 if (null == isTopup) {
                     newLoanApplication.setIsTopup(false);
@@ -383,8 +390,28 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                     }
 
                     final LoanTopupDetails topupDetails = new LoanTopupDetails(newLoanApplication, loanIdToClose);
+                    parentId = command.longValueOfParameterNamed("parentId");
+                    newLoanApplication.setParentId(parentId);
                     newLoanApplication.setTopupLoanDetails(topupDetails);
                 }
+            }
+
+            if (null == childLoan) {
+                childLoan = false;
+            }
+
+            if (null == handLoan) {
+                handLoan = false;
+            }
+
+            if (childLoan) {
+                System.out.println("childLoan: " + childLoan);
+                parentId = command.longValueOfParameterNamed("parentId");
+                newLoanApplication.setParentId(parentId);
+            } else if (handLoan) {
+                System.out.println("handLoan: " + handLoan);
+                parentId = command.longValueOfParameterNamed("parentId");
+                newLoanApplication.setParentId(parentId);
             }
 
             this.loanRepositoryWrapper.save(newLoanApplication);

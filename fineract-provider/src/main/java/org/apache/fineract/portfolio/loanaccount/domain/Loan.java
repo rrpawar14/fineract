@@ -163,8 +163,8 @@ public class Loan extends AbstractPersistableCustom {
     @Column(name = "external_id")
     private String externalId;
 
-    @Column(name = "parent_id", nullable = false)
-    private Integer parentId;
+    @Column(name = "parent_id")
+    private Long parentId;
 
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = true)
@@ -1077,6 +1077,11 @@ public class Loan extends AbstractPersistableCustom {
 
     public void setGlim(GroupLoanIndividualMonitoringAccount glim) {
         this.glim = glim;
+    }
+
+    public void setParentId(final Long parentId) {
+        System.out.println("parentId: " + parentId);
+        this.parentId = parentId;
     }
 
     public LoanProduct loanProduct() {
