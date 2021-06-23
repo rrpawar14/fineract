@@ -21,6 +21,7 @@ package org.apache.fineract.vlms.loantransfer.service;
 import java.util.Collection;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.apache.fineract.vlms.loantransfer.data.LoanTransferDashboardData;
+import org.apache.fineract.vlms.loantransfer.data.LoanTransferTeamApplicationStatusData;
 
 public interface LoanTransferReadPlatformService {
 
@@ -29,5 +30,7 @@ public interface LoanTransferReadPlatformService {
     Collection<TaskData> retrieveAllTask();
 
     Collection<TaskData> retrieveAllTaskStatus(final String taskStatus);
+
+    LoanTransferTeamApplicationStatusData retrieveAllLoanApplicationStatus(String loanType, Long loanId);
 
 }

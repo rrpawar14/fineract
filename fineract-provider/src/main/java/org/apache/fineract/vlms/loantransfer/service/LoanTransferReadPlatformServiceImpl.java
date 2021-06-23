@@ -27,6 +27,7 @@ import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.apache.fineract.vlms.loantransfer.data.LoanTransferDashboardData;
+import org.apache.fineract.vlms.loantransfer.data.LoanTransferTeamApplicationStatusData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -130,6 +131,42 @@ public class LoanTransferReadPlatformServiceImpl implements LoanTransferReadPlat
         final String sql = "select " + rm.schema() + " from m_loantransfer_task task where task.status = ? ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] { taskStatus });
+    }
+
+    @Override
+    @Cacheable(value = "LoanTransferAllData", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('CD')")
+    public LoanTransferTeamApplicationStatusData retrieveAllLoanApplicationStatus(String loanType, Long loanId) {
+        this.context.authenticatedUser();
+
+        final LoanTransferStatusMapper rm = new LoanTransferStatusMapper();
+        String sql = null;
+        if (loanType.equals("topuploan")) {
+            sql = " select loan.is_topup as status, " + rm.schema() + " where is_topup = 1 and parent_id= ? ";
+        } else if (loanType.equals("childloan")) {
+            sql = " select loan.is_childloan as status, " + rm.schema() + " where is_childloan = 1 and parent_id= ? ";
+        } else if (loanType.equals("handloan")) {
+            sql = " select loan.is_handloan as status, " + rm.schema() + " where is_handloan = 1 and parent_id= ? ";
+        }
+
+        return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { loanId });
+    }
+
+    private static final class LoanTransferStatusMapper implements RowMapper<LoanTransferTeamApplicationStatusData> {
+
+        public String schema() {
+            return " loan.id as loanId from m_loan loan ";
+
+        }
+
+        @Override
+        public LoanTransferTeamApplicationStatusData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
+                throws SQLException {
+
+            final Boolean status = rs.getBoolean("status");
+            final Long loanId = rs.getLong("loanId");
+
+            return LoanTransferTeamApplicationStatusData.instance(status, loanId);
+        }
     }
 
 }

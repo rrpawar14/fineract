@@ -163,6 +163,9 @@ public class Loan extends AbstractPersistableCustom {
     @Column(name = "external_id")
     private String externalId;
 
+    @Column(name = "parent_id", nullable = false)
+    private Integer parentId;
+
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = true)
     private Client client;

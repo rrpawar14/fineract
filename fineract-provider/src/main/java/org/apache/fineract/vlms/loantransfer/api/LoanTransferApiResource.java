@@ -49,6 +49,7 @@ import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSer
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.vlms.fieldexecutive.data.TaskData;
 import org.apache.fineract.vlms.loantransfer.data.LoanTransferDashboardData;
+import org.apache.fineract.vlms.loantransfer.data.LoanTransferTeamApplicationStatusData;
 import org.apache.fineract.vlms.loantransfer.service.LoanTransferReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -62,6 +63,7 @@ public class LoanTransferApiResource {
     private final PlatformSecurityContext context;
     private final LoanTransferReadPlatformService loanTransferReadPlatformService;
     private final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer;
+    private final DefaultToApiJsonSerializer<LoanTransferTeamApplicationStatusData> toApiLoanStatusDataJsonSerializer;
     private final DefaultToApiJsonSerializer<LoanTransferDashboardData> toApiLoanTransferAnalyticsJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
@@ -72,15 +74,41 @@ public class LoanTransferApiResource {
     public LoanTransferApiResource(final PlatformSecurityContext context,
             final LoanTransferReadPlatformService loanTransferReadPlatformService,
             final DefaultToApiJsonSerializer<TaskData> toApiTaskJsonSerializer,
+            final DefaultToApiJsonSerializer<LoanTransferTeamApplicationStatusData> toApiLoanStatusDataJsonSerializer,
             final DefaultToApiJsonSerializer<LoanTransferDashboardData> toApiLoanTransferAnalyticsJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
         this.loanTransferReadPlatformService = loanTransferReadPlatformService;
         this.toApiTaskJsonSerializer = toApiTaskJsonSerializer;
+        this.toApiLoanStatusDataJsonSerializer = toApiLoanStatusDataJsonSerializer;
         this.toApiLoanTransferAnalyticsJsonSerializer = toApiLoanTransferAnalyticsJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
+    }
+
+    @GET
+    @Path("getLoanApplicationStatus")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Enquires", description = "Returns the list of Enquries.\n" + "\n" + "Example Requests:\n" + "\n"
+            + "documents")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(array =
+                                                                              // @ArraySchema(schema =
+                                                                              // @Schema(implementation =
+                                                                              // CodesApiResourceSwagger.GetCodesResponse.class))))
+                                                                              // })
+    public String retrieveAllLoanTransferDashboardData(@Context final UriInfo uriInfo,
+            @QueryParam("loanType") @Parameter(description = "loanType") final String loanType,
+            @QueryParam("loanId") @Parameter(description = "loanId") final Long loanId) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final LoanTransferTeamApplicationStatusData LoanTransferTeamApplicationStatus = this.loanTransferReadPlatformService
+                .retrieveAllLoanApplicationStatus(loanType, loanId);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiLoanStatusDataJsonSerializer.serialize(settings, LoanTransferTeamApplicationStatus, RESPONSE_DATA_PARAMETERS);
     }
 
     @GET
