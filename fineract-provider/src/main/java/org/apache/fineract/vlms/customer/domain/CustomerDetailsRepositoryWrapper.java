@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanaccount.domain;
+package org.apache.fineract.vlms.customer.domain;
 
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.loanaccount.exception.LoanTransactionProcessingStrategyNotFoundException;
@@ -25,30 +25,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class BankDetailsRepositoryWrapper {
+public class CustomerDetailsRepositoryWrapper {
 
-    private final BankDetailsRepository repository;
+    private final CustomerDetailsRepository repository;
     private final PlatformSecurityContext context;
 
     @Autowired
-    public BankDetailsRepositoryWrapper(final BankDetailsRepository repository, final PlatformSecurityContext context) {
+    public CustomerDetailsRepositoryWrapper(final CustomerDetailsRepository repository, final PlatformSecurityContext context) {
         this.repository = repository;
         this.context = context;
     }
 
-    public BankDetails findOneWithNotFoundDetection(final Long id) {
+    public CustomerDetails findOneWithNotFoundDetection(final Long id) {
         return this.findOneWithNotFoundDetection(id, false);
     }
 
     @Transactional(readOnly = true)
-    public BankDetails findOneWithNotFoundDetection(final Long applicationId, final boolean loadLazyCollections) {
+    public CustomerDetails findOneWithNotFoundDetection(final Long applicationId, final boolean loadLazyCollections) {
 
-        final BankDetails bankDetails = this.repository.findById(applicationId)
+        final CustomerDetails customerDetails = this.repository.findById(applicationId)
                 .orElseThrow(() -> new LoanTransactionProcessingStrategyNotFoundException(applicationId));
         /*
          * if (loadLazyCollections) { NewVehicleLoan.loadLazyCollections(); }
          */
-        return bankDetails;
+        return customerDetails;
     }
 
 }

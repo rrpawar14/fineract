@@ -450,10 +450,10 @@ public class FEWritePlatformServiceJpaRepositoryImpl implements FEWritePlatformS
 
         // this.fromApiJsonDeserializer.validateForCreate(command.json());
 
-        final Task feTask = retrieveTaskBy(taskId);
+        final Task task = retrieveTaskBy(taskId);
 
         try {
-            this.feTaskRepository.delete(feTask);
+            this.feTaskRepository.delete(task);
             this.feTaskRepository.flush();
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             throw new PlatformDataIntegrityException("error.msg.cund.unknown.data.integrity.issue",

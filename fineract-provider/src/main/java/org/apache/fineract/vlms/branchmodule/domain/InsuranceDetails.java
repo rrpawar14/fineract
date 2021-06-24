@@ -50,7 +50,6 @@ public class InsuranceDetails extends AbstractPersistableCustom {
 
         JsonObject addressObject = command.parsedJson().getAsJsonObject();
         JsonElement guarantorObject = addressObject.get(paramName);
-        System.out.println("InsuranceDetails: " + guarantorObject);
 
         if (!(guarantorObject instanceof JsonNull)) { // NOTE : "element instanceof JsonNull" is for handling empty
                                                       // values (and
@@ -64,16 +63,16 @@ public class InsuranceDetails extends AbstractPersistableCustom {
         Gson gson = new Gson();
 
         guarantorObject = addressObject.get("policyNumber");
-        System.out.println("addressLine1: " + guarantorObject);
-        final String policyNumber = gson.toJson(guarantorObject);
+        String policyNumber = gson.toJson(guarantorObject);
+        policyNumber = policyNumber.replaceAll("[^a-zA-Z0-9]", "");
 
         guarantorObject = addressObject.get("companyCoverage");
-        System.out.println("addressLine2: " + guarantorObject);
-        final String companyCoverage = gson.toJson(guarantorObject);
+        String companyCoverage = gson.toJson(guarantorObject);
+        companyCoverage = companyCoverage.replaceAll("[^a-zA-Z0-9]", "");
 
         guarantorObject = addressObject.get("policyCoverage");
-        System.out.println("addressLine2: " + guarantorObject);
-        final String policyCoverage = gson.toJson(guarantorObject);
+        String policyCoverage = gson.toJson(guarantorObject);
+        policyCoverage = policyCoverage.replaceAll("[^a-zA-Z0-9]", "");
 
         /*
          * final String policyNumber = command.stringValueOfParameterNamed("policyNumber"); final String companyCoverage

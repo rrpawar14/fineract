@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -311,5 +312,25 @@ public class CustomerLoansApiResource {
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.tobranchApiJsonSerializer.serialize(settings, branchAnalytics, RESPONSE_DATA_PARAMETERS);
+    }
+
+    @POST
+    @Path("documentsData")
+    @Operation(summary = "Create a User Loan Enquiry", description = "Removes the user and the associated roles and permissions.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") }) // , content = @Content(schema =
+                                                                              // @Schema(implementation =
+                                                                              // UsersApiResourceSwagger.DeleteUsersUserIdResponse.class)))
+                                                                              // })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String customerDocumentsData(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .createDocumentsData().withJson(apiRequestBodyAsJson) //
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
     }
 }

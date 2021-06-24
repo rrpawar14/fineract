@@ -53,7 +53,6 @@ public class EducationQualification extends AbstractPersistableCustom {
 
         JsonObject addressObject = command.parsedJson().getAsJsonObject();
         JsonElement guarantorObject = addressObject.get(paramName);
-        System.out.println("guarantorObject: " + guarantorObject);
 
         if (!(guarantorObject instanceof JsonNull)) { // NOTE : "element instanceof JsonNull" is for handling empty
                                                       // values (and
@@ -67,16 +66,20 @@ public class EducationQualification extends AbstractPersistableCustom {
         Gson gson = new Gson();
 
         guarantorObject = addressObject.get("university");
-        final String university = gson.toJson(guarantorObject);
+        String university = gson.toJson(guarantorObject);
+        university = university.replaceAll("[^a-zA-Z0-9]", "");
 
         guarantorObject = addressObject.get("qualification");
-        final String qualification = gson.toJson(guarantorObject);
+        String qualification = gson.toJson(guarantorObject);
+        qualification = qualification.replaceAll("[^a-zA-Z0-9]", "");
 
         guarantorObject = addressObject.get("percentage");
-        final String percentage = gson.toJson(guarantorObject);
+        String percentage = gson.toJson(guarantorObject);
+        percentage = percentage.replaceAll("[^a-zA-Z0-9]", "");
 
         guarantorObject = addressObject.get("passingyear");
-        final String passingyear = gson.toJson(guarantorObject);
+        String passingyear = gson.toJson(guarantorObject);
+        passingyear = passingyear.replaceAll("[^a-zA-Z0-9]", "");
 
         /*
          * final String university = command.stringValueOfParameterNamed("university"); final String qualification =

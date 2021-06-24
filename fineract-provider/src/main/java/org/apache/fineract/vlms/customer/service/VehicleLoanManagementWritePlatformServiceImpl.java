@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanaccount.service;
+package org.apache.fineract.vlms.customer.service;
 
 import java.util.Map;
 import javax.persistence.PersistenceException;
@@ -39,14 +39,21 @@ import org.apache.fineract.portfolio.loanaccount.domain.NewVehicleLoanRepository
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetailsRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleLoan;
+import org.apache.fineract.portfolio.loanaccount.service.LoanAssembler;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
+import org.apache.fineract.vlms.branchmodule.domain.Employee;
+import org.apache.fineract.vlms.branchmodule.domain.EmployeeRepository;
 import org.apache.fineract.vlms.customer.domain.BankDetails;
 import org.apache.fineract.vlms.customer.domain.BankDetailsRepository;
 import org.apache.fineract.vlms.customer.domain.CustomerDetails;
 import org.apache.fineract.vlms.customer.domain.CustomerDetailsRepository;
 import org.apache.fineract.vlms.customer.domain.CustomerGuarantor;
 import org.apache.fineract.vlms.customer.domain.CustomerGuarantorRepository;
+import org.apache.fineract.vlms.customer.domain.Documents;
+import org.apache.fineract.vlms.customer.domain.DocumentsRepository;
+import org.apache.fineract.vlms.fieldexecutive.domain.FEEnroll;
+import org.apache.fineract.vlms.fieldexecutive.domain.FEEnrollRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetailsRepository;
 import org.slf4j.Logger;
@@ -68,6 +75,9 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
     private final BankDetailsRepository bankDetailsRepository;
     private final CustomerGuarantorRepository customerGuarantorRepository;
     private final AddressRepository addressRepository;
+    private final FEEnrollRepository feEnrollRepository;
+    private final EmployeeRepository employeeRepository;
+    private final DocumentsRepository documentsRepository;
     private final AppUserRepositoryWrapper appUserRepositoryWrapper;
     private final FELoanDetailsRepository feLoanDetailsRepository;
     private final LoanAssembler loanAssembler;
@@ -81,9 +91,11 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             final NewVehicleLoanRepository newVehicleLoanRepository, final CustomerDetailsRepository customerDetailsRepository,
             final VehicleDetailsRepository vehicleDetailsRepository, final FELoanDetailsRepository feLoanDetailsRepository,
             final BankDetailsRepository bankDetailsRepository, final CustomerGuarantorRepository customerGuarantorRepository,
-            final AddressRepository addressRepository, final AppUserRepositoryWrapper appUserRepositoryWrapper,
-            final LoanAssembler loanAssembler, final AccountNumberGenerator accountNumberGenerator,
-            final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final LoanRepositoryWrapper loanRepositoryWrapper) {
+            final AddressRepository addressRepository, final FEEnrollRepository feEnrollRepository,
+            final EmployeeRepository employeeRepository, final DocumentsRepository documentsRepository,
+            final AppUserRepositoryWrapper appUserRepositoryWrapper, final LoanAssembler loanAssembler,
+            final AccountNumberGenerator accountNumberGenerator, final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository,
+            final LoanRepositoryWrapper loanRepositoryWrapper) {
         this.context = context;
         this.fromJsonHelper = fromJsonHelper;
         this.newVehicleLoanRepository = newVehicleLoanRepository;
@@ -93,6 +105,9 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
         this.feLoanDetailsRepository = feLoanDetailsRepository;
         this.customerGuarantorRepository = customerGuarantorRepository;
         this.addressRepository = addressRepository;
+        this.feEnrollRepository = feEnrollRepository;
+        this.employeeRepository = employeeRepository;
+        this.documentsRepository = documentsRepository;
         this.appUserRepositoryWrapper = appUserRepositoryWrapper;
         this.loanAssembler = loanAssembler;
         this.accountNumberGenerator = accountNumberGenerator;
@@ -329,6 +344,89 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
                     .build();
         }
 
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult submitCustomerDocumentsData(final JsonCommand command) {
+
+        // this.fromApiJsonDeserializer.validateForCreate(command.json());
+
+        try {
+            this.context.authenticatedUser();
+            Loan loanDetails = null;
+            CustomerDetails customerDetails = null;
+            CustomerGuarantor customerGuarantor = null;
+            FEEnroll enroll = null;
+            BankDetails bankDetails = null;
+            Employee employee = null;
+            Loan loan = null;
+            VehicleDetails vehicleDetails = null;
+
+            final Long customerDetailsId = command.longValueOfParameterNamed("customerId");
+            final Long guarantorId = command.longValueOfParameterNamed("guarantorId");
+            final Long enrollId = command.longValueOfParameterNamed("enrollId");
+            final Long bankDetailsId = command.longValueOfParameterNamed("bankId");
+            final Long employeeId = command.longValueOfParameterNamed("employeeId");
+            final Long loanId = command.longValueOfParameterNamed("loanId");
+            final Long vehicleDetailsId = command.longValueOfParameterNamed("vehicleDetailsId");
+
+            if (customerDetailsId != null) {
+                customerDetails = this.customerDetailsRepository.getOne(customerDetailsId);
+            }
+
+            if (guarantorId != null) {
+                customerGuarantor = this.customerGuarantorRepository.getOne(guarantorId);
+            }
+
+            if (employeeId != null) {
+                employee = this.employeeRepository.getOne(employeeId);
+            }
+
+            if (bankDetailsId != null) {
+                bankDetails = this.bankDetailsRepository.getOne(bankDetailsId);
+            }
+
+            if (enrollId != null) {
+                enroll = this.feEnrollRepository.getOne(enrollId);
+            }
+
+            if (loanId != null) {
+                loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
+            }
+
+            if (vehicleDetailsId != null) {
+                vehicleDetails = this.vehicleDetailsRepository.getOne(vehicleDetailsId);
+            }
+
+            final Documents documents = Documents.fromJson(command, customerDetails, customerGuarantor, employee, bankDetails, enroll,
+                    loanDetails, vehicleDetails);
+
+            this.documentsRepository.save(documents);
+            /*
+             * final VehicleDetails vehicleDetails = this.vehicleDetailsRepository.getOne(vehicleDetailsId);
+             *
+             * final Map<String, Object> changes = vehicleDetails.update(command);
+             *
+             * if (!changes.isEmpty()) { this.vehicleDetailsRepository.save(vehicleDetails); }
+             */
+
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(documents.getId()) //
+                    // .withVehicleDetailsId(vehicleDetails.getId()) //
+                    .build();
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .build();
+        } catch (final PersistenceException dve) {
+            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+            handleDataIntegrityIssues(command, throwable, dve);
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .build();
+        }
     }
 
     @Transactional

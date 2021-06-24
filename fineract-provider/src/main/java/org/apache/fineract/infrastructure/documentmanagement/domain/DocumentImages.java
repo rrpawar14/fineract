@@ -25,11 +25,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
-import org.apache.fineract.portfolio.loanaccount.domain.BankDetails;
-import org.apache.fineract.portfolio.loanaccount.domain.CustomerDetails;
-import org.apache.fineract.portfolio.loanaccount.domain.CustomerGuarantor;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleLoan;
 import org.apache.fineract.vlms.branchmodule.domain.Employee;
+import org.apache.fineract.vlms.customer.domain.BankDetails;
+import org.apache.fineract.vlms.customer.domain.CustomerDetails;
+import org.apache.fineract.vlms.customer.domain.CustomerGuarantor;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnroll;
 
 @Entity

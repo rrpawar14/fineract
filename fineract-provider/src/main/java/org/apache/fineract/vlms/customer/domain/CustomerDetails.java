@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanaccount.domain;
+package org.apache.fineract.vlms.customer.domain;
 
 import java.time.LocalDate;
 import java.util.Date;

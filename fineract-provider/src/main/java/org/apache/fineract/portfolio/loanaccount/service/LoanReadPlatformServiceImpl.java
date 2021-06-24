@@ -637,8 +637,9 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                     + " left join m_loan_recalculation_details lir on lir.loan_id = l.id "
                     + " join m_currency rc on rc.`code` = l.currency_code" //
                     // + " left join m_client c on c.id = l.client_id" //
-                    + " left join m_apply_vehicle_loan vl on vl.loandetail_id = l.id" //
-                    + " left join m_customer_details c on c.id = vl.customerdetails_id" //
+                    // + " left join m_apply_vehicle_loan vl on vl.loandetail_id = l.id" //
+                    // + " left join m_customer_details c on c.id = vl.customerdetails_id" //
+                    + " left join m_customer_details c on c.id = l.customer_id" //
                     + " left join m_group g on g.id = l.group_id" //
                     + " left join m_loan_arrears_aging la on la.loan_id = l.id" //
                     + " left join m_fund f on f.id = l.fund_id" //

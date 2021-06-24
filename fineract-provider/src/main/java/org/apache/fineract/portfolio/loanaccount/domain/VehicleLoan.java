@@ -31,6 +31,9 @@ import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.useradministration.domain.AppUser;
+import org.apache.fineract.vlms.customer.domain.BankDetails;
+import org.apache.fineract.vlms.customer.domain.CustomerDetails;
+import org.apache.fineract.vlms.customer.domain.CustomerGuarantor;
 
 @Entity
 @Table(name = "m_apply_vehicle_loan")

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanaccount.domain;
+package org.apache.fineract.vlms.customer.domain;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

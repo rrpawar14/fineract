@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.vlms.fieldexecutive.handler;
+package org.apache.fineract.vlms.customer.handler;
 
 import org.apache.fineract.commands.annotation.CommandType;
 import org.apache.fineract.commands.handler.NewCommandSourceHandler;
@@ -28,21 +28,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@CommandType(entity = "GUARANTORDETAIL", action = "UPDATE")
-public class UpdateGuarantorDetailsCommandHandler implements NewCommandSourceHandler {
+@CommandType(entity = "DOCUMENTSDATA", action = "CREATE")
+public class CreateCustomerDocumentsDataCommandHandler implements NewCommandSourceHandler {
 
-    private final VehicleLoanManagementWritePlatformService vehicleLoanManagementWritePlatformService;
+    private final VehicleLoanManagementWritePlatformService writePlatformService;
 
     @Autowired
-    public UpdateGuarantorDetailsCommandHandler(final VehicleLoanManagementWritePlatformService vehicleLoanManagementWritePlatformService) {
-        this.vehicleLoanManagementWritePlatformService = vehicleLoanManagementWritePlatformService;
+    public CreateCustomerDocumentsDataCommandHandler(final VehicleLoanManagementWritePlatformService writePlatformService) {
+        this.writePlatformService = writePlatformService;
     }
 
     @Transactional
     @Override
     public CommandProcessingResult processCommand(final JsonCommand command) {
 
-        // return this.writePlatformService.createFEUsedVehicleLoan(command);
-        return this.vehicleLoanManagementWritePlatformService.updateGuarantorDetails(command.entityId(), command);
+        return this.writePlatformService.submitCustomerDocumentsData(command);
     }
+
 }

@@ -139,6 +139,8 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountAssembler;
 import org.apache.fineract.portfolio.savings.service.GSIMReadPlatformService;
 import org.apache.fineract.useradministration.domain.AppUser;
+import org.apache.fineract.vlms.customer.domain.CustomerDetails;
+import org.apache.fineract.vlms.customer.domain.CustomerDetailsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,6 +190,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
     private final FineractEntityToEntityMappingRepository repository;
     private final FineractEntityRelationRepository fineractEntityRelationRepository;
     private final LoanProductReadPlatformService loanProductReadPlatformService;
+    private final CustomerDetailsRepository customerDetailsRepository;
 
     private final RateAssembler rateAssembler;
     private final GLIMAccountInfoWritePlatformService glimAccountInfoWritePlatformService;
@@ -220,7 +223,8 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
             final EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService,
             final GLIMAccountInfoWritePlatformService glimAccountInfoWritePlatformService, final GLIMAccountInfoRepository glimRepository,
             final LoanRepository loanRepository, final GSIMReadPlatformService gsimReadPlatformService, final RateAssembler rateAssembler,
-            final LoanProductReadPlatformService loanProductReadPlatformService) {
+            final LoanProductReadPlatformService loanProductReadPlatformService,
+            final CustomerDetailsRepository customerDetailsRepository) {
         this.context = context;
         this.fromJsonHelper = fromJsonHelper;
         this.loanApplicationTransitionApiJsonValidator = loanApplicationTransitionApiJsonValidator;
@@ -261,6 +265,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
         this.glimRepository = glimRepository;
         this.loanRepository = loanRepository;
         this.gsimReadPlatformService = gsimReadPlatformService;
+        this.customerDetailsRepository = customerDetailsRepository;
     }
 
     private LoanLifecycleStateMachine defaultLoanLifecycleStateMachine() {
@@ -332,14 +337,13 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                     newLoanApplication);
 
             Boolean childLoan = command.booleanObjectValueOfParameterNamed("isChildLoan");
-            System.out.println("childLoan " + childLoan);
+
             Boolean handLoan = command.booleanObjectValueOfParameterNamed("isHandLoan");
-            System.out.println("handLoan " + handLoan);
 
             Long parentId = null;
             // if (loanProduct.canUseForTopup() && clientId != null) {
             if (loanProduct.canUseForTopup()) {
-                System.out.println("Topuploan: ");
+
                 final Boolean isTopup = command.booleanObjectValueOfParameterNamed(LoanApiConstants.isTopup);
                 if (null == isTopup) {
                     newLoanApplication.setIsTopup(false);
@@ -405,13 +409,17 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
             }
 
             if (childLoan) {
-                System.out.println("childLoan: " + childLoan);
                 parentId = command.longValueOfParameterNamed("parentId");
                 newLoanApplication.setParentId(parentId);
             } else if (handLoan) {
-                System.out.println("handLoan: " + handLoan);
                 parentId = command.longValueOfParameterNamed("parentId");
                 newLoanApplication.setParentId(parentId);
+            }
+
+            final Long customerId = this.fromJsonHelper.extractLongNamed("customerId", command.parsedJson());
+            if (customerId != null) {
+                CustomerDetails customerDetails = this.customerDetailsRepository.getOne(customerId);
+                newLoanApplication.setCustomerDetails(customerDetails);
             }
 
             this.loanRepositoryWrapper.save(newLoanApplication);

@@ -141,6 +141,7 @@ import org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations;
 import org.apache.fineract.portfolio.paymentdetail.domain.PaymentDetail;
 import org.apache.fineract.portfolio.rate.domain.Rate;
 import org.apache.fineract.useradministration.domain.AppUser;
+import org.apache.fineract.vlms.customer.domain.CustomerDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -165,6 +166,10 @@ public class Loan extends AbstractPersistableCustom {
 
     @Column(name = "parent_id")
     private Long parentId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = true)
+    private CustomerDetails customerDetails;
 
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = true)
@@ -1080,8 +1085,11 @@ public class Loan extends AbstractPersistableCustom {
     }
 
     public void setParentId(final Long parentId) {
-        System.out.println("parentId: " + parentId);
         this.parentId = parentId;
+    }
+
+    public void setCustomerDetails(final CustomerDetails customerDetails) {
+        this.customerDetails = customerDetails;
     }
 
     public LoanProduct loanProduct() {

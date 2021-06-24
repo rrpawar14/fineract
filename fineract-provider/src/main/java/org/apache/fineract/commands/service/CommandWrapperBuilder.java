@@ -902,6 +902,15 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createDocumentsData() {
+        this.actionName = "CREATE";
+        this.entityName = "DOCUMENTSDATA";
+        this.entityId = null;
+        this.loanId = null;
+        this.href = "/customers/documentsdata";
+        return this;
+    }
+
     public CommandWrapperBuilder createLoanApplication() {
         this.actionName = "CREATE";
         this.entityName = "LOAN";

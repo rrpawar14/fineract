@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanaccount.domain;
+package org.apache.fineract.vlms.customer.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface CustomerDetailsRepository extends JpaRepository<CustomerDetails, Long>, JpaSpecificationExecutor<CustomerDetails> {
+public interface BankDetailsRepository extends JpaRepository<BankDetails, Long>, JpaSpecificationExecutor<BankDetails> {
 
 }

@@ -32,7 +32,7 @@ import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.portfolio.address.domain.Address;
-import org.apache.fineract.portfolio.loanaccount.domain.BankDetails;
+import org.apache.fineract.vlms.customer.domain.BankDetails;
 
 @Entity
 @Table(name = "m_employee")

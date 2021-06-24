@@ -29,8 +29,6 @@ import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityEx
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.address.domain.Address;
 import org.apache.fineract.portfolio.address.domain.AddressRepository;
-import org.apache.fineract.portfolio.loanaccount.domain.BankDetails;
-import org.apache.fineract.portfolio.loanaccount.domain.BankDetailsRepository;
 import org.apache.fineract.vlms.branchmodule.domain.EducationQualification;
 import org.apache.fineract.vlms.branchmodule.domain.EducationQualificationRepository;
 import org.apache.fineract.vlms.branchmodule.domain.Employee;
@@ -41,6 +39,8 @@ import org.apache.fineract.vlms.branchmodule.domain.LoanApprovalLimit;
 import org.apache.fineract.vlms.branchmodule.domain.LoanApprovalLimitRepository;
 import org.apache.fineract.vlms.branchmodule.domain.LoanDisbursalLimit;
 import org.apache.fineract.vlms.branchmodule.domain.LoanDisbursalLimitRepository;
+import org.apache.fineract.vlms.customer.domain.BankDetails;
+import org.apache.fineract.vlms.customer.domain.BankDetailsRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEApplicantDetailsRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FECoApplicantDetailsRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnquiryRepository;
@@ -129,7 +129,6 @@ public class BranchModuleWritePlatformServiceImpl implements BranchModuleWritePl
             // this.fromApiJsonDeserializer.validateForCreate(command.json());
 
             final BankDetails bankDetails = BankDetails.fromJson(command);
-            System.out.println("bankDetails" + bankDetails);
             this.bankDetailsRepository.save(bankDetails);
 
             Address customerAdd = Address.fromJson(command, "employee_communicationAddress");

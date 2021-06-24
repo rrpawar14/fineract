@@ -186,7 +186,6 @@ public class Address extends AbstractPersistableCustom {
 
         JsonObject addressObject = command.parsedJson().getAsJsonObject();
         JsonElement guarantorObject = addressObject.get(paramName);
-        System.out.println("guarantorObject: " + guarantorObject);
 
         if (!(guarantorObject instanceof JsonNull)) { // NOTE : "element instanceof JsonNull" is for handling empty
                                                       // values (and
@@ -200,32 +199,32 @@ public class Address extends AbstractPersistableCustom {
         Gson gson = new Gson();
 
         guarantorObject = addressObject.get("addressLine1");
-        System.out.println("addressLine1: " + guarantorObject);
-        final String addressLine1 = gson.toJson(guarantorObject);
+        String addressLine1 = gson.toJson(guarantorObject);
+        addressLine1 = addressLine1.replaceAll("[^a-zA-Z0-9]", "");
 
         guarantorObject = addressObject.get("addressLine2");
-        System.out.println("addressLine2: " + guarantorObject);
-        final String addressLine2 = gson.toJson(guarantorObject);
+        String addressLine2 = gson.toJson(guarantorObject);
+        addressLine2 = addressLine2.replaceAll("[^a-zA-Z0-9]", "");
 
         guarantorObject = addressObject.get("landmark");
-        System.out.println("landmark: " + guarantorObject);
-        final String landmark = gson.toJson(guarantorObject);
+        String landmark = gson.toJson(guarantorObject);
+        landmark = landmark.replaceAll("[^a-zA-Z0-9]", "");
 
         guarantorObject = addressObject.get("pincode");
-        System.out.println("pincode: " + guarantorObject);
-        final String pincode = gson.toJson(guarantorObject);
+        String pincode = gson.toJson(guarantorObject);
+        pincode = pincode.replaceAll("[^a-zA-Z0-9]", "");
 
         guarantorObject = addressObject.get("area");
-        System.out.println("area: " + guarantorObject);
-        final String area = gson.toJson(guarantorObject);
+        String area = gson.toJson(guarantorObject);
+        area = area.replaceAll("[^a-zA-Z0-9]", "");
 
         guarantorObject = addressObject.get("city");
-        System.out.println("city: " + guarantorObject);
-        final String city = gson.toJson(guarantorObject);
+        String city = gson.toJson(guarantorObject);
+        city = city.replaceAll("[^a-zA-Z0-9]", "");
 
         guarantorObject = addressObject.get("state");
-        System.out.println("state: " + guarantorObject);
-        final String state = gson.toJson(guarantorObject);
+        String state = gson.toJson(guarantorObject);
+        state = state.replaceAll("[^a-zA-Z0-9]", "");
 
         return new Address(addressLine1, addressLine2, landmark, pincode, area, city, state);
     }
