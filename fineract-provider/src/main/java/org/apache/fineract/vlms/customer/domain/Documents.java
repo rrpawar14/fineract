@@ -20,7 +20,9 @@ package org.apache.fineract.vlms.customer.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
@@ -39,24 +41,31 @@ public class Documents extends AbstractPersistableCustom {
     @Column(name = "document_number")
     private String documentNumber;
 
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
-    private CustomerDetails customerId;
+    private CustomerDetails customerDetails;
 
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "guarantor_id")
-    private CustomerGuarantor guarantorId;
+    private CustomerGuarantor customerGuarantor;
 
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id")
-    private Employee employeeId;
+    private Employee employee;
 
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "bank_id")
-    private BankDetails bankId;
+    private BankDetails bankDetails;
 
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "enroll_id")
-    private FEEnroll enrollId;
+    private FEEnroll feEnroll;
 
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "loan_id")
-    private Loan loanId;
+    private Loan loan;
 
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id")
     private VehicleDetails vehicleDetails;
 
@@ -76,12 +85,12 @@ public class Documents extends AbstractPersistableCustom {
             final Loan loan, final VehicleDetails vehicleDetails) {
         this.documentType = documentType;
         this.documentNumber = documentNumber;
-        this.customerId = customerDetails;
-        this.guarantorId = customerGuarantor;
-        this.employeeId = employee;
-        this.bankId = bankDetails;
-        this.enrollId = enroll;
-        this.loanId = loan;
+        this.customerDetails = customerDetails;
+        this.customerGuarantor = customerGuarantor;
+        this.employee = employee;
+        this.bankDetails = bankDetails;
+        this.feEnroll = enroll;
+        this.loan = loan;
         this.vehicleDetails = vehicleDetails;
     }
 }

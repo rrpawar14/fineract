@@ -322,7 +322,8 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
             }
 
             if (StringUtils.isNotBlank(searchParameters.getExternalId())) {
-                sqlBuilder.append(" and l.external_id = ?");
+                // sqlBuilder.append(" and l.external_id = ?");
+                sqlBuilder.append(" and l.loan_status_id = ?");
                 extraCriterias.add(searchParameters.getExternalId());
                 arrayPos = arrayPos + 1;
             }
