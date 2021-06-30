@@ -367,8 +367,8 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
             final String sql = " select " + repaymentScheduleMapper.schema() + " from m_loan_repayment_schedule rs "
                     + repaymentScheduleMapper.join()
 
-                    + " where MONTH(duedate) = MONTH(CURRENT_DATE()) AND YEAR(duedate) = YEAR(CURRENT_DATE()) and rs.completed_derived = 0 ";
-
+                    + " where rs.completed_derived = 0 ";
+            // MONTH(duedate) = MONTH(CURRENT_DATE()) AND YEAR(duedate) = YEAR(CURRENT_DATE()) and
             return this.jdbcTemplate.query(sql, repaymentScheduleMapper, new Object[] {});
         } catch (final EmptyResultDataAccessException e) {
             return null;
