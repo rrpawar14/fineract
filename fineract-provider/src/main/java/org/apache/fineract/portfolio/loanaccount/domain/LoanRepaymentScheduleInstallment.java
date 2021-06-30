@@ -52,6 +52,10 @@ public final class LoanRepaymentScheduleInstallment extends AbstractAuditableCus
     private Integer installmentNumber;
 
     @Temporal(TemporalType.DATE)
+    @Column(name = "followondate", nullable = true)
+    private Date followondate;
+
+    @Temporal(TemporalType.DATE)
     @Column(name = "fromdate", nullable = true)
     private Date fromDate;
 

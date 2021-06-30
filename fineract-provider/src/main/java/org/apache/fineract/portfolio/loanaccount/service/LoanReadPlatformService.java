@@ -47,6 +47,8 @@ public interface LoanReadPlatformService {
     LoanScheduleData retrieveRepaymentSchedule(Long loanId, RepaymentScheduleRelatedLoanData repaymentScheduleRelatedData,
             Collection<DisbursementData> disbursementData, boolean isInterestRecalculationEnabled, BigDecimal totalPaidFeeCharges);
 
+    Collection<LoanSchedulePeriodData> retrieveAllRepaymentScheduleCurrentMonthDueDate();
+
     Collection<LoanTransactionData> retrieveLoanTransactions(Long loanId);
 
     LoanAccountData retrieveTemplateWithClientAndProductDetails(Long clientId, Long productId);

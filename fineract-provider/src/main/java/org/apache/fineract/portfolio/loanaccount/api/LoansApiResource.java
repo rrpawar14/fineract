@@ -118,6 +118,7 @@ import org.apache.fineract.portfolio.loanaccount.exception.NotSupportedLoanTempl
 import org.apache.fineract.portfolio.loanaccount.guarantor.data.GuarantorData;
 import org.apache.fineract.portfolio.loanaccount.guarantor.service.GuarantorReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.data.LoanScheduleData;
+import org.apache.fineract.portfolio.loanaccount.loanschedule.data.LoanSchedulePeriodData;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleModel;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.service.LoanScheduleCalculationPlatformService;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.service.LoanScheduleHistoryReadPlatformService;
@@ -240,6 +241,7 @@ public class LoansApiResource {
     private final CodeValueReadPlatformService codeValueReadPlatformService;
     private final GroupReadPlatformService groupReadPlatformService;
     private final DefaultToApiJsonSerializer<LoanAccountData> toApiJsonSerializer;
+    private final DefaultToApiJsonSerializer<LoanSchedulePeriodData> toApiJsonLoanScheduleSerializer;
     private final DefaultToApiJsonSerializer<CustomerDetailsData> toCustomerApiJsonSerializer;
     private final DefaultToApiJsonSerializer<LoanApprovalData> loanApprovalDataToApiJsonSerializer;
     private final DefaultToApiJsonSerializer<LoanScheduleData> loanScheduleToApiJsonSerializer;
@@ -271,6 +273,7 @@ public class LoansApiResource {
             final GuarantorReadPlatformService guarantorReadPlatformService,
             final CodeValueReadPlatformService codeValueReadPlatformService, final GroupReadPlatformService groupReadPlatformService,
             final DefaultToApiJsonSerializer<LoanAccountData> toApiJsonSerializer,
+            final DefaultToApiJsonSerializer<LoanSchedulePeriodData> toApiJsonLoanScheduleSerializer,
             final DefaultToApiJsonSerializer<LoanApprovalData> loanApprovalDataToApiJsonSerializer,
             final DefaultToApiJsonSerializer<LoanScheduleData> loanScheduleToApiJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper, final FromJsonHelper fromJsonHelper,
@@ -301,6 +304,7 @@ public class LoansApiResource {
         this.codeValueReadPlatformService = codeValueReadPlatformService;
         this.groupReadPlatformService = groupReadPlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
+        this.toApiJsonLoanScheduleSerializer = toApiJsonLoanScheduleSerializer;
         this.loanApprovalDataToApiJsonSerializer = loanApprovalDataToApiJsonSerializer;
         this.loanScheduleToApiJsonSerializer = loanScheduleToApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
@@ -606,6 +610,18 @@ public class LoansApiResource {
                             repaymentScheduleRelatedData, disbursementData);
                     loanBasicDetails = LoanAccountData.withOriginalSchedule(loanBasicDetails, loanScheduleData);
                 }
+
+                /*
+                 * if (associationParameters.contains("currentMonth") &&
+                 * loanBasicDetails.isInterestRecalculationEnabled()) { mandatoryResponseParameters.add("currentMonth");
+                 * final RepaymentScheduleRelatedLoanData repaymentScheduleCurrentMonthRelatedData = loanBasicDetails
+                 * .repaymentScheduleRelatedData(); repaymentSchedule =
+                 * this.loanReadPlatformService.retrieveAllRepaymentScheduleCurrentMonthDueDate(loanId,
+                 * repaymentScheduleCurrentMonthRelatedData, disbursementData,
+                 * loanBasicDetails.isInterestRecalculationEnabled(), loanBasicDetails.getTotalPaidFeeCharges());
+                 *
+                 * }
+                 */
             }
 
             if (associationParameters.contains("charges")) {
@@ -760,7 +776,7 @@ public class LoansApiResource {
             + "loans?orderBy=accountNo&sortOrder=DESC")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansResponse.class))) })
-    public String retrieveAll(@Context final UriInfo uriInfo,
+    public String retrieveAllScheduleInstallment(@Context final UriInfo uriInfo,
             @QueryParam("sqlSearch") @Parameter(description = "sqlSearch") final String sqlSearch,
             @QueryParam("externalId") @Parameter(description = "externalId") final String externalId,
             // @QueryParam("underHierarchy") final String hierarchy,
@@ -779,6 +795,37 @@ public class LoansApiResource {
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, loanBasicDetails, this.loanDataParameters);
+    }
+
+    @GET
+    @Path("loanSchedule")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "List Loans", description = "The list capability of loans can support pagination and sorting.\n"
+            + "Example Requests:\n" + "\n" + "loans\n" + "\n" + "loans?fields=accountNo\n" + "\n" + "loans?offset=10&limit=50\n" + "\n"
+            + "loans?orderBy=accountNo&sortOrder=DESC")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansResponse.class))) })
+    public String retrieveAll(@Context final UriInfo uriInfo,
+            @QueryParam("sqlSearch") @Parameter(description = "sqlSearch") final String sqlSearch,
+            @QueryParam("externalId") @Parameter(description = "externalId") final String externalId,
+            // @QueryParam("underHierarchy") final String hierarchy,
+            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+            @QueryParam("accountNo") @Parameter(description = "accountNo") final String accountNo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final SearchParameters searchParameters = SearchParameters.forLoans(sqlSearch, externalId, offset, limit, orderBy, sortOrder,
+                accountNo);
+
+        final Collection<LoanSchedulePeriodData> loanScheduleData = this.loanReadPlatformService
+                .retrieveAllRepaymentScheduleCurrentMonthDueDate();
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiJsonLoanScheduleSerializer.serialize(settings, loanScheduleData, this.loanDataParameters);
     }
 
     @POST
@@ -816,42 +863,61 @@ public class LoansApiResource {
         return this.toApiJsonSerializer.serialize(result);
     }
 
-    @POST
-    @Path("applyLoan/newVehicle")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = " Submit a new Loan Application", description = "It submits the Loan Application for New Vehicle")
-    @RequestBody(required = true, content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PostLoansRequest.class)))
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PostLoansResponse.class))) })
-    public String submitNewLoanApplication(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
-
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().createNewVehicleLoanApplication().withJson(apiRequestBodyAsJson)
-                .build();
-
-        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
-
-        return this.toApiJsonSerializer.serialize(result);
-    }
-
-    @POST
-    @Path("applyLoan/usedVehicle")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = " Submit a Used Loan Application", description = "It submits the Loan Application for Used Vehicle")
-    @RequestBody(required = true, content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PostLoansRequest.class)))
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PostLoansResponse.class))) })
-    public String submitUsedLoanApplication(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
-
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().createUsedVehicleLoanApplication().withJson(apiRequestBodyAsJson)
-                .build();
-
-        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
-
-        return this.toApiJsonSerializer.serialize(result);
-    }
-
+    /*
+     * @POST
+     *
+     * @Path("applyLoan/newVehicle")
+     *
+     * @Consumes({ MediaType.APPLICATION_JSON })
+     *
+     * @Produces({ MediaType.APPLICATION_JSON })
+     *
+     * @Operation(summary = " Submit a new Loan Application", description =
+     * "It submits the Loan Application for New Vehicle")
+     *
+     * @RequestBody(required = true, content = @Content(schema = @Schema(implementation =
+     * LoansApiResourceSwagger.PostLoansRequest.class)))
+     *
+     * @ApiResponses({
+     *
+     * @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation =
+     * LoansApiResourceSwagger.PostLoansResponse.class))) }) public String submitNewLoanApplication(@Parameter(hidden =
+     * true) final String apiRequestBodyAsJson) {
+     *
+     * final CommandWrapper commandRequest = new
+     * CommandWrapperBuilder().createNewVehicleLoanApplication().withJson(apiRequestBodyAsJson) .build();
+     *
+     * final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+     *
+     * return this.toApiJsonSerializer.serialize(result); }
+     *
+     * @POST
+     *
+     * @Path("applyLoan/usedVehicle")
+     *
+     * @Consumes({ MediaType.APPLICATION_JSON })
+     *
+     * @Produces({ MediaType.APPLICATION_JSON })
+     *
+     * @Operation(summary = " Submit a Used Loan Application", description =
+     * "It submits the Loan Application for Used Vehicle")
+     *
+     * @RequestBody(required = true, content = @Content(schema = @Schema(implementation =
+     * LoansApiResourceSwagger.PostLoansRequest.class)))
+     *
+     * @ApiResponses({
+     *
+     * @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation =
+     * LoansApiResourceSwagger.PostLoansResponse.class))) }) public String submitUsedLoanApplication(@Parameter(hidden =
+     * true) final String apiRequestBodyAsJson) {
+     *
+     * final CommandWrapper commandRequest = new
+     * CommandWrapperBuilder().createUsedVehicleLoanApplication().withJson(apiRequestBodyAsJson) .build();
+     *
+     * final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+     *
+     * return this.toApiJsonSerializer.serialize(result); }
+     */
     // fetch all vehicle customer loan applications
     /*
      * @GET

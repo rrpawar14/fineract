@@ -21,6 +21,7 @@ package org.apache.fineract.infrastructure.documentmanagement.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -48,27 +49,27 @@ public final class DocumentImages extends AbstractPersistableCustom {
     @Column(name = "document_number")
     private String documentNumber;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
+    @OneToOne(optional = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "bank_id", nullable = true)
     private BankDetails bankImage;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
+    @OneToOne(optional = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "guarantor_id", nullable = true)
     private CustomerGuarantor customerGuarantor;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
+    @OneToOne(optional = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "loan_id", nullable = true)
     private VehicleLoan vehicleLoan;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
+    @OneToOne(optional = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "feEnroll_id", nullable = true)
     private FEEnroll feEnroll;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
+    @OneToOne(optional = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "customerdetails_id", nullable = true)
     private CustomerDetails customerDetails;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
+    @OneToOne(optional = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = true)
     private Employee employee;
 

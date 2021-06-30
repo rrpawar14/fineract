@@ -83,11 +83,20 @@ public class CustomerDetails extends AbstractPersistableCustom {
     @Column(name = "marital_status")
     private String maritalStatus;
 
+    @Column(name = "physical_challenge")
+    private String physicalChallenge;
+
     @Column(name = "spousename")
     private String spousename;
 
     @Column(name = "profession")
     private String profession;
+
+    @Column(name = "employeeType")
+    private String employeeType;
+
+    @Column(name = "individualType")
+    private String individualType;
 
     @OneToOne(optional = true)
     @JoinColumn(name = "branch", nullable = true)
@@ -117,18 +126,22 @@ public class CustomerDetails extends AbstractPersistableCustom {
         final String altNumber = command.stringValueOfParameterNamed("altNumber");//
         final String applicantType = command.stringValueOfParameterNamed("applicantType");//
         final String refBy = command.stringValueOfParameterNamed("refBy");//
+        final String refMobileNo = command.stringValueOfParameterNamed("refMobileNo");//
         final String companyName = command.stringValueOfParameterNamed("companyName");//
         final String monthlyIncome = command.stringValueOfParameterNamed("monthlyIncome");//
         final Integer salaryDate = command.integerValueOfParameterNamed("customerSalaryDate"); //
         final String salaryPeriod = command.stringValueOfParameterNamed("salaryPeriod");//
         final Date dob = command.dateValueOfParameterNamed("dob");
         final String maritalStatus = command.stringValueOfParameterNamed("maritalStatus");
+        final String physicalChallenge = command.stringValueOfParameterNamed("physicalChallenge");
         final String spousename = command.stringValueOfParameterNamed("spouseName");
         final String profession = command.stringValueOfParameterNamed("profession");
+        final String employeeType = command.stringValueOfParameterNamed("employeeType");
+        final String individualType = command.stringValueOfParameterNamed("individualType");
 
         return new CustomerDetails(name, age, gender, mobileNo, fatherName, altNumber, applicantType, refBy, companyName, monthlyIncome,
-                salaryDate, salaryPeriod, dob, maritalStatus, spousename, profession, customerCommunicationAdd, customerPermanentAdd,
-                customerOfficeAdd);
+                salaryDate, salaryPeriod, dob, maritalStatus, physicalChallenge, spousename, profession, employeeType, individualType,
+                customerCommunicationAdd, customerPermanentAdd, customerOfficeAdd);
 
     }
 
@@ -136,9 +149,9 @@ public class CustomerDetails extends AbstractPersistableCustom {
 
     private CustomerDetails(final String name, final Integer age, final String gender, final String mobileNo, final String fatherName,
             final String altNumber, final String applicantType, final String refBy, final String companyName, final String monthlyIncome,
-            final Integer salaryDate, final String salaryPeriod, final Date dob, final String maritalStatus, final String spousename,
-            final String profession, final Address customerCommunicationAdd, final Address customerPermanentAdd,
-            final Address customerOfficeAdd) {
+            final Integer salaryDate, final String salaryPeriod, final Date dob, final String maritalStatus, final String physicalChallenge,
+            final String spousename, final String profession, final String employeeType, final String individualType,
+            final Address customerCommunicationAdd, final Address customerPermanentAdd, final Address customerOfficeAdd) {
         this.name = name;
         this.age = age;
         this.gender = gender;
@@ -153,8 +166,11 @@ public class CustomerDetails extends AbstractPersistableCustom {
         this.salaryPeriod = salaryPeriod;
         this.dob = dob;
         this.maritalStatus = maritalStatus;
+        this.physicalChallenge = physicalChallenge;
         this.spousename = spousename;
         this.profession = profession;
+        this.employeeType = employeeType;
+        this.individualType = individualType;
         this.communicationAdd = customerCommunicationAdd;
         this.permanentAdd = customerPermanentAdd;
         this.officeAdd = customerOfficeAdd;
@@ -283,6 +299,13 @@ public class CustomerDetails extends AbstractPersistableCustom {
             this.maritalStatus = StringUtils.defaultIfEmpty(newValue, null);
         }
 
+        final String physicalChallengeParamName = "physicalChallenge";
+        if (command.isChangeInStringParameterNamed(physicalChallengeParamName, this.physicalChallenge)) {
+            final String newValue = command.stringValueOfParameterNamed(physicalChallengeParamName);
+            actualChanges.put(physicalChallengeParamName, newValue);
+            this.physicalChallenge = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
         final String spousenameParamName = "spouseName";
         if (command.isChangeInStringParameterNamed(spousenameParamName, this.spousename)) {
             final String newValue = command.stringValueOfParameterNamed(spousenameParamName);
@@ -295,6 +318,20 @@ public class CustomerDetails extends AbstractPersistableCustom {
             final String newValue = command.stringValueOfParameterNamed(professionParamName);
             actualChanges.put(professionParamName, newValue);
             this.profession = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String employeeTypeParamName = "employeeType";
+        if (command.isChangeInStringParameterNamed(employeeTypeParamName, this.employeeType)) {
+            final String newValue = command.stringValueOfParameterNamed(employeeTypeParamName);
+            actualChanges.put(employeeTypeParamName, newValue);
+            this.employeeType = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String individualTypeParamName = "individualType";
+        if (command.isChangeInStringParameterNamed(individualTypeParamName, this.individualType)) {
+            final String newValue = command.stringValueOfParameterNamed(individualTypeParamName);
+            actualChanges.put(individualTypeParamName, newValue);
+            this.individualType = StringUtils.defaultIfEmpty(newValue, null);
         }
 
         return actualChanges;

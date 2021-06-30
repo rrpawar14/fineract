@@ -21,9 +21,7 @@ package org.apache.fineract.vlms.customer.service;
 import java.util.Map;
 import javax.persistence.PersistenceException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormat;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatRepositoryWrapper;
-import org.apache.fineract.infrastructure.accountnumberformat.domain.EntityAccountType;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
@@ -40,6 +38,8 @@ import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleDetailsRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.VehicleLoan;
 import org.apache.fineract.portfolio.loanaccount.service.LoanAssembler;
+import org.apache.fineract.portfolio.paymenttype.domain.PaymentType;
+import org.apache.fineract.portfolio.paymenttype.domain.PaymentTypeRepositoryWrapper;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
 import org.apache.fineract.vlms.branchmodule.domain.Employee;
@@ -54,7 +54,6 @@ import org.apache.fineract.vlms.customer.domain.Documents;
 import org.apache.fineract.vlms.customer.domain.DocumentsRepository;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnroll;
 import org.apache.fineract.vlms.fieldexecutive.domain.FEEnrollRepository;
-import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetails;
 import org.apache.fineract.vlms.fieldexecutive.domain.FELoanDetailsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +72,7 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
     private final CustomerDetailsRepository customerDetailsRepository;
     private final VehicleDetailsRepository vehicleDetailsRepository;
     private final BankDetailsRepository bankDetailsRepository;
+    private final PaymentTypeRepositoryWrapper paymentTyperepositoryWrapper;
     private final CustomerGuarantorRepository customerGuarantorRepository;
     private final AddressRepository addressRepository;
     private final FEEnrollRepository feEnrollRepository;
@@ -95,7 +95,7 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             final EmployeeRepository employeeRepository, final DocumentsRepository documentsRepository,
             final AppUserRepositoryWrapper appUserRepositoryWrapper, final LoanAssembler loanAssembler,
             final AccountNumberGenerator accountNumberGenerator, final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository,
-            final LoanRepositoryWrapper loanRepositoryWrapper) {
+            final LoanRepositoryWrapper loanRepositoryWrapper, final PaymentTypeRepositoryWrapper paymentTyperepositoryWrapper) {
         this.context = context;
         this.fromJsonHelper = fromJsonHelper;
         this.newVehicleLoanRepository = newVehicleLoanRepository;
@@ -113,6 +113,7 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
         this.accountNumberGenerator = accountNumberGenerator;
         this.accountNumberFormatRepository = accountNumberFormatRepository;
         this.loanRepositoryWrapper = loanRepositoryWrapper;
+        this.paymentTyperepositoryWrapper = paymentTyperepositoryWrapper;
     }
 
     @Transactional
@@ -185,15 +186,25 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             final CustomerGuarantor customerGuarantorObj = this.customerGuarantorRepository.getOne(customerGuarantorId);
 
             // createbankdetails
-            final BankDetails bankDetails = BankDetails.fromJson(command);
+            final Long paymentTypeId = command.longValueOfParameterNamed("paymentTypeId");
+            PaymentType paymentType = null;
 
-            this.bankDetailsRepository.save(bankDetails);
+            if (paymentTypeId != null) {
+                paymentType = this.paymentTyperepositoryWrapper.findOneWithNotFoundDetection(paymentTypeId);
+            }
 
-            final Long bankDetailsId = bankDetails.getId();
-
-            final BankDetails bankDetailsObj = this.bankDetailsRepository.getOne(bankDetailsId);
+            /*
+             * final BankDetails bankDetails = BankDetails.fromJson(paymentType, command);
+             *
+             * this.bankDetailsRepository.save(bankDetails);
+             *
+             * final Long bankDetailsId = bankDetails.getId();
+             *
+             * final BankDetails bankDetailsObj = this.bankDetailsRepository.getOne(bankDetailsId);
+             */
 
             final Long userId = command.longValueOfParameterNamed("userId");
+
             AppUser appuser = null;
             if (userId != null) {
                 appuser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
@@ -202,26 +213,25 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             Loan loanDetails = null;
             String productIdParamName = "productId";
 
-            if (command.hasParameter(productIdParamName)) {
-                // final Loan loanDetails = Loan.fromJson(command);
-
-                loanDetails = this.loanAssembler.assembleFrom(command, appuser);
-                this.loanRepositoryWrapper.save(loanDetails);
-
-                // this.feLoanDetailsRepository.save(loanDetails);
-
-                final AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository
-                        .findByAccountType(EntityAccountType.LOAN);
-
-                String accountNumber = this.accountNumberGenerator.generate(loanDetails, accountNumberFormat);
-                loanDetails.updateAccountNo(accountNumber + "1");
-            } else {
-
-                loanDetails = this.loanRepositoryWrapper.findOneWithNotFoundDetection(1L);
-            }
+            /*
+             * if (command.hasParameter(productIdParamName)) { // final Loan loanDetails = Loan.fromJson(command);
+             *
+             * loanDetails = this.loanAssembler.assembleFrom(command, appuser);
+             * this.loanRepositoryWrapper.save(loanDetails);
+             *
+             * // this.feLoanDetailsRepository.save(loanDetails);
+             *
+             * final AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository
+             * .findByAccountType(EntityAccountType.LOAN);
+             *
+             * String accountNumber = this.accountNumberGenerator.generate(loanDetails, accountNumberFormat);
+             * loanDetails.updateAccountNo(accountNumber + "1"); } else {
+             *
+             * loanDetails = this.loanRepositoryWrapper.findOneWithNotFoundDetection(1L); }
+             */
 
             final VehicleLoan newVehicleLoan = VehicleLoan.fromJson(command, customerDetailsObj, vehicleDetailsObj, customerGuarantorObj,
-                    loanDetails, bankDetailsObj, appuser);
+                    appuser);
 
             // final NewVehicleLoan newVehicleLoan = NewVehicleLoan.fromJson(command);
 
@@ -233,8 +243,8 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
                     // .withAddressId(addobj.getId()) //
                     .withCustomerDetailsId(customerDetailsObj.getId()) //
                     .withVehicleDetailsId(vehicleDetailsObj.getId()) //
-                    .withCustomerGuarantorId(customerGuarantorObj.getId()).withBankDetailsId(bankDetailsObj.getId())//
-                    .withLoanId(loanDetails.getId()) //
+                    .withCustomerGuarantorId(customerGuarantorObj.getId())// .withBankDetailsId(bankDetailsObj.getId())//
+                    // .withLoanId(loanDetails.getId()) //
                     // .with(changes) //
                     .build();
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
@@ -248,6 +258,56 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .build();
+        }
+
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult submitBankDetails(final JsonCommand command) {
+
+        try {
+
+            this.context.authenticatedUser();
+
+            final Long paymentTypeId = command.longValueOfParameterNamed("paymentTypeId");
+            PaymentType paymentType = null;
+
+            if (paymentTypeId != null) {
+                paymentType = this.paymentTyperepositoryWrapper.findOneWithNotFoundDetection(paymentTypeId);
+            }
+
+            final Long loanId = command.longValueOfParameterNamed("loanId");
+            Loan loan = null;
+
+            if (loanId != null) {
+                loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
+            }
+
+            BankDetails bankDetails = BankDetails.fromJson(loan, null, paymentType, command);
+
+            this.bankDetailsRepository.save(bankDetails);
+
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .withBankDetailsId(bankDetails.getId()) //
+                    .build();
+
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .build();
+
+        } catch (final PersistenceException dve) {
+            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+            handleDataIntegrityIssues(command, throwable, dve);
+
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .build();
+
         }
 
     }
@@ -534,41 +594,30 @@ public class VehicleLoanManagementWritePlatformServiceImpl implements VehicleLoa
         }
     }
 
-    @Transactional
-    @Override
-    public CommandProcessingResult updateLoanDetails(Long loanDetailId, final JsonCommand command) {
-
-        // this.fromApiJsonDeserializer.validateForCreate(command.json());
-
-        try {
-            this.context.authenticatedUser();
-
-            final FELoanDetails loanDetails = this.feLoanDetailsRepository.getOne(loanDetailId);
-            // CustomerGuarantor customerGuarantor = this.customerGuarantorRepository.getOne(guarantorId);
-
-            final Map<String, Object> changes = loanDetails.update(command);
-
-            if (!changes.isEmpty()) {
-                this.feLoanDetailsRepository.save(loanDetails);
-            }
-
-            return new CommandProcessingResultBuilder() //
-                    .withCommandId(command.commandId()) //
-                    .withLoanId(loanDetails.getId()) //
-                    .build();
-        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
-            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
-            return new CommandProcessingResultBuilder() //
-                    .withCommandId(command.commandId()) //
-                    .build();
-        } catch (final PersistenceException dve) {
-            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
-            handleDataIntegrityIssues(command, throwable, dve);
-            return new CommandProcessingResultBuilder() //
-                    .withCommandId(command.commandId()) //
-                    .build();
-        }
-    }
+    /*
+     * @Transactional
+     *
+     * @Override public CommandProcessingResult updateLoanDetails(Long loanDetailId, final JsonCommand command) {
+     *
+     * // this.fromApiJsonDeserializer.validateForCreate(command.json());
+     *
+     * try { this.context.authenticatedUser();
+     *
+     * final FELoanDetails loanDetails = this.feLoanDetailsRepository.getOne(loanDetailId); // CustomerGuarantor
+     * customerGuarantor = this.customerGuarantorRepository.getOne(guarantorId);
+     *
+     * final Map<String, Object> changes = loanDetails.update(command);
+     *
+     * if (!changes.isEmpty()) { this.feLoanDetailsRepository.save(loanDetails); }
+     *
+     * return new CommandProcessingResultBuilder() // .withCommandId(command.commandId()) //
+     * .withLoanId(loanDetails.getId()) // .build(); } catch (final JpaSystemException | DataIntegrityViolationException
+     * dve) { handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve); return new
+     * CommandProcessingResultBuilder() // .withCommandId(command.commandId()) // .build(); } catch (final
+     * PersistenceException dve) { Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+     * handleDataIntegrityIssues(command, throwable, dve); return new CommandProcessingResultBuilder() //
+     * .withCommandId(command.commandId()) // .build(); } }
+     */
 
     /*
      * @Transactional

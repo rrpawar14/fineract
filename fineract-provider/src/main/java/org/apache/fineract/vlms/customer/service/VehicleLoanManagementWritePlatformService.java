@@ -25,6 +25,8 @@ public interface VehicleLoanManagementWritePlatformService {
 
     CommandProcessingResult submitNewVehicleLoanApplication(JsonCommand command);
 
+    CommandProcessingResult submitBankDetails(JsonCommand command);
+
     CommandProcessingResult submitCustomerDocumentsData(JsonCommand command);
 
     CommandProcessingResult updateCustomerDetails(Long customerDetailsId, JsonCommand command);
@@ -33,7 +35,7 @@ public interface VehicleLoanManagementWritePlatformService {
 
     CommandProcessingResult updateBankDetails(Long bankDetailsId, JsonCommand command);
 
-    CommandProcessingResult updateLoanDetails(Long loanDetailsId, JsonCommand command);
+    // CommandProcessingResult updateLoanDetails(Long loanDetailsId, JsonCommand command);
 
     CommandProcessingResult updateVehicleDetails(Long vehicleDetailsId, JsonCommand command);
 

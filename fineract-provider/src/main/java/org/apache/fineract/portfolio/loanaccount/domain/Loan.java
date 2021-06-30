@@ -403,6 +403,12 @@ public class Loan extends AbstractPersistableCustom {
     @Column(name = "is_topup", nullable = false)
     private boolean isTopup = false;
 
+    @Column(name = "is_childloan", nullable = false)
+    private boolean isChildLoan = false;
+
+    @Column(name = "is_handloan", nullable = false)
+    private boolean isHandLoan = false;
+
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "loan", optional = true, orphanRemoval = true, fetch = FetchType.EAGER)
     private LoanTopupDetails loanTopupDetails;
 
@@ -6699,6 +6705,22 @@ public class Loan extends AbstractPersistableCustom {
 
     public boolean isTopup() {
         return this.isTopup;
+    }
+
+    public void setIsChildLoan(final boolean isChildLoan) {
+        this.isChildLoan = isChildLoan;
+    }
+
+    public boolean isChildLoan() {
+        return this.isChildLoan;
+    }
+
+    public void setIsHandLoan(final boolean isHandLoan) {
+        this.isHandLoan = isHandLoan;
+    }
+
+    public boolean isHandLoan() {
+        return this.isHandLoan;
     }
 
     public BigDecimal getFirstDisbursalAmount() {

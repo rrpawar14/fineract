@@ -411,9 +411,12 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
             if (childLoan) {
                 parentId = command.longValueOfParameterNamed("parentId");
                 newLoanApplication.setParentId(parentId);
+                newLoanApplication.setIsChildLoan(true);
             } else if (handLoan) {
                 parentId = command.longValueOfParameterNamed("parentId");
                 newLoanApplication.setParentId(parentId);
+                newLoanApplication.setIsHandLoan(true);
+
             }
 
             final Long customerId = this.fromJsonHelper.extractLongNamed("customerId", command.parsedJson());

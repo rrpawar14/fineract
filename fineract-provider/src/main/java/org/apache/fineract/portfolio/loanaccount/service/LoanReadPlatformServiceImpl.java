@@ -263,6 +263,118 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
         }
     }
 
+    private static final class LoanRepaymentScheduleMapper implements RowMapper<LoanSchedulePeriodData> {
+
+        public String schema() {
+            return " rs.id as Id, rs.loan_id as loanId, rs.fromdate as fromDate, rs.dueDate as dueDate, rs.followondate as followOnDate, "
+
+                    + " 	rs.installment as installment, rs.principal_amount as principalAmount, rs.principal_completed_derived as principalCompleted,  "
+                    + " rs.interest_amount as interestAmount, rs.interest_completed_derived as interestCompleted, rs.completed_derived as completedDerived,  "
+                    + "  l.submittedon_userid as submittedBy, l.approvedon_userid as approvedBy, l.disbursedon_userid as disbursedBy,  "
+                    + "  l.principal_amount_proposed as TotalloanAmount, l.term_frequency as LoanTerm, l.nominal_interest_rate_per_period as interestRate, "
+                    + "  vl.customer_name as customerName, vl.vehicle_type as vehicleType, vl.loan_type as loanType, "
+                    + " c.id as cid, c.mobile_number as mobileNumber,  c.refer_by as referredBy ";
+        }
+
+        public String join() {
+            return " left join m_apply_vehicle_loan vl on vl.loandetail_id = rs.loan_id "
+                    + "  left join m_customer_details c on c.id = vl.customerdetails_id "
+                    + "  left join m_loan l on l.id = vl.loandetail_id ";
+        }
+
+        @Override
+        public LoanSchedulePeriodData mapRow(ResultSet rs, @SuppressWarnings("unused") int rowNum) throws SQLException {
+
+            final Integer Id = JdbcSupport.getInteger(rs, "Id");
+            // final Integer loanId = JdbcSupport.getInteger(rs, "loanId");
+            final Long customerId = JdbcSupport.getLong(rs, "cid");
+            final Long loanId = JdbcSupport.getLong(rs, "loanId");
+            final Integer period = JdbcSupport.getInteger(rs, "installment");
+            final LocalDate dueDate = JdbcSupport.getLocalDate(rs, "dueDate");
+            final BigDecimal interestWaived = null;
+
+            final LocalDate fromDate = JdbcSupport.getLocalDate(rs, "fromDate");
+            final LocalDate followOnDate = JdbcSupport.getLocalDate(rs, "followOnDate");
+
+            final LocalDate obligationsMetOnDate = null;
+            final Boolean complete = rs.getBoolean("completedDerived");
+            final BigDecimal principalOriginalDue = null;
+            final BigDecimal principalPaid = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "principalCompleted");
+
+            final BigDecimal principalWrittenOff = null;
+            final BigDecimal principalOutstanding = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "principalAmount");
+            final BigDecimal interestPaid = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "interestCompleted");
+
+            final BigDecimal interestRate = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "interestRate");
+            final Integer LoanTerm = JdbcSupport.getInteger(rs, "LoanTerm");
+            final String customerName = rs.getString("customerName");
+            final String vehicleType = rs.getString("vehicleType");
+            final String loanType = rs.getString("loanType");
+            final String mobileNumber = rs.getString("mobileNumber");
+            final String referredBy = rs.getString("referredBy");
+
+            final BigDecimal interestWrittenOff = null;
+            final BigDecimal interestOutstanding = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "interestAmount");
+            final BigDecimal feeChargesDue = null;
+            final BigDecimal feeChargesPaid = null;
+            final BigDecimal feeChargesWaived = null;
+            final BigDecimal feeChargesWrittenOff = null;
+            final BigDecimal feeChargesOutstanding = null;
+            final BigDecimal penaltyChargesDue = null;
+            final BigDecimal penaltyChargesPaid = null;
+            final BigDecimal penaltyChargesWaived = null;
+            final BigDecimal penaltyChargesWrittenOff = null;
+            final BigDecimal penaltyChargesOutstanding = null;
+
+            final BigDecimal totalDueForPeriod = null;
+            final BigDecimal totalPaidInAdvanceForPeriod = null;
+            final BigDecimal totalPaidLateForPeriod = null;
+            final BigDecimal totalActualCostOfLoanForPeriod = null;
+            final BigDecimal outstandingPrincipalBalanceOfLoan = null;
+            final BigDecimal interestDueOnPrincipalOutstanding = null;
+
+            final BigDecimal totalWaived = null;
+            final BigDecimal totalWrittenOff = null;
+            final BigDecimal totalOutstanding = null;
+            final BigDecimal totalPaid = null;
+            final BigDecimal totalInstallmentAmount = null;
+
+            return LoanSchedulePeriodData.repaymentPeriodWithPaymentswithFollowOnDate(loanId, customerId, period, fromDate, dueDate,
+                    followOnDate, interestRate, LoanTerm, customerName, vehicleType, loanType, mobileNumber, referredBy,
+                    obligationsMetOnDate, complete, principalOriginalDue, principalPaid, principalWrittenOff, principalOutstanding,
+                    outstandingPrincipalBalanceOfLoan, interestDueOnPrincipalOutstanding, interestPaid, interestWaived, interestWrittenOff,
+                    interestOutstanding, feeChargesDue, feeChargesPaid, feeChargesWaived, feeChargesWrittenOff, feeChargesOutstanding,
+                    penaltyChargesDue, penaltyChargesPaid, penaltyChargesWaived, penaltyChargesWrittenOff, penaltyChargesOutstanding,
+                    totalDueForPeriod, totalPaid, totalPaidInAdvanceForPeriod, totalPaidLateForPeriod, totalWaived, totalWrittenOff,
+                    totalOutstanding, totalActualCostOfLoanForPeriod, totalInstallmentAmount);
+        }
+    }
+
+    // fetching the REPAYMENT SCHEDULE BASED ON CURRENT MONTH
+    @Override
+    public Collection<LoanSchedulePeriodData> retrieveAllRepaymentScheduleCurrentMonthDueDate() {
+
+        try {
+            this.context.authenticatedUser();
+
+            /*
+             * final LoanScheduleResultSetExtractor fullResultsetExtractor = new LoanScheduleResultSetExtractor(
+             * repaymentScheduleRelatedLoanData, disbursementData, isInterestRecalculationEnabled, totalPaidFeeCharges);
+             */
+
+            final LoanRepaymentScheduleMapper repaymentScheduleMapper = new LoanRepaymentScheduleMapper();
+
+            final String sql = " select " + repaymentScheduleMapper.schema() + " from m_loan_repayment_schedule rs "
+                    + repaymentScheduleMapper.join()
+
+                    + " where MONTH(duedate) = MONTH(CURRENT_DATE()) AND YEAR(duedate) = YEAR(CURRENT_DATE()) and rs.completed_derived = 0 ";
+
+            return this.jdbcTemplate.query(sql, repaymentScheduleMapper, new Object[] {});
+        } catch (final EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
     @Override
     public Collection<LoanTransactionData> retrieveLoanTransactions(final Long loanId) {
         try {

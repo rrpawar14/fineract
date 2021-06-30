@@ -18,27 +18,36 @@
  */
 package org.apache.fineract.vlms.customer.domain;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
+import org.apache.fineract.portfolio.loanaccount.domain.Loan;
+import org.apache.fineract.portfolio.paymenttype.domain.PaymentType;
+import org.apache.fineract.vlms.branchmodule.domain.Employee;
 
 @Entity
 @Table(name = "m_customer_bank_details")
 public class BankDetails extends AbstractPersistableCustom {
 
     @Column(name = "loan_eligible_amount")
-    private Integer loanEligibleAmount;
+    private BigDecimal loanEligibleAmount;
 
-    @Column(name = "account_type")
-    private String accountType;
+    @Column(name = "to_pay")
+    private BigDecimal toPay;
 
-    @Column(name = "disbursal_type")
-    private String disbursalType;
+    @Column(name = "transfer_type")
+    private String transferType;
+
+    @Column(name = "transfer_mode")
+    private String transferMode;
 
     @Column(name = "account_number")
     private String accountNumber;
@@ -55,34 +64,52 @@ public class BankDetails extends AbstractPersistableCustom {
     @Column(name = "IFSC")
     private String IFSC;
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "payment_type_id")
+    private PaymentType paymentTypeId; // 1st party or 3rd party apps
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "loan_id")
+    private Loan loan;
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
+
     /*
      * @OneToOne(optional = true, cascade = CascadeType.ALL)
      *
      * @JoinColumn(name = "passbook_image_id", nullable = true) private DocumentImages image;
      */
-    public static BankDetails fromJson(final JsonCommand command) {
+    public static BankDetails fromJson(final Loan loan, final Employee employee, final PaymentType paymentType, final JsonCommand command) {
 
-        final Integer loanEligibleAmount = command.integerValueOfParameterNamed("loanEligibleAmount");
-        final String accountType = command.stringValueOfParameterNamed("accountType");
-        final String disbursalType = command.stringValueOfParameterNamed("disbursalType");
+        final BigDecimal loanEligibleAmount = command.bigDecimalValueOfParameterNamed("loanEligibleAmount");
+        final BigDecimal toPay = command.bigDecimalValueOfParameterNamed("toPay");
+        final String transferType = command.stringValueOfParameterNamed("transferType");
+        final String transferMode = command.stringValueOfParameterNamed("transferMode");
         final String accountNumber = command.stringValueOfParameterNamed("accountNumber");
         final String accountHolderName = command.stringValueOfParameterNamed("accountHolderName");
         final String bankName = command.stringValueOfParameterNamed("bankName");
         final String branchName = command.stringValueOfParameterNamed("branchName");
         final String IFSC = command.stringValueOfParameterNamed("IFSC");
 
-        return new BankDetails(loanEligibleAmount, accountType, disbursalType, accountNumber, accountHolderName, bankName, branchName,
-                IFSC);
+        return new BankDetails(loan, employee, paymentType, loanEligibleAmount, toPay, transferType, transferMode, accountNumber,
+                accountHolderName, bankName, branchName, IFSC);
 
     }
 
     public BankDetails() {}
 
-    private BankDetails(final Integer loanEligibleAmount, final String accountType, final String disbursalType, final String accountNumber,
+    private BankDetails(final Loan loan, final Employee employee, final PaymentType paymentType, final BigDecimal loanEligibleAmount,
+            final BigDecimal toPay, final String accountType, final String disbursalType, final String accountNumber,
             final String accountHolderName, final String bankName, final String branchName, final String IFSC) {
+        this.loan = loan;
+        this.employee = employee;
+        this.paymentTypeId = paymentType;
         this.loanEligibleAmount = loanEligibleAmount;
-        this.accountType = accountType;
-        this.disbursalType = disbursalType;
+        this.toPay = toPay;
+        this.transferType = accountType;
+        this.transferMode = disbursalType;
         this.accountNumber = accountNumber;
         this.accountHolderName = accountHolderName;
         this.bankName = bankName;
@@ -99,24 +126,31 @@ public class BankDetails extends AbstractPersistableCustom {
         final Map<String, Object> actualChanges = new LinkedHashMap<>(1);
 
         final String loanEligibleAmountParamName = "loanEligibleAmount";
-        if (command.isChangeInIntegerParameterNamed(loanEligibleAmountParamName, this.loanEligibleAmount)) {
-            final Integer newValue = command.integerValueOfParameterNamed(loanEligibleAmountParamName);
+        if (command.isChangeInBigDecimalParameterNamed(loanEligibleAmountParamName, this.loanEligibleAmount)) {
+            final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(loanEligibleAmountParamName);
             actualChanges.put(loanEligibleAmountParamName, newValue);
             this.loanEligibleAmount = newValue;// StringUtils.defaultIfEmpty(newValue, null);
         }
 
-        final String accountTypeParamName = "accountType";
-        if (command.isChangeInStringParameterNamed(accountTypeParamName, this.accountType)) {
-            final String newValue = command.stringValueOfParameterNamed(accountTypeParamName);
-            actualChanges.put(accountTypeParamName, newValue);
-            this.accountType = StringUtils.defaultIfEmpty(newValue, null);
+        final String toPayParamName = "toPay";
+        if (command.isChangeInBigDecimalParameterNamed(toPayParamName, this.toPay)) {
+            final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(toPayParamName);
+            actualChanges.put(toPayParamName, newValue);
+            this.toPay = newValue;
         }
 
-        final String disbursalTypeParamName = "disbursalType";
-        if (command.isChangeInStringParameterNamed(disbursalTypeParamName, this.disbursalType)) {
-            final String newValue = command.stringValueOfParameterNamed(disbursalTypeParamName);
-            actualChanges.put(disbursalTypeParamName, newValue);
-            this.disbursalType = StringUtils.defaultIfEmpty(newValue, null);
+        final String transferTypeParamName = "transferType";
+        if (command.isChangeInStringParameterNamed(transferTypeParamName, this.transferType)) {
+            final String newValue = command.stringValueOfParameterNamed(transferTypeParamName);
+            actualChanges.put(transferTypeParamName, newValue);
+            this.transferType = StringUtils.defaultIfEmpty(newValue, null);
+        }
+
+        final String transferModeParamName = "transferMode";
+        if (command.isChangeInStringParameterNamed(transferModeParamName, this.transferMode)) {
+            final String newValue = command.stringValueOfParameterNamed(transferModeParamName);
+            actualChanges.put(transferModeParamName, newValue);
+            this.transferMode = StringUtils.defaultIfEmpty(newValue, null);
         }
 
         final String accountNumberParamName = "accountNumber";

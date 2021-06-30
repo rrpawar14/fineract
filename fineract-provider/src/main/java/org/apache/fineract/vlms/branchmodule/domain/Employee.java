@@ -32,7 +32,6 @@ import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.portfolio.address.domain.Address;
-import org.apache.fineract.vlms.customer.domain.BankDetails;
 
 @Entity
 @Table(name = "m_employee")
@@ -104,10 +103,6 @@ public class Employee extends AbstractPersistableCustom {
     private Address permanentAdd;
 
     @OneToOne(optional = true)
-    @JoinColumn(name = "bankdetails_id", nullable = true)
-    private BankDetails bankDetails;
-
-    @OneToOne(optional = true)
     @JoinColumn(name = "insurancedetails_id", nullable = true)
     private InsuranceDetails insuranceDetails;
 
@@ -132,7 +127,7 @@ public class Employee extends AbstractPersistableCustom {
     private EducationQualification postgraduateQualification;
 
     public static Employee fromJson(final JsonCommand command, final Address customerCommunicationAdd, final Address customerPermanentAdd,
-            final BankDetails bankDetails, final InsuranceDetails insuranceDetails, final InsuranceDetails accidentalInsuranceDetails,
+            final InsuranceDetails insuranceDetails, final InsuranceDetails accidentalInsuranceDetails,
             final EducationQualification schoolQualification, final EducationQualification collegeQualification,
             final EducationQualification graduateQualification, final EducationQualification postgraduateQualification) {
 
@@ -158,8 +153,8 @@ public class Employee extends AbstractPersistableCustom {
 
         return new Employee(name, calledName, surName, mobileNumber, altNumber, officialNumber, dob, gender, age, maritalStatus,
                 designation, spousename, bloodGroup, fatherName, vehicleNumber, vehicleType, doj, agtnumber, status,
-                customerCommunicationAdd, customerPermanentAdd, bankDetails, insuranceDetails, accidentalInsuranceDetails,
-                schoolQualification, collegeQualification, graduateQualification, postgraduateQualification);
+                customerCommunicationAdd, customerPermanentAdd, insuranceDetails, accidentalInsuranceDetails, schoolQualification,
+                collegeQualification, graduateQualification, postgraduateQualification);
 
     }
 
@@ -169,10 +164,9 @@ public class Employee extends AbstractPersistableCustom {
             final String officialNumber, final Date dob, final String gender, final Integer age, final String maritalStatus,
             final String designation, final String spousename, final String bloodGroup, final String fatherName, final String vehicleNumber,
             final String vehicleType, final Date doj, final String agtnumber, final String status, final Address customerCommunicationAdd,
-            final Address customerPermanentAdd, final BankDetails bankDetails, final InsuranceDetails insuranceDetails,
-            final InsuranceDetails accidentalInsuranceDetails, final EducationQualification schoolQualification,
-            final EducationQualification collegeQualification, final EducationQualification graduateQualification,
-            final EducationQualification postgraduateQualification) {
+            final Address customerPermanentAdd, final InsuranceDetails insuranceDetails, final InsuranceDetails accidentalInsuranceDetails,
+            final EducationQualification schoolQualification, final EducationQualification collegeQualification,
+            final EducationQualification graduateQualification, final EducationQualification postgraduateQualification) {
         this.name = name;
         this.calledName = calledName;
         this.surName = surName;
@@ -194,7 +188,6 @@ public class Employee extends AbstractPersistableCustom {
         this.status = status;
         this.communicationAdd = customerCommunicationAdd;
         this.permanentAdd = customerPermanentAdd;
-        this.bankDetails = bankDetails;
         this.insuranceDetails = insuranceDetails;
         this.accidentalInsuranceDetails = accidentalInsuranceDetails;
         this.schoolQualification = schoolQualification;

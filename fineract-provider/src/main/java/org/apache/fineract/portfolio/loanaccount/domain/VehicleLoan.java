@@ -21,7 +21,6 @@ package org.apache.fineract.portfolio.loanaccount.domain;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -31,7 +30,6 @@ import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.useradministration.domain.AppUser;
-import org.apache.fineract.vlms.customer.domain.BankDetails;
 import org.apache.fineract.vlms.customer.domain.CustomerDetails;
 import org.apache.fineract.vlms.customer.domain.CustomerGuarantor;
 
@@ -43,7 +41,13 @@ public class VehicleLoan extends AbstractPersistableCustom {
     private String customerName;
 
     @Column(name = "vehicle_type", nullable = true, length = 100)
-    private String vehicleType;
+    private String vehicleType; // two or four wheeler
+
+    @Column(name = "loan_type", nullable = true, length = 100)
+    private String loanType; // new or used vehicle
+
+    @Column(name = "advance_for_new_vehicle", nullable = true, length = 100)
+    private String advanceForNewVehicle;
 
     @Column(name = "dealer", nullable = true, length = 100)
     private String dealer;
@@ -66,13 +70,11 @@ public class VehicleLoan extends AbstractPersistableCustom {
     @JoinColumn(name = "guarantordetails_id", nullable = true)
     private CustomerGuarantor customerGuarantor;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "loandetail_id", nullable = true)
-    private Loan loanDetails;
-
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "bankdetails_id", nullable = true)
-    private BankDetails bankDetails;
+    /*
+     * @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true, fetch = FetchType.EAGER)
+     *
+     * @JoinColumn(name = "loandetail_id", nullable = true) private Loan loanDetails;
+     */
 
     @OneToOne(optional = true)
     @JoinColumn(name = "customer_id", nullable = true)
@@ -81,11 +83,12 @@ public class VehicleLoan extends AbstractPersistableCustom {
     public VehicleLoan() {}
 
     public static VehicleLoan fromJson(final JsonCommand command, final CustomerDetails customerDetails,
-            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final Loan loanDetails,
-            final BankDetails bankDetails, final AppUser appuser) {
+            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final AppUser appuser) {
 
         final String customerName = command.stringValueOfParameterNamed("customerName");
         final String vehicleType = command.stringValueOfParameterNamed("vehicleType");
+        final String loanType = command.stringValueOfParameterNamed("loanType");
+        final String advanceForNewVehicle = command.stringValueOfParameterNamed("advanceForNewVehicle");
         final String dealer = command.stringValueOfParameterNamed("dealer");
         final String invoiceNumber = command.stringValueOfParameterNamed("invoiceNumber");
         final String vehicleCondition = command.stringValueOfParameterNamed("vehicleCondition");
@@ -94,24 +97,24 @@ public class VehicleLoan extends AbstractPersistableCustom {
 
         // final Integer image = command.stringValueOfParameterNamed("invoiceImageId");
 
-        return new VehicleLoan(customerName, vehicleType, dealer, invoiceNumber, createdDate, customerDetails, vehicleDetails,
-                customerGuarantor, loanDetails, bankDetails, appuser);
+        return new VehicleLoan(customerName, vehicleType, loanType, advanceForNewVehicle, dealer, invoiceNumber, createdDate,
+                customerDetails, vehicleDetails, customerGuarantor, appuser);
 
     }
 
-    private VehicleLoan(final String customerName, final String vehicleType, final String dealer, final String invoiceNumber,
-            final Date createdDate, final CustomerDetails customerDetails, final VehicleDetails vehicleDetails,
-            final CustomerGuarantor customerGuarantor, final Loan loanDetails, final BankDetails bankDetails, final AppUser appuser) {
+    private VehicleLoan(final String customerName, final String vehicleType, final String loanType, final String advanceForNewVehicle,
+            final String dealer, final String invoiceNumber, final Date createdDate, final CustomerDetails customerDetails,
+            final VehicleDetails vehicleDetails, final CustomerGuarantor customerGuarantor, final AppUser appuser) {
         this.customerName = customerName;
         this.vehicleType = vehicleType;
+        this.loanType = loanType;
+        this.advanceForNewVehicle = advanceForNewVehicle;
         this.dealer = dealer;
         this.invoiceNumber = invoiceNumber;
         this.createdDate = createdDate;
         this.customerDetails = customerDetails;
         this.vehicleDetails = vehicleDetails;
         this.customerGuarantor = customerGuarantor;
-        this.loanDetails = loanDetails;
-        this.bankDetails = bankDetails;
         this.appuser = appuser;
     }
 

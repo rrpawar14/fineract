@@ -138,18 +138,15 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
     public CommandProcessingResult saveOrUpdateImage(String entityName, final Long formId, String documentNumber, final String imageName,
             final InputStream inputStream, final Long fileSize) {
 
-        System.out.println("--image testing 1 --");
-
         Object owner = deletePreviousImage(entityName, formId);
-        System.out.println("documentnumberWriteStream1: " + documentNumber);
-        System.out.println("entityName: " + entityName + "object: " + owner);
+
         final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository();
-        System.out.println("contentRepository: " + contentRepository);
+
         final String imageLocation = contentRepository.saveImage(inputStream, formId, imageName, fileSize); // it stores
-        System.out.println("imageLocation: " + imageLocation); // the image
-                                                               // and get
-                                                               // the
-                                                               // location
+        // the image
+        // and get
+        // the
+        // location
         return updateImage(entityName, owner, imageLocation, documentNumber, contentRepository.getStorageType());
     }
 
@@ -158,12 +155,10 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
     public CommandProcessingResult saveOrUpdateImage(String entityName, final Long clientId, String documentNumber,
             final Base64EncodedImage encodedImage) {
         Object owner = deletePreviousImage(entityName, clientId);
-        System.out.println("documentnumberWritebase641: " + documentNumber);
 
-        System.out.println("--image testing 2 --");
         final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository();
         final String imageLocation = contentRepository.saveImage(encodedImage, clientId, "image");
-        System.out.println("--imageLocation--" + imageLocation);
+
         return updateImage(entityName, owner, imageLocation, documentNumber, contentRepository.getStorageType());
     }
 
@@ -192,7 +187,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 || EntityTypeForImages.BACK_VEHICLE_LICENCE.toString().equals(entityName)
                 || EntityTypeForImages.CUSTOMERIMAGE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
-            System.out.println("-- GovernmentDocument--");
+
             CustomerDetails cd = null;
             // CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
             documentImage = this.documentImageRepository.getCustomerDocumentImageByEntityNameandEntityId(clientId, entityName);
@@ -210,7 +205,6 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 || EntityTypeForImages.G_FRONT_VEHICLE_LICENCE.toString().equals(entityName)
                 || EntityTypeForImages.G_BACK_VEHICLE_LICENCE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
-            System.out.println("-- GovernmentDocument--");
 
             // CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
             documentImage = this.documentImageRepository.getGurantorDocumentImageByEntityNameandEntityId(clientId, entityName);
@@ -219,7 +213,6 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
 
         } else if (EntityTypeForImages.BANK.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
-            System.out.println("-- GovernmentDocument--");
 
             // CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
             documentImage = this.documentImageRepository.getBankDocumentImageByEntityNameandEntityId(clientId, entityName);
@@ -236,7 +229,6 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 || EntityTypeForImages.ENROLL_FRONT_VEHICLE_LICENCE.toString().equals(entityName)
                 || EntityTypeForImages.ENROLL_BACK_VEHICLE_LICENCE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
-            System.out.println("-- GovernmentDocument--");
 
             // CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
             documentImage = this.documentImageRepository.getFEEnrollDocumentImageByEntityNameandEntityId(clientId, entityName);
@@ -247,7 +239,6 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 || EntityTypeForImages.EMPLOYEE_PANCARD.toString().equals(entityName)
                 || EntityTypeForImages.EMPLOYEE_VEHICLE_LICENCE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
-            System.out.println("-- GovernmentDocument--");
 
             // CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
             documentImage = this.documentImageRepository.getEmployeeDocumentImageByEntityNameandEntityId(clientId, entityName);
@@ -262,7 +253,6 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 || EntityTypeForImages.VEHICLE_CHALAN_REPORT.toString().equals(entityName)
                 || EntityTypeForImages.VEHICLE_TRANSACTION_HISTORY.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
-            System.out.println("-- GovernmentDocument--");
 
             // CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
             vehicleImage = this.vehicleImageRepository.getVehicleImageByEntityNameandEntityId(clientId, entityName);
@@ -271,7 +261,6 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
 
         } else if (EntityTypeForImages.INVOICEIMAGE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
-            System.out.println("-- GovernmentDocument--");
 
             // CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
             documentImage = this.documentImageRepository.getLoanDocumentImageByEntityNameandEntityId(clientId, entityName);
@@ -289,25 +278,25 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
 
         // delete image from the file system
         if (image != null) {
-            System.out.println("-- image-- ");
+
             final ContentRepository contentRepository = this.contentRepositoryFactory
                     .getRepository(StorageType.fromInt(image.getStorageType()));
             contentRepository.deleteImage(image.getLocation());
             this.imageRepository.delete(image);
         } else if (documentImage != null) {
-            System.out.println("-- documentImage-- ");
+
             final ContentRepository contentRepository = this.contentRepositoryFactory
                     .getRepository(StorageType.fromInt(documentImage.getStorageType()));
             contentRepository.deleteImage(documentImage.getLocation());
             this.documentImageRepository.delete(documentImage);
         } else if (vehicleImage != null) {
-            System.out.println("-- vehicleImage-- ");
+
             final ContentRepository contentRepository = this.contentRepositoryFactory
                     .getRepository(StorageType.fromInt(vehicleImage.getStorageType()));
             contentRepository.deleteImage(vehicleImage.getLocation());
             this.vehicleImageRepository.delete(vehicleImage);
         }
-        System.out.println("-- done-- ");
+
         return new CommandProcessingResult(clientId);
     }
 
@@ -323,10 +312,10 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
         VehicleImages vehicleImage = null;
         // CustomerImage, AdharPhoto, GovermentDocument, InvoiceImage, Engine, Chassis, Vehicle, GuarantorImage,
         // GuarantorDocument, Bank
-        System.out.println("Object creation");
+
         if (EntityTypeForImages.PROFILEIMAGE.toString().equals(entityName) || entityName.equals("CustomerImage")) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
-            System.out.println("--PROFILEIMAGE--");
+
             AppUser appuser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(entityId);
             image = appuser.getImage();
             owner = appuser;
@@ -351,18 +340,18 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 || EntityTypeForImages.FRONT_VEHICLE_LICENCE.toString().equals(entityName)
                 || EntityTypeForImages.BACK_VEHICLE_LICENCE.toString().equals(entityName)) {
             // if (EntityTypeForImages.USEDVEHICLE.toString().equals(entityName)) {
-            System.out.println("--AdharPhoto GovernmentDocument--");
+
             CustomerDetails customerDetails = this.customerDetailsRepository.getOne(entityId);
-            // documentImage = usedVehicleLoan.getDocumentImage();
+            documentImage = this.documentImageRepository.getCustomerDocumentImageByEntityNameandEntityId(entityId, entityName);
             owner = customerDetails;
             // }
         }
         System.out.println("E:" + EntityTypeForImages.INVOICEIMAGE.toString() + " : " + entityName);
         if (EntityTypeForImages.INVOICEIMAGE.toString().equals(entityName)) {
             // if (EntityTypeForImages.NEWVEHICLE.toString().equals(entityName)) {
-            System.out.println("--InvoiceImage--");
+
             VehicleLoan newVehicleLoan = this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
-            // documentImage = newVehicleLoan.getInvoiceImage();
+            documentImage = this.documentImageRepository.getCustomerDocumentImageByEntityNameandEntityId(entityId, entityName);
             owner = newVehicleLoan;
             // }
         }
@@ -377,9 +366,9 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 || EntityTypeForImages.VEHICLE_CHALAN_REPORT.toString().equals(entityName)
                 || EntityTypeForImages.VEHICLE_TRANSACTION_HISTORY.toString().equals(entityName)) {
             // else if (EntityTypeForImages.VEHICLEDETAILS.toString().equals(entityName)) {
-            System.out.println("--Engine--");
+
             VehicleDetails vehicleDetails = this.vehicleDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
-            // vehicleImage = vehicleDetails.getImage();
+            vehicleImage = this.vehicleImageRepository.getVehicleImageByEntityNameandEntityId(entityId, entityName);
             owner = vehicleDetails;
             // }
         }
@@ -395,15 +384,15 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 || EntityTypeForImages.G_FRONT_VEHICLE_LICENCE.toString().equals(entityName)
                 || EntityTypeForImages.G_BACK_VEHICLE_LICENCE.toString().equals(entityName)) {
             // else if (EntityTypeForImages.GUARANTOR.toString().equals(entityName)) {
-            System.out.println("--GUARANTOR--");
+
             CustomerGuarantor customerGuarantor = this.customerGuarantorRepositoryWrapper.findOneWithNotFoundDetection(entityId);
-            // image = customerGuarantor.getGuarantorImage();
+            documentImage = this.documentImageRepository.getGurantorDocumentImageByEntityNameandEntityId(entityId, entityName);
             owner = customerGuarantor;
             // }
         } else if (EntityTypeForImages.BANK.toString().equals(entityName)) {
-            System.out.println("--BANK--");
+
             BankDetails bankDetails = this.bankDetailsRepositoryWrapper.findOneWithNotFoundDetection(entityId);
-            // documentImage = bankDetails.getImage();
+            documentImage = this.documentImageRepository.getBankDocumentImageByEntityNameandEntityId(entityId, entityName);
             owner = bankDetails;
         } else if (EntityTypeForImages.ENROLL_CUSTOMERIMAGE.toString().equals(entityName)
                 || EntityTypeForImages.ENROLL_ADHARPHOTO.toString().equals(entityName)
@@ -414,14 +403,14 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 || EntityTypeForImages.ENROLL_BACK_PANCARD.toString().equals(entityName)
                 || EntityTypeForImages.ENROLL_FRONT_VEHICLE_LICENCE.toString().equals(entityName)
                 || EntityTypeForImages.ENROLL_BACK_VEHICLE_LICENCE.toString().equals(entityName)) {
-            System.out.println("--FEENROLL--");
+
             FEEnroll feEnroll = this.feEnrollRepositoryWrapper.findOneWithNotFoundDetection(entityId);
-            // documentImage = bankDetails.getImage();
+            documentImage = this.documentImageRepository.getFEEnrollDocumentImageByEntityNameandEntityId(entityId, entityName);
             owner = feEnroll;
         }
 
         else if (EntityTypeForImages.FENEWLOAN.toString().equals(entityName)) {
-            System.out.println("--FENEWLOAN--");
+
             VehicleLoan newLoan = this.newVehicleLoanRepositoryWrapper.findOneWithNotFoundDetection(entityId);
             // documentImage = bankDetails.getImage();
             owner = newLoan;
@@ -431,9 +420,10 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 || EntityTypeForImages.EMPLOYEE_PANCARD.toString().equals(entityName)
                 || EntityTypeForImages.EMPLOYEE_VEHICLE_LICENCE.toString().equals(entityName)) {
             // if (EntityTypeForImages.NEWVEHICLE.toString().equals(entityName)) {
-            System.out.println("--EMPLOYEE--");
+
             Employee employee = this.employeeRepositoryWrapper.findOneWithNotFoundDetection(entityId);
-            // documentImage = newVehicleLoan.getInvoiceImage();
+
+            documentImage = this.documentImageRepository.getEmployeeDocumentImageByEntityNameandEntityId(entityId, entityName);
             owner = employee;
             // }
         }
@@ -448,25 +438,42 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             owner = staff;
         }
         if (image != null) {
-            System.out.println("--deleting image--");
+
             final ContentRepository contentRepository = this.contentRepositoryFactory
                     .getRepository(StorageType.fromInt(image.getStorageType()));
             contentRepository.deleteImage(image.getLocation());
-            System.out.println("--deleting image location--" + image.getLocation());
+
             this.imageRepository.delete(image);
+        }
+        if (documentImage != null) {
+
+            final ContentRepository contentRepository = this.contentRepositoryFactory
+                    .getRepository(StorageType.fromInt(documentImage.getStorageType()));
+            contentRepository.deleteImage(documentImage.getLocation());
+
+            this.documentImageRepository.delete(documentImage);
+        }
+
+        if (vehicleImage != null) {
+
+            final ContentRepository contentRepository = this.contentRepositoryFactory
+                    .getRepository(StorageType.fromInt(vehicleImage.getStorageType()));
+            contentRepository.deleteImage(vehicleImage.getLocation());
+
+            this.vehicleImageRepository.delete(vehicleImage);
         }
         return owner;
     }
 
     private CommandProcessingResult updateImage(String entityName, final Object owner, final String imageLocation, String documentNumber,
             final StorageType storageType) {
-        System.out.println("documentnumberWrite2: " + documentNumber);
+
         Image image = null; // NewVehicleLoan, NewVehicleLoan, VehicleDetails, CustomerGuarantor, BankDetails
         DocumentImages documentImage = null;
         VehicleImages vehicleImage = null;
         Long clientId = null;
         if (owner instanceof Client) {
-            System.out.println("--NewVehicleLoan--");
+
             Client client = (Client) owner;
             image = client.getImage();
             clientId = client.getId();
@@ -474,7 +481,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             client.setImage(image);
             this.clientRepositoryWrapper.save(client);
         } else if (owner instanceof AppUser) { // create 3 section same as database documents, images, vehicles
-            System.out.println("--AppUser--");
+
             AppUser appUser = (AppUser) owner;
 
             // documentImage = newVehicleLoan.getInvoiceImage();
@@ -488,7 +495,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             // newVehicleLoan.setInvoiceImage(documentImage);
             this.appUserRepository.save(appUser);
         } else if (owner instanceof VehicleLoan) { // create 3 section same as database documents, images, vehicles
-            System.out.println("--NewVehicleLoan--");
+
             VehicleLoan newVehicleLoan = (VehicleLoan) owner;
 
             // documentImage = newVehicleLoan.getInvoiceImage();
@@ -512,7 +519,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
            * usedVehicleLoan.setDocumentImage(documentImage); this.usedVehicleLoanRepository.save(usedVehicleLoan); }
            */
         else if (owner instanceof CustomerDetails) {
-            System.out.println("--VehicleDetails--");
+
             CustomerDetails customerDetails = (CustomerDetails) owner;
             // vehicleImage = vehicleDetails.getImage();
             clientId = customerDetails.getId();
@@ -522,7 +529,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             this.documentImageRepository.saveAndFlush(documentImage);
             // this.vehicleDetailsRepository.save(vehicleDetails);
         } else if (owner instanceof VehicleDetails) {
-            System.out.println("--VehicleDetails--");
+
             VehicleDetails vehicleDetails = (VehicleDetails) owner;
             // vehicleImage = vehicleDetails.getImage();
             clientId = vehicleDetails.getId();
@@ -531,12 +538,12 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             this.vehicleImageRepository.save(vehicleImage);
             this.vehicleDetailsRepository.save(vehicleDetails);
         } else if (owner instanceof CustomerGuarantor) {
-            System.out.println("--CustomerGuarantor--");
+
             CustomerGuarantor customerGuarantor = (CustomerGuarantor) owner;
             clientId = customerGuarantor.getId(); // if guarantor has image and doucme
 
             if (entityName.equals("GuarantorImage")) {
-                System.out.println("--GuarantorImage--");
+
                 // image = customerGuarantor.getGuarantorImage();
                 image = createImage(entityName, image, imageLocation, storageType, null, customerGuarantor);
                 // customerGuarantor.setGuarantorImage(image);
@@ -544,7 +551,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 this.customerGuarantorRepository.save(customerGuarantor);
             } else { // storing guarantor documents
                 // documentImage = customerGuarantor.getDocumentImage();
-                System.out.println("--NotGuarantorImage--");
+
                 if (EntityTypeForImages.G_ADHARPHOTO.toString().equals(entityName)) {
                     System.out.println("--ADHARPHOTO--");
                     // entityName = "adharphoto";
@@ -564,37 +571,35 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                 this.customerGuarantorRepository.save(customerGuarantor);
             }
         } else if (owner instanceof BankDetails) {
-            System.out.println("--Bankdetails--");
+
             BankDetails bankDetails = (BankDetails) owner;
             // documentImage = bankDetails.getImage();
             clientId = bankDetails.getId();
-            System.out.println("--clientId--:" + clientId);
+
             documentImage = createDocumentImage(entityName, documentImage, imageLocation, documentNumber, storageType, bankDetails, null,
                     null, null, null, null);
             // bankDetails.setImage(documentImage);
-            System.out.println("--setImage--" + bankDetails);
+
             this.documentImageRepository.saveAndFlush(documentImage);
-            System.out.println("--documentImageRepository--" + bankDetails);
+
             this.bankDetailsRepository.saveAndFlush(bankDetails);
-            System.out.println("--bankDetailsRepository--");
 
         } else if (owner instanceof Employee) {
-            System.out.println("--Bankdetails--");
+
             Employee employee = (Employee) owner;
             // documentImage = bankDetails.getImage();
             clientId = employee.getId();
-            System.out.println("--clientId--:" + clientId);
+
             documentImage = createDocumentImage(entityName, documentImage, imageLocation, documentNumber, storageType, null, null, null,
                     null, null, employee);
             // bankDetails.setImage(documentImage);
-            System.out.println("--setImage--" + employee);
+
             this.documentImageRepository.saveAndFlush(documentImage);
-            System.out.println("--documentImageRepository--" + employee);
+
             this.employeeRepository.saveAndFlush(employee);
-            System.out.println("--employeeRepository--");
 
         } else if (owner instanceof FEEnroll) {
-            System.out.println("--FEENROLL--");
+
             FEEnroll feEnroll = (FEEnroll) owner;
             clientId = feEnroll.getId();
 
@@ -602,7 +607,6 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
                     feEnroll, null, null);
 
             this.documentImageRepository.saveAndFlush(documentImage);
-            System.out.println("--FEENROLLRepository--" + feEnroll);
 
             this.feEnrollRepository.saveAndFlush(feEnroll);
             // documentImage = bankDetails.getImage();
@@ -646,7 +650,7 @@ public class ImageWritePlatformServiceJpaRepositoryImpl implements ImageWritePla
             final CustomerGuarantor customerGuarantor, final VehicleLoan newVehicleImage, final FEEnroll feEnroll,
             CustomerDetails customerDetails, final Employee employee) {
         if (documentImage == null) {
-            System.out.println("documentnumberWrite3: " + documentNumber);
+
             documentImage = new DocumentImages(imageLocation, entityName, documentNumber, storageType, bankDetails, customerGuarantor,
                     newVehicleImage, feEnroll, customerDetails, employee);
         } else {

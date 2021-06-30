@@ -29,6 +29,8 @@ import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityEx
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.address.domain.Address;
 import org.apache.fineract.portfolio.address.domain.AddressRepository;
+import org.apache.fineract.portfolio.paymenttype.domain.PaymentType;
+import org.apache.fineract.portfolio.paymenttype.domain.PaymentTypeRepositoryWrapper;
 import org.apache.fineract.vlms.branchmodule.domain.EducationQualification;
 import org.apache.fineract.vlms.branchmodule.domain.EducationQualificationRepository;
 import org.apache.fineract.vlms.branchmodule.domain.Employee;
@@ -84,6 +86,7 @@ public class BranchModuleWritePlatformServiceImpl implements BranchModuleWritePl
     private final BankDetailsRepository bankDetailsRepository;
     private final LoanApprovalLimitRepository loanApprovalLimitRepository;
     private final LoanDisbursalLimitRepository loanDisbursalLimitRepository;
+    private final PaymentTypeRepositoryWrapper paymentTypeRepositoryWrapper;
 
     @Autowired
     public BranchModuleWritePlatformServiceImpl(final PlatformSecurityContext context, final FEEnquiryRepository feEnquiryRepository,
@@ -96,7 +99,8 @@ public class BranchModuleWritePlatformServiceImpl implements BranchModuleWritePl
             final FETaskRepository feTaskRepository, final InsuranceRepository insuranceRepository,
             final EducationQualificationRepository educationQualificationRepository, final EmployeeRepository employeeRepository,
             final BankDetailsRepository bankDetailsRepository, final LoanApprovalLimitRepository loanApprovalLimitRepository,
-            final LoanDisbursalLimitRepository loanDisbursalLimitRepository) {
+            final LoanDisbursalLimitRepository loanDisbursalLimitRepository,
+            final PaymentTypeRepositoryWrapper paymentTypeRepositoryWrapper) {
         this.context = context;
         this.feEnquiryRepository = feEnquiryRepository;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
@@ -116,6 +120,8 @@ public class BranchModuleWritePlatformServiceImpl implements BranchModuleWritePl
         this.bankDetailsRepository = bankDetailsRepository;
         this.loanApprovalLimitRepository = loanApprovalLimitRepository;
         this.loanDisbursalLimitRepository = loanDisbursalLimitRepository;
+        this.paymentTypeRepositoryWrapper = paymentTypeRepositoryWrapper;
+
     }
 
     @Transactional
@@ -127,9 +133,6 @@ public class BranchModuleWritePlatformServiceImpl implements BranchModuleWritePl
             this.context.authenticatedUser();
 
             // this.fromApiJsonDeserializer.validateForCreate(command.json());
-
-            final BankDetails bankDetails = BankDetails.fromJson(command);
-            this.bankDetailsRepository.save(bankDetails);
 
             Address customerAdd = Address.fromJson(command, "employee_communicationAddress");
             this.addressRepository.save(customerAdd);
@@ -155,11 +158,23 @@ public class BranchModuleWritePlatformServiceImpl implements BranchModuleWritePl
             final EducationQualification postGraduateQualification = EducationQualification.fromJson(command, "postgraduate_qualification");
             this.educationQualificationRepository.save(postGraduateQualification);
 
-            final Employee employee = Employee.fromJson(command, customerAdd, permanentAdd, bankDetails, insuranceDetails,
-                    accidentalInsuranceDetails, schoolQualification, collegeQualification, graduateQualification,
-                    postGraduateQualification);
+            Employee employee = Employee.fromJson(command, customerAdd, permanentAdd, insuranceDetails, accidentalInsuranceDetails,
+                    schoolQualification, collegeQualification, graduateQualification, postGraduateQualification);
 
             this.employeeRepository.save(employee);
+
+            final Long employeeId = employee.getId();
+            employee = this.employeeRepository.getOne(employeeId);
+
+            final Long paymentTypeId = command.longValueOfParameterNamed("paymentTypeId");
+            PaymentType paymentType = null;
+
+            if (paymentTypeId != null) {
+                paymentType = this.paymentTypeRepositoryWrapper.findOneWithNotFoundDetection(paymentTypeId);
+            }
+
+            final BankDetails bankDetails = BankDetails.fromJson(null, employee, paymentType, command);
+            this.bankDetailsRepository.save(bankDetails);
 
             return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(employee.getId()).build();
             // .withEntityId(code.getId())

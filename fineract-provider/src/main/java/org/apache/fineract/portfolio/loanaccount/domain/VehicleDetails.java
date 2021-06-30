@@ -73,6 +73,9 @@ public class VehicleDetails extends AbstractPersistableCustom {
     @Column(name = "live_km_reading")
     private Integer kmReading;
 
+    @Column(name = "dealer_mobile_number")
+    private String dealerMobileNumber;
+
     /*
      * @OneToOne(optional = true)
      *
@@ -95,16 +98,18 @@ public class VehicleDetails extends AbstractPersistableCustom {
         final Date insuranceExpiry = command.dateValueOfParameterNamed("insuranceExpiry");
         final Date pollutionCertExpiry = command.dateValueOfParameterNamed("pollutionCertExpiry");
         final Date registration = command.dateValueOfParameterNamed("registration");
+        final String dealerMobileNumber = command.stringValueOfParameterNamed("dealerMobileNumber");
         final Integer kmReading = command.integerValueOfParameterNamed("kmReading");
 
         return new VehicleDetails(vehicleNumber, maker, model, color, mfgYear, engineNumber, chassisNumber, insuranceCompany,
-                insurancePolicy, insuranceExpiry, pollutionCertExpiry, registration, kmReading);
+                insurancePolicy, insuranceExpiry, pollutionCertExpiry, registration, dealerMobileNumber, kmReading);
 
     }
 
     private VehicleDetails(final String vehicleNumber, final String maker, final String model, final String color, final String mfgYear,
             final String engineNumber, final String chassisNumber, final String insuranceCompany, final String insurancePolicy,
-            final Date insuranceExpiry, final Date pollutionCertExpiry, final Date registration, final Integer kmReading) {
+            final Date insuranceExpiry, final Date pollutionCertExpiry, final Date registration, final String dealerMobileNumber,
+            final Integer kmReading) {
         this.vehicleNumber = vehicleNumber;
         this.maker = maker;
         this.model = model;
@@ -117,6 +122,7 @@ public class VehicleDetails extends AbstractPersistableCustom {
         this.insuranceExpiry = insuranceExpiry;
         this.pollutionCertExpiry = pollutionCertExpiry;
         this.registration = registration;
+        this.dealerMobileNumber = dealerMobileNumber;
         this.kmReading = kmReading;
     }
 
@@ -219,6 +225,16 @@ public class VehicleDetails extends AbstractPersistableCustom {
 
             final LocalDate newValue = command.localDateValueOfParameterNamed(pollutionCertExpiryParamName);
             this.pollutionCertExpiry = Date.from(newValue.atStartOfDay(DateUtils.getDateTimeZoneOfTenant()).toInstant());
+
+        }
+
+        final String dealerMobileNumberParamName = "dealerMobileNumber";
+
+        if (command.isChangeInStringParameterNamed(dealerMobileNumberParamName, this.dealerMobileNumber)) {
+
+            final String newValue = command.stringValueOfParameterNamed(dealerMobileNumberParamName);
+            actualChanges.put(dealerMobileNumberParamName, newValue);
+            this.dealerMobileNumber = StringUtils.defaultIfEmpty(newValue, null);
 
         }
 

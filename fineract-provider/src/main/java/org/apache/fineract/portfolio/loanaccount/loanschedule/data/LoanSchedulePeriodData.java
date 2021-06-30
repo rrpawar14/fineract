@@ -29,9 +29,19 @@ import org.apache.fineract.infrastructure.core.service.DateUtils;
  */
 public final class LoanSchedulePeriodData {
 
+    private final Long loanId;
+    private final Long customerId;
     private final Integer period;
     private final LocalDate fromDate;
     private final LocalDate dueDate;
+    private final LocalDate followOnDate;
+    private final BigDecimal interestRate;
+    private final Integer LoanTerm;
+    private final String customerName;
+    private final String vehicleType;
+    private final String loanType;
+    private final String mobileNumber;
+    private final String referredBy;
     private final LocalDate obligationsMetOnDate;
     private final Boolean complete;
     private final Integer daysInPeriod;
@@ -114,6 +124,110 @@ public final class LoanSchedulePeriodData {
                 totalActualCostOfLoanForPeriod, totalInstallmentAmountForPeriod);
     }
 
+    public static LoanSchedulePeriodData repaymentPeriodWithPaymentswithFollowOnDate(@SuppressWarnings("unused") final Long loanId,
+            final Long customerId, final Integer periodNumber, final LocalDate fromDate, final LocalDate dueDate,
+            final LocalDate followOnDate, final BigDecimal interestRate, final Integer LoanTerm, final String customerName,
+            final String vehicleType, final String loanType, final String mobileNumber, final String referredBy,
+            final LocalDate obligationsMetOnDate, final boolean complete, final BigDecimal principalOriginalDue,
+            final BigDecimal principalPaid, final BigDecimal principalWrittenOff, final BigDecimal principalOutstanding,
+            final BigDecimal outstandingPrincipalBalanceOfLoan, final BigDecimal interestDueOnPrincipalOutstanding,
+            final BigDecimal interestPaid, final BigDecimal interestWaived, final BigDecimal interestWrittenOff,
+            final BigDecimal interestOutstanding, final BigDecimal feeChargesDue, final BigDecimal feeChargesPaid,
+            final BigDecimal feeChargesWaived, final BigDecimal feeChargesWrittenOff, final BigDecimal feeChargesOutstanding,
+            final BigDecimal penaltyChargesDue, final BigDecimal penaltyChargesPaid, final BigDecimal penaltyChargesWaived,
+            final BigDecimal penaltyChargesWrittenOff, final BigDecimal penaltyChargesOutstanding, final BigDecimal totalDueForPeriod,
+            final BigDecimal totalPaid, final BigDecimal totalPaidInAdvanceForPeriod, final BigDecimal totalPaidLateForPeriod,
+            final BigDecimal totalWaived, final BigDecimal totalWrittenOff, final BigDecimal totalOutstanding,
+            final BigDecimal totalActualCostOfLoanForPeriod, final BigDecimal totalInstallmentAmountForPeriod) {
+
+        return new LoanSchedulePeriodData(loanId, customerId, periodNumber, fromDate, dueDate, followOnDate, interestRate, LoanTerm,
+                customerName, vehicleType, loanType, mobileNumber, referredBy, obligationsMetOnDate, complete, principalOriginalDue,
+                principalPaid, principalWrittenOff, principalOutstanding, outstandingPrincipalBalanceOfLoan,
+                interestDueOnPrincipalOutstanding, interestPaid, interestWaived, interestWrittenOff, interestOutstanding, feeChargesDue,
+                feeChargesPaid, feeChargesWaived, feeChargesWrittenOff, feeChargesOutstanding, penaltyChargesDue, penaltyChargesPaid,
+                penaltyChargesWaived, penaltyChargesWrittenOff, penaltyChargesOutstanding, totalDueForPeriod, totalPaid,
+                totalPaidInAdvanceForPeriod, totalPaidLateForPeriod, totalWaived, totalWrittenOff, totalOutstanding,
+                totalActualCostOfLoanForPeriod, totalInstallmentAmountForPeriod);
+    }
+
+    private LoanSchedulePeriodData(final Long loanId, final Long customerId, final Integer periodNumber, final LocalDate fromDate,
+            final LocalDate dueDate, final LocalDate followOnDate, final BigDecimal interestRate, final Integer LoanTerm,
+            final String customerName, final String vehicleType, final String loanType, final String mobileNumber, final String referredBy,
+            final LocalDate obligationsMetOnDate, final boolean complete, final BigDecimal principalOriginalDue,
+            final BigDecimal principalPaid, final BigDecimal principalWrittenOff, final BigDecimal principalOutstanding,
+            final BigDecimal principalLoanBalanceOutstanding, final BigDecimal interestDueOnPrincipalOutstanding,
+            final BigDecimal interestPaid, final BigDecimal interestWaived, final BigDecimal interestWrittenOff,
+            final BigDecimal interestOutstanding, final BigDecimal feeChargesDue, final BigDecimal feeChargesPaid,
+            final BigDecimal feeChargesWaived, final BigDecimal feeChargesWrittenOff, final BigDecimal feeChargesOutstanding,
+            final BigDecimal penaltyChargesDue, final BigDecimal penaltyChargesPaid, final BigDecimal penaltyChargesWaived,
+            final BigDecimal penaltyChargesWrittenOff, final BigDecimal penaltyChargesOutstanding, final BigDecimal totalDueForPeriod,
+            final BigDecimal totalPaid, final BigDecimal totalPaidInAdvanceForPeriod, final BigDecimal totalPaidLateForPeriod,
+            final BigDecimal totalWaived, final BigDecimal totalWrittenOff, final BigDecimal totalOutstanding,
+            final BigDecimal totalActualCostOfLoanForPeriod, final BigDecimal totalInstallmentAmountForPeriod) {
+        this.period = periodNumber;
+        this.fromDate = fromDate;
+        this.dueDate = dueDate;
+        this.followOnDate = followOnDate;
+        this.obligationsMetOnDate = obligationsMetOnDate;
+        this.complete = complete;
+        if (fromDate != null) {
+            this.daysInPeriod = Math.toIntExact(ChronoUnit.DAYS.between(this.fromDate, this.dueDate));
+        } else {
+            this.daysInPeriod = null;
+        }
+        this.principalDisbursed = null;
+        this.principalOriginalDue = principalOriginalDue;
+        this.principalDue = principalOriginalDue;
+        this.principalPaid = principalPaid;
+        this.principalWrittenOff = principalWrittenOff;
+        this.principalOutstanding = principalOutstanding;
+        this.principalLoanBalanceOutstanding = principalLoanBalanceOutstanding;
+
+        this.interestOriginalDue = interestDueOnPrincipalOutstanding;
+        this.interestDue = interestDueOnPrincipalOutstanding;
+        this.interestPaid = interestPaid;
+        this.interestWaived = interestWaived;
+        this.interestWrittenOff = interestWrittenOff;
+        this.interestOutstanding = interestOutstanding;
+
+        this.feeChargesDue = feeChargesDue;
+        this.feeChargesPaid = feeChargesPaid;
+        this.feeChargesWaived = feeChargesWaived;
+        this.feeChargesWrittenOff = feeChargesWrittenOff;
+        this.feeChargesOutstanding = feeChargesOutstanding;
+
+        this.penaltyChargesDue = penaltyChargesDue;
+        this.penaltyChargesPaid = penaltyChargesPaid;
+        this.penaltyChargesWaived = penaltyChargesWaived;
+        this.penaltyChargesWrittenOff = penaltyChargesWrittenOff;
+        this.penaltyChargesOutstanding = penaltyChargesOutstanding;
+
+        this.totalOriginalDueForPeriod = totalDueForPeriod;
+        this.totalDueForPeriod = totalDueForPeriod;
+        this.totalPaidForPeriod = totalPaid;
+        this.totalPaidInAdvanceForPeriod = totalPaidInAdvanceForPeriod;
+        this.totalPaidLateForPeriod = totalPaidLateForPeriod;
+        this.totalWaivedForPeriod = totalWaived;
+        this.totalWrittenOffForPeriod = totalWrittenOff;
+        this.totalOutstandingForPeriod = totalOutstanding;
+        this.totalActualCostOfLoanForPeriod = totalActualCostOfLoanForPeriod;
+        this.totalInstallmentAmountForPeriod = totalInstallmentAmountForPeriod;
+        this.loanId = loanId;
+        this.customerId = customerId;
+        this.interestRate = interestRate;
+        this.LoanTerm = LoanTerm;
+        this.customerName = customerName;
+        this.vehicleType = vehicleType;
+        this.loanType = loanType;
+        this.mobileNumber = mobileNumber;
+        this.referredBy = referredBy;
+        if (dueDate.isBefore(LocalDate.now(DateUtils.getDateTimeZoneOfTenant()))) {
+            this.totalOverdue = this.totalOutstandingForPeriod;
+        } else {
+            this.totalOverdue = null;
+        }
+    }
+
     public static LoanSchedulePeriodData withPaidDetail(final LoanSchedulePeriodData loanSchedulePeriodData, final boolean complete,
             final BigDecimal principalPaid, final BigDecimal interestPaid, final BigDecimal feeChargesPaid,
             final BigDecimal penaltyChargesPaid) {
@@ -142,6 +256,7 @@ public final class LoanSchedulePeriodData {
         this.period = periodNumber;
         this.fromDate = fromDate;
         this.dueDate = dueDate;
+        this.followOnDate = null;
         this.obligationsMetOnDate = null;
         this.complete = null;
         if (fromDate != null) {
@@ -193,6 +308,15 @@ public final class LoanSchedulePeriodData {
         this.totalOutstandingForPeriod = this.feeChargesOutstanding;
         this.totalActualCostOfLoanForPeriod = this.feeChargesDue;
         this.totalInstallmentAmountForPeriod = null;
+        this.interestRate = null;
+        this.LoanTerm = null;
+        this.customerName = null;
+        this.vehicleType = null;
+        this.loanType = null;
+        this.mobileNumber = null;
+        this.referredBy = null;
+        this.loanId = null;
+        this.customerId = null;
         if (dueDate.isBefore(LocalDate.now(DateUtils.getDateTimeZoneOfTenant()))) {
             this.totalOverdue = this.totalOutstandingForPeriod;
         } else {
@@ -210,6 +334,7 @@ public final class LoanSchedulePeriodData {
         this.period = periodNumber;
         this.fromDate = fromDate;
         this.dueDate = dueDate;
+        this.followOnDate = null;
         this.obligationsMetOnDate = null;
         this.complete = null;
         if (fromDate != null) {
@@ -251,6 +376,15 @@ public final class LoanSchedulePeriodData {
         this.totalPaidLateForPeriod = null;
         this.totalWaivedForPeriod = null;
         this.totalWrittenOffForPeriod = null;
+        this.interestRate = null;
+        this.LoanTerm = null;
+        this.customerName = null;
+        this.vehicleType = null;
+        this.loanType = null;
+        this.mobileNumber = null;
+        this.referredBy = null;
+        this.loanId = null;
+        this.customerId = null;
         this.totalOutstandingForPeriod = totalDueForPeriod;
         this.totalActualCostOfLoanForPeriod = interestDueOnPrincipalOutstanding.add(feeChargesDueForPeriod);
         this.totalInstallmentAmountForPeriod = totalInstallmentAmountForPeriod;
@@ -281,6 +415,7 @@ public final class LoanSchedulePeriodData {
         this.period = periodNumber;
         this.fromDate = fromDate;
         this.dueDate = dueDate;
+        this.followOnDate = null;
         this.obligationsMetOnDate = obligationsMetOnDate;
         this.complete = complete;
         if (fromDate != null) {
@@ -325,6 +460,16 @@ public final class LoanSchedulePeriodData {
         this.totalOutstandingForPeriod = totalOutstanding;
         this.totalActualCostOfLoanForPeriod = totalActualCostOfLoanForPeriod;
         this.totalInstallmentAmountForPeriod = totalInstallmentAmountForPeriod;
+
+        this.interestRate = null;
+        this.LoanTerm = null;
+        this.customerName = null;
+        this.vehicleType = null;
+        this.loanType = null;
+        this.mobileNumber = null;
+        this.referredBy = null;
+        this.loanId = null;
+        this.customerId = null;
 
         if (dueDate.isBefore(LocalDate.now(DateUtils.getDateTimeZoneOfTenant()))) {
             this.totalOverdue = this.totalOutstandingForPeriod;

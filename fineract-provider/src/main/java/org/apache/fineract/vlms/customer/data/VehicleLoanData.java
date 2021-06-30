@@ -40,7 +40,7 @@ public class VehicleLoanData {
 
     private VehicleDetailsData vehicleDetails;
 
-    private BankDetailsData bankDetails;
+    // private BankDetailsData bankDetails;
 
     private LoanDetailsData loanDetailsData;
 
@@ -48,17 +48,17 @@ public class VehicleLoanData {
 
     public static VehicleLoanData instance(final Long id, final String customerName, final String vehicleType, final String loanType,
             final CustomerDetailsData customerDetails, final GuarantorDetailsData customerGuarantor,
-            final VehicleDetailsData vehicleDetails, final BankDetailsData bankDetails, final LoanDetailsData loanDetailsData,
-            final LoanChangeRequestData loanChangeRequestData) {
+            final VehicleDetailsData vehicleDetails, // final BankDetailsData bankDetails,
+            final LoanDetailsData loanDetailsData, final LoanChangeRequestData loanChangeRequestData) {
 
-        return new VehicleLoanData(id, customerName, vehicleType, loanType, customerDetails, customerGuarantor, vehicleDetails, bankDetails,
+        return new VehicleLoanData(id, customerName, vehicleType, loanType, customerDetails, customerGuarantor, vehicleDetails, // bankDetails,
                 loanDetailsData, loanChangeRequestData);
     }
 
     public VehicleLoanData(final Long id, final String customerName, final String vehicleType, final String loanType,
             final CustomerDetailsData customerDetails, final GuarantorDetailsData customerGuarantor,
-            final VehicleDetailsData vehicleDetails, final BankDetailsData bankDetails, final LoanDetailsData loanDetailsData,
-            final LoanChangeRequestData loanChangeRequestData) {
+            final VehicleDetailsData vehicleDetails, // final BankDetailsData bankDetails,
+            final LoanDetailsData loanDetailsData, final LoanChangeRequestData loanChangeRequestData) {
 
         this.id = id;
 
@@ -74,7 +74,7 @@ public class VehicleLoanData {
 
         this.vehicleDetails = vehicleDetails;
 
-        this.bankDetails = bankDetails;
+        // this.bankDetails = bankDetails;
 
         this.loanDetailsData = loanDetailsData;
 
