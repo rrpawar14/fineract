@@ -167,7 +167,7 @@ public class Loan extends AbstractPersistableCustom {
     @Column(name = "parent_id")
     private Long parentId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "customer_id", nullable = true)
     private CustomerDetails customerDetails;
 

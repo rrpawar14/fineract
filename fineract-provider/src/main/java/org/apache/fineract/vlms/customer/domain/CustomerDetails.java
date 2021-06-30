@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -102,15 +103,15 @@ public class CustomerDetails extends AbstractPersistableCustom {
     @JoinColumn(name = "branch", nullable = true)
     private Office office;
 
-    @OneToOne(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "communicationadd_id", nullable = true)
     private Address communicationAdd;
 
-    @OneToOne(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "permanentadd_id", nullable = true)
     private Address permanentAdd;
 
-    @OneToOne(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "officeadd_id", nullable = true)
     private Address officeAdd;
 
