@@ -305,17 +305,17 @@ public class FEReadPlatformServiceJpaRepositoryImpl implements FEReadPlatformSer
         String sql = null;
         final DocumentsDetailsDataMapper rm = new DocumentsDetailsDataMapper();
         if (commandParam.equals("customerData")) {
-            sql = "select " + rm.schema() + " from m_documents_data doc where customer_id = ? ";
+            sql = "select " + rm.schema() + " from m_documents doc where customer_id = ? ";
         } else if (commandParam.equals("guarantorData")) {
-            sql = "select " + rm.schema() + " from m_documents_data doc  where guarantor_id = ? ";
+            sql = "select " + rm.schema() + " from m_documents doc  where guarantor_id = ? ";
         } else if (commandParam.equals("employeeData")) {
-            sql = "select " + rm.schema() + " from m_documents_data doc  where employee_id= ? ";
+            sql = "select " + rm.schema() + " from m_documents doc  where employee_id= ? ";
         } else if (commandParam.equals("enrollData")) {
-            sql = "select " + rm.schema() + " from m_documents_data doc  where enroll_id= ? ";
+            sql = "select " + rm.schema() + " from m_documents doc  where enroll_id= ? ";
         } else if (commandParam.equals("bankData")) {
-            sql = "select " + rm.schema() + " from m_documents_data doc  where bank_id= ? ";
+            sql = "select " + rm.schema() + " from m_documents doc  where bank_id= ? ";
         } else if (commandParam.equals("loanData")) {
-            sql = "select " + rm.schema() + " from m_documents_data doc  where loan_id= ? ";
+            sql = "select " + rm.schema() + " from m_documents doc  where loan_id= ? ";
         } else if (commandParam.equals("vehicleData")) {
             sql = "select " + rm.schema() + " from m_vehicle_images doc  where vehicle_id= ? ";
         }

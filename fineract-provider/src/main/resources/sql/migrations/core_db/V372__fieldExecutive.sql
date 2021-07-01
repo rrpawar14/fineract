@@ -183,76 +183,92 @@ AUTO_INCREMENT=1
 */
 
 CREATE TABLE `m_feenroll` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `customer_name` VARCHAR(50) NULL DEFAULT NULL,
-    `mobile_number` VARCHAR(50) NULL DEFAULT NULL,
-    `alternate_mobile_number` VARCHAR(50) NULL DEFAULT NULL,
-    `dob` DATE NULL DEFAULT NULL,
-    `father_name` VARCHAR(50) NULL DEFAULT NULL,
-    `gender` VARCHAR(50) NULL DEFAULT NULL,
-    `applicant_type` VARCHAR(50) NULL DEFAULT NULL,
-    `applicant_id` VARCHAR(50) NULL DEFAULT NULL,
-    INDEX `id` (`id`)
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`customer_name` VARCHAR(50) NULL DEFAULT NULL,
+	`mobile_number` VARCHAR(50) NULL DEFAULT NULL,
+	`alternate_mobile_number` VARCHAR(50) NULL DEFAULT NULL,
+	`alternate_mobile_number_two` VARCHAR(50) NULL DEFAULT NULL,
+	`dob` DATE NULL DEFAULT NULL,
+	`father_name` VARCHAR(50) NULL DEFAULT NULL,
+	`spouse_name` VARCHAR(50) NULL DEFAULT NULL,
+	`gender` VARCHAR(50) NULL DEFAULT NULL,
+	`applicant_type` VARCHAR(50) NULL DEFAULT NULL,
+	`applicant_id` VARCHAR(50) NULL DEFAULT NULL,
+	`created_date` DATE NULL DEFAULT NULL,
+	`enroll_id` VARCHAR(50) NULL DEFAULT NULL,
+	INDEX `id` (`id`)
 )
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=1
 ;
 
+
  CREATE TABLE `m_documents_images` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `location` VARCHAR(500) NULL DEFAULT NULL,
-    `entity_name` VARCHAR(50) NULL DEFAULT NULL,
-    `document_number` VARCHAR(50) NULL DEFAULT NULL,
-    `storage_type_enum` SMALLINT(6) NULL DEFAULT NULL,
-    `customerdetails_id` INT(11) NULL DEFAULT NULL,
-    `guarantor_id` INT(11) NULL DEFAULT NULL,
-    `bank_id` INT(11) NULL DEFAULT NULL,
-    `loan_id` INT(11) NULL DEFAULT NULL,
-    `feEnroll_id` INT(11) NULL DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    INDEX `FK_document_bank_images` (`bank_id`),
-    INDEX `FK_guarantor_id` (`guarantor_id`),
-    INDEX `FK_newvehicle_id` (`loan_id`),
-    INDEX `FK_enroll_id` (`feEnroll_id`),
-    INDEX `customerdetails_org` (`customerdetails_id`),
-    CONSTRAINT `FK_document_bank_images` FOREIGN KEY (`bank_id`) REFERENCES `m_customer_bank_details` (`id`),
-    CONSTRAINT `FK_enroll_id` FOREIGN KEY (`feEnroll_id`) REFERENCES `m_feenroll` (`id`),
-    CONSTRAINT `FK_guarantor_id` FOREIGN KEY (`guarantor_id`) REFERENCES `m_customer_guarantor` (`id`),
-    CONSTRAINT `customerdetails_org` FOREIGN KEY (`customerdetails_id`) REFERENCES `m_customer_details` (`id`),
-    CONSTRAINT `m_documents_images_ibfk_1` FOREIGN KEY (`loan_id`) REFERENCES `m_apply_vehicle_loan` (`id`)
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`location` VARCHAR(500) NULL DEFAULT NULL,
+	`entity_name` VARCHAR(50) NULL DEFAULT NULL,
+	`document_number` VARCHAR(50) NULL DEFAULT NULL,
+	`storage_type_enum` SMALLINT(6) NULL DEFAULT NULL,
+	`customerdetails_id` INT(11) NULL DEFAULT NULL,
+	`guarantor_id` INT(11) NULL DEFAULT NULL,
+	`bank_id` INT(11) NULL DEFAULT NULL,
+	`loan_id` INT(11) NULL DEFAULT NULL,
+	`feEnroll_id` INT(11) NULL DEFAULT NULL,
+	`employee_id` INT(11) NULL DEFAULT NULL,
+	PRIMARY KEY (`id`),
+	INDEX `FK_document_bank_images` (`bank_id`),
+	INDEX `FK_guarantor_id` (`guarantor_id`),
+	INDEX `FK_newvehicle_id` (`loan_id`),
+	INDEX `FK_enroll_id` (`feEnroll_id`),
+	INDEX `customerdetails_org` (`customerdetails_id`),
+	INDEX `doc_images` (`employee_id`),
+	CONSTRAINT `FK_document_bank_images` FOREIGN KEY (`bank_id`) REFERENCES `m_customer_bank_details` (`id`),
+	CONSTRAINT `FK_enroll_id` FOREIGN KEY (`feEnroll_id`) REFERENCES `m_feenroll` (`id`),
+	CONSTRAINT `FK_guarantor_id` FOREIGN KEY (`guarantor_id`) REFERENCES `m_customer_guarantor` (`id`),
+	CONSTRAINT `customerdetails_org` FOREIGN KEY (`customerdetails_id`) REFERENCES `m_customer_details` (`id`),
+	CONSTRAINT `doc_images` FOREIGN KEY (`employee_id`) REFERENCES `m_employee` (`id`),
+	CONSTRAINT `m_documents_images_ibfk_1` FOREIGN KEY (`loan_id`) REFERENCES `m_apply_vehicle_loan` (`id`)
 )
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=1
 ;
+
 
 
 CREATE TABLE `m_fe_task` (
-    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-    `taskType` VARCHAR(50) NULL DEFAULT NULL,
-    `customer_reg_no` VARCHAR(50) NULL DEFAULT NULL,
-    `customer_mobile_no` VARCHAR(50) NULL DEFAULT NULL,
-    `vehicle_number` VARCHAR(50) NULL DEFAULT NULL,
-    `due_date` DATE NULL DEFAULT NULL,
-    `assign_to` VARCHAR(50) NULL DEFAULT NULL,
-    `description` VARCHAR(100) NULL DEFAULT NULL,
-    INDEX `id` (`id`)
+	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+	`taskType` VARCHAR(50) NULL DEFAULT NULL,
+	`customer_reg_no` VARCHAR(50) NULL DEFAULT NULL,
+	`customer_mobile_no` VARCHAR(50) NULL DEFAULT NULL,
+	`vehicle_number` VARCHAR(50) NULL DEFAULT NULL,
+	`due_date` DATE NULL DEFAULT NULL,
+	`assign_to` VARCHAR(50) NULL DEFAULT NULL,
+	`assign_by` VARCHAR(50) NULL DEFAULT NULL,
+	`assign` VARCHAR(50) NULL DEFAULT NULL,
+	`description` VARCHAR(100) NULL DEFAULT NULL,
+	`branch` VARCHAR(100) NULL DEFAULT NULL,
+	`status` VARCHAR(100) NULL DEFAULT NULL,
+	`created_date` DATE NULL DEFAULT NULL,
+	INDEX `id` (`id`)
 )
+COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=1
 ;
 
-
-
 CREATE TABLE `m_documents_type` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `documents_name` VARCHAR(50) NULL DEFAULT NULL,
-    `status` INT(11) NULL DEFAULT NULL,
-    INDEX `id` (`id`)
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`documents_name` VARCHAR(50) NULL DEFAULT NULL,
+	`status` INT(11) NULL DEFAULT NULL,
+	INDEX `id` (`id`)
 )
+COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
+AUTO_INCREMENT=1
 ;
+
 
 INSERT INTO `fineract_default`.`m_documents_type` (`id`, `documents_name`, `status`) VALUES ('1', 'aadhaar', '1');
 INSERT INTO `fineract_default`.`m_documents_type` (`id`, `documents_name`, `status`) VALUES ('2', 'pancard', '1');
